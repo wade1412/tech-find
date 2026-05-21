@@ -1,2 +1,13 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-main-400: #facc15;
+  --color-main-500: #eab308;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
