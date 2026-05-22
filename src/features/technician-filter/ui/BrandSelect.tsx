@@ -1,7 +1,7 @@
-import { Skeleton } from "@mui/material";
+import { Autocomplete, Skeleton, TextField } from "@mui/material";
 import { useBrandsQuery } from "../../../entities/brand/useBrandsQuery";
-import { useBrandsGroupsQuery } from "../../../entities/brandGroup/useBrandGroupsQuery";
-import { useMemo } from "react";
+import { useBrandGroupsQuery } from "../../../entities/brandGroup/useBrandGroupsQuery";
+import { useMemo, useState } from "react";
 
 type BrandOption = {
   id: string;
@@ -11,6 +11,8 @@ type BrandOption = {
 };
 
 function BrandSelect() {
+  const [selectedBrands, setSelectedBrands] = useState<BrandOption[]>([]);
+
   const {
     data: brands,
     isPending: isBrandsPending,
@@ -23,7 +25,7 @@ function BrandSelect() {
     isPending: isBrandGroupsPending,
     isError: isBrandGroupsError,
     error: brandGroupsError,
-  } = useBrandsGroupsQuery();
+  } = useBrandGroupsQuery();
 
   const brandOptions = useMemo<BrandOption[]>(() => {
     // Return early on empty data
@@ -52,7 +54,7 @@ function BrandSelect() {
         return a.groupOrder - b.groupOrder;
       }
       // Then sort alphabetically
-      return a.groupLabel.localeCompare(b.groupLabel);
+      return a.label.localeCompare(b.label);
     });
 
     return sorted;
@@ -60,15 +62,28 @@ function BrandSelect() {
 
   const errorMessage = brandsError?.message || brandGroupsError?.message;
 
+  if (isBrandsPending || isBrandGroupsPending) {
+    return <Skeleton variant="rounded" height={56} />;
+  }
+
+  if (isBrandsError || isBrandGroupsError) {
+    return <p>{errorMessage}</p>;
+  }
+
   return (
     <div>
-      {(isBrandsPending || isBrandGroupsPending) && <Skeleton />}
-
-      {(isBrandsError || isBrandGroupsError) && <h2>{errorMessage}</h2>}
-
-      {brandOptions.map((b) => (
-        <p key={b.id}>{b.label}</p>
-      ))}
+      <Autocomplete
+        multiple
+        value={selectedBrands}
+        onChange={(_, newValue) => {
+          setSelectedBrands(newValue);
+        }}
+        isOptionEqualToValue={(option, value) => option.id === value.id}
+        options={brandOptions}
+        groupBy={(option) => option.groupLabel}
+        getOptionLabel={(option) => option.label}
+        renderInput={(params) => <TextField {...params} label="Brand" />}
+      />
     </div>
   );
 }
