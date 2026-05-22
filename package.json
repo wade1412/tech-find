@@ -11,6 +11,9 @@
     "db:types": "supabase gen types typescript --project-id ybcvjxgymvynhvdkyqtp --schema public > src/shared/api/supabase/database.types.ts"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/material": "^9.0.1",
     "@supabase/supabase-js": "^2.106.1",
     "@tailwindcss/vite": "^4.3.0",
     "@tanstack/react-query": "^5.100.11",
