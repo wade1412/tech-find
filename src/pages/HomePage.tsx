@@ -1,5 +1,6 @@
 import TechnicianList from "../entities/technician/ui/TechnicianList";
 import UnitList from "../entities/unit/ui/UnitList";
+import BrandSelect from "../features/technician-filter/ui/BrandSelect";
 
 export function HomePage() {
   return (
@@ -7,6 +8,8 @@ export function HomePage() {
       <TechnicianList />
 
       <UnitList />
+
+      <BrandSelect />
     </div>
   );
 }
