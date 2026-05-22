@@ -1,21 +1,12 @@
-import { useTechniciansQuery } from "../entities/technician/useTechniciansQuery";
+import TechnicianList from "../entities/technician/ui/TechnicianList";
+import UnitList from "../entities/unit/ui/UnitList";
 
 export function HomePage() {
-  const { data, isPending, isError, error } = useTechniciansQuery();
-
   return (
     <div className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 transition-colors">
-      {isPending && <h1>Loading...</h1>}
+      <TechnicianList />
 
-      {isError && <p>{error.message}</p>}
-
-      {data && data.length > 0 && (
-        <ul>
-          {data.map((tech) => (
-            <li key={tech.id}>{tech.name}</li>
-          ))}
-        </ul>
-      )}
+      <UnitList />
     </div>
   );
 }
