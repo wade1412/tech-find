@@ -9,6 +9,7 @@ export const getUnits = async (): Promise<Unit[]> => {
         id,
         name,
         slug,
+        display_order,
         active,
         is_built_in,
         can_be_stacked,
@@ -16,9 +17,9 @@ export const getUnits = async (): Promise<Unit[]> => {
         `,
     )
     .eq("active", true)
-    .order("name");
+    .order("display_order");
 
   if (error) throw error;
 
-  return data || [];
+  return data ?? [];
 };
