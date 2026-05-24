@@ -47,44 +47,50 @@ function BrandSelect() {
       };
     });
 
-    // Sort by group
     const sorted = mapped.sort((a, b) => {
-      // Sort by group order first
+      // Sort by group order
       if (a.groupOrder !== b.groupOrder) {
         return a.groupOrder - b.groupOrder;
       }
-      // Then sort alphabetically
+      // Sort alphabetically
       return a.label.localeCompare(b.label);
     });
 
     return sorted;
   }, [brands, brandGroups]);
 
-  const errorMessage = brandsError?.message || brandGroupsError?.message;
-
   if (isBrandsPending || isBrandGroupsPending) {
     return <Skeleton variant="rounded" height={56} />;
   }
 
   if (isBrandsError || isBrandGroupsError) {
-    return <p>{errorMessage}</p>;
+    return (
+      <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-400">
+        {brandsError?.message ?? brandGroupsError?.message}
+      </div>
+    );
   }
 
   return (
-    <div>
-      <Autocomplete
-        multiple
-        value={selectedBrands}
-        onChange={(_, newValue) => {
-          setSelectedBrands(newValue);
-        }}
-        isOptionEqualToValue={(option, value) => option.id === value.id}
-        options={brandOptions}
-        groupBy={(option) => option.groupLabel}
-        getOptionLabel={(option) => option.label}
-        renderInput={(params) => <TextField {...params} label="Brand" />}
-      />
-    </div>
+    <Autocomplete
+      multiple
+      value={selectedBrands}
+      onChange={(_, newValue) => {
+        setSelectedBrands(newValue);
+      }}
+      isOptionEqualToValue={(option, value) => option.id === value.id}
+      options={brandOptions}
+      groupBy={(option) => option.groupLabel}
+      getOptionLabel={(option) => option.label}
+      slotProps={{
+        chip: { color: "primary", variant: "outlined", size: "small" },
+      }}
+      sx={{
+        "& .MuiOutlinedInput-root": { borderRadius: "0.75rem" },
+        "& .MuiChip-root": { borderRadius: "0.5rem", fontWeight: 600 },
+      }}
+      renderInput={(params) => <TextField {...params} label="Brand" />}
+    />
   );
 }
 

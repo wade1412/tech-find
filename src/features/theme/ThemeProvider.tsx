@@ -48,6 +48,12 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
           },
           divider: theme === "dark" ? "#27272a" : "#e4e4e7",
         },
+        typography: {
+          fontFamily: '"Inter", system-ui, sans-serif',
+          h1: { fontFamily: '"Manrope", system-ui, sans-serif' },
+          h2: { fontFamily: '"Manrope", system-ui, sans-serif' },
+          h3: { fontFamily: '"Manrope", system-ui, sans-serif' },
+        },
       }),
     [theme],
   );
