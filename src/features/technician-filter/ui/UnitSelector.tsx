@@ -1,9 +1,9 @@
-import { useUnitsQuery } from "../useUnitsQuery";
-import UnitCard from "./UnitCard";
-import UnitSkeleton from "./UnitSkeleton";
-import { useTechnicianFilters } from "../../../features/technician-filter/model/useTechnicianFilters";
+import { useUnitsQuery } from "../../../entities/unit/useUnitsQuery";
+import UnitCard from "../../../entities/unit/ui/UnitCard";
+import UnitSkeleton from "../../../entities/unit/ui/UnitSkeleton";
+import { useTechnicianFilters } from "../model/useTechnicianFilters";
 
-function UnitList() {
+function UnitSelector() {
   const { data, isPending, isError, error } = useUnitsQuery();
   const { filter, toggleUnit, clearUnits } = useTechnicianFilters();
 
@@ -57,4 +57,4 @@ function UnitList() {
   );
 }
 
-export default UnitList;
+export default UnitSelector;

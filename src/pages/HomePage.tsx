@@ -1,9 +1,6 @@
 import TechnicianList from "../entities/technician/ui/TechnicianList";
-import UnitList from "../entities/unit/ui/UnitList";
-import BrandSelect from "../features/technician-filter/ui/BrandSelect";
-
-const headingStyle =
-  "font-heading mb-2.5 text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500";
+import FilterPanel from "../features/technician-filter/ui/FilterPanel";
+import { headingStyle } from "../shared/styles/styles";
 
 export function HomePage() {
   return (
@@ -20,17 +17,7 @@ export function HomePage() {
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {/* Left Column - filtering options: Units, Brands and others */}
         <div className="flex flex-col gap-5">
-          {/* Brand Select */}
-          <section>
-            <h2 className={headingStyle}>Filter by Brand</h2>
-            <BrandSelect />
-          </section>
-
-          {/* Unit List */}
-          <section>
-            <h2 className={headingStyle}>Units</h2>
-            <UnitList />
-          </section>
+          <FilterPanel />
         </div>
 
         {/* Right Column - Technicians List */}

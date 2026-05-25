@@ -8,6 +8,8 @@ export const useTechnicianFilters = () => {
     const unitsParam = filterParams.get("units");
     return {
       unitSlugs: unitsParam ? unitsParam.split(",") : [],
+      isStacked: filterParams.get("stacked") === "1",
+      isCommercial: filterParams.get("commercial") === "1",
     };
   }, [filterParams]);
 
@@ -43,6 +45,24 @@ export const useTechnicianFilters = () => {
     [filter.unitSlugs, updateFilter],
   );
 
+  // Toggle Stacked option
+  const toggleStacked = useCallback(() => {
+    const prev = filterParams.get("stacked");
+    updateFilter("stacked", prev === "1" ? null : "1");
+  }, [filterParams, updateFilter]);
+
+  // Toggle Commercial option
+  const toggleCommercial = useCallback(() => {
+    const prev = filterParams.get("commercial");
+    updateFilter("commercial", prev === "1" ? null : "1");
+  }, [filterParams, updateFilter]);
+
+  // Clear checkboxes
+  const clearOptions = useCallback(() => {
+    updateFilter("stacked", null);
+    updateFilter("commercial", null);
+  }, [updateFilter]);
+
   const clearUnits = useCallback(() => {
     updateFilter("units", null);
   }, [updateFilter]);
@@ -51,5 +71,8 @@ export const useTechnicianFilters = () => {
     filter,
     toggleUnit,
     clearUnits,
+    toggleStacked,
+    toggleCommercial,
+    clearOptions,
   };
 };
