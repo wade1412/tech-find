@@ -1,18 +1,11 @@
-import { useState } from "react";
 import { useUnitsQuery } from "../useUnitsQuery";
 import UnitCard from "./UnitCard";
 import UnitSkeleton from "./UnitSkeleton";
+import { useTechnicianFilters } from "../../../features/technician-filter/model/useTechnicianFilters";
 
 function UnitList() {
   const { data, isPending, isError, error } = useUnitsQuery();
-
-  const [selectedUnitIds, setSelectedUnitIds] = useState<string[]>([]);
-
-  const isSelected = (id: string) => selectedUnitIds.includes(id);
-  const toggleId = (id: string) =>
-    setSelectedUnitIds((prev) =>
-      prev.some((u) => u === id) ? prev.filter((u) => u !== id) : [...prev, id],
-    );
+  const { filter, toggleUnit, clearUnits } = useTechnicianFilters();
 
   if (isPending) return <UnitSkeleton />;
 
@@ -28,15 +21,15 @@ function UnitList() {
     <div className="flex flex-col gap-3">
       {/* Top Row if any units selected: Info and Clear Button */}
       <div
-        className={`overflow-hidden transition-all duration-200 ${selectedUnitIds.length > 0 ? "max-h-10 mb-2" : "max-h-0"}`}
+        className={`overflow-hidden transition-all duration-200 ${filter.unitSlugs.length > 0 ? "max-h-10 mb-2" : "max-h-0"}`}
       >
         <div className="flex items-center justify-between">
           <span className="text-sm text-zinc-500 dark:text-zinc-400">
-            {selectedUnitIds.length} selected
+            {filter.unitSlugs.length} selected
           </span>
           <button
-            className="text-sm font-medium text-main-500 hover:text-main-400 transition-colors"
-            onClick={() => setSelectedUnitIds([])}
+            className="text-sm font-medium text-main-500 hover:text-main-400 transition-colors cursor-pointer"
+            onClick={clearUnits}
           >
             Clear
           </button>
@@ -50,8 +43,8 @@ function UnitList() {
             <UnitCard
               key={unit.id}
               unit={unit}
-              isSelected={isSelected(unit.id)}
-              onToggle={() => toggleId(unit.id)}
+              isSelected={filter.unitSlugs.includes(unit.slug)}
+              onToggle={() => toggleUnit(unit.slug)}
             />
           ))
         ) : (
