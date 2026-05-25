@@ -16,9 +16,7 @@ export function HomePage() {
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {/* Left Column - filtering options: Units, Brands and others */}
-        <div className="flex flex-col gap-5">
-          <FilterPanel />
-        </div>
+        <FilterPanel />
 
         {/* Right Column - Technicians List */}
         <section>

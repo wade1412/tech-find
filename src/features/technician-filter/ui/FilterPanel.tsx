@@ -4,7 +4,7 @@ import UnitSelector from "./UnitSelector";
 
 function FilterPanel() {
   return (
-    <div>
+    <div className="flex flex-col gap-5">
       {/* Brand Select */}
       <section>
         <h2 className={headingStyle}>Filter by Brand</h2>

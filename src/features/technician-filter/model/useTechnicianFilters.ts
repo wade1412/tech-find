@@ -1,13 +1,22 @@
 import { useCallback, useMemo } from "react";
 import { useSearchParams } from "react-router";
+import type { FilterState } from "./filter.types";
+
+type FilterParamKey = "units" | "stacked" | "commercial" | "gas";
+type FilterOptionKey = Exclude<FilterParamKey, "units">;
+
+const filterCheckboxes: FilterOptionKey[] = ["stacked", "commercial", "gas"];
 
 export const useTechnicianFilters = () => {
   const [filterParams, setFilterParams] = useSearchParams();
 
-  const filter = useMemo(() => {
+  const filter: FilterState = useMemo(() => {
     const unitsParam = filterParams.get("units");
     return {
-      unitSlugs: unitsParam ? unitsParam.split(",") : [],
+      unitSlugs: unitsParam
+        ? [...new Set(unitsParam.split(",").filter(Boolean))]
+        : [],
+      isGas: filterParams.get("gas") === "1",
       isStacked: filterParams.get("stacked") === "1",
       isCommercial: filterParams.get("commercial") === "1",
     };
@@ -15,11 +24,11 @@ export const useTechnicianFilters = () => {
 
   // Universal function to update a filter
   const updateFilter = useCallback(
-    (key: string, value: string | null | undefined) => {
+    (key: FilterParamKey, value: string | null | undefined) => {
       // New params to avoid mutations
       const newParams = new URLSearchParams(filterParams);
 
-      if (!value || value === "null") {
+      if (value == null || value === "") {
         newParams.delete(key);
       } else {
         newParams.set(key, value);
@@ -29,6 +38,8 @@ export const useTechnicianFilters = () => {
     },
     [filterParams, setFilterParams],
   );
+
+  // -------- Toggle Filter Options --------
 
   // Toggle Unit from a units Array
   const toggleUnit = useCallback(
@@ -47,21 +58,45 @@ export const useTechnicianFilters = () => {
 
   // Toggle Stacked option
   const toggleStacked = useCallback(() => {
-    const prev = filterParams.get("stacked");
-    updateFilter("stacked", prev === "1" ? null : "1");
-  }, [filterParams, updateFilter]);
+    updateFilter("stacked", filter.isStacked ? null : "1");
+  }, [filter.isStacked, updateFilter]);
 
   // Toggle Commercial option
   const toggleCommercial = useCallback(() => {
-    const prev = filterParams.get("commercial");
-    updateFilter("commercial", prev === "1" ? null : "1");
-  }, [filterParams, updateFilter]);
+    updateFilter("commercial", filter.isCommercial ? null : "1");
+  }, [filter.isCommercial, updateFilter]);
 
-  // Clear checkboxes
+  // Toggle Gas option
+  const toggleGas = useCallback(() => {
+    updateFilter("gas", filter.isGas ? null : "1");
+  }, [filter.isGas, updateFilter]);
+
+  // -------- Clear Filter Options --------
+
+  const clearFilterOption = useCallback(
+    (key: FilterOptionKey) => updateFilter(key, null),
+    [updateFilter],
+  );
+
+  const clearStacked = useCallback(() => {
+    clearFilterOption("stacked");
+  }, [clearFilterOption]);
+
+  const clearCommercial = useCallback(() => {
+    clearFilterOption("commercial");
+  }, [clearFilterOption]);
+
+  const clearGas = useCallback(() => {
+    clearFilterOption("gas");
+  }, [clearFilterOption]);
+
+  // Clear all checkboxes
   const clearOptions = useCallback(() => {
-    updateFilter("stacked", null);
-    updateFilter("commercial", null);
-  }, [updateFilter]);
+    const newParams = new URLSearchParams(filterParams);
+    filterCheckboxes.forEach((c) => newParams.delete(c));
+
+    setFilterParams(newParams, { replace: true });
+  }, [filterParams, setFilterParams]);
 
   const clearUnits = useCallback(() => {
     updateFilter("units", null);
@@ -73,6 +108,10 @@ export const useTechnicianFilters = () => {
     clearUnits,
     toggleStacked,
     toggleCommercial,
+    toggleGas,
+    clearStacked,
+    clearCommercial,
+    clearGas,
     clearOptions,
   };
 };
