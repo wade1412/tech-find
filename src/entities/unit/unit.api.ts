@@ -13,6 +13,7 @@ export const getUnits = async (): Promise<Unit[]> => {
         active,
         is_built_in,
         can_be_stacked,
+        can_be_gas,
         can_be_commercial
         `,
     )

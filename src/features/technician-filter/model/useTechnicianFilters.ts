@@ -1,11 +1,9 @@
 import { useCallback, useMemo } from "react";
 import { useSearchParams } from "react-router";
-import type { FilterState } from "./filter.types";
+import type { FilterState, JobOptionKey } from "./filter.types";
+import { filterCheckboxes } from "./filter.constants";
 
 type FilterParamKey = "units" | "stacked" | "commercial" | "gas";
-type FilterOptionKey = Exclude<FilterParamKey, "units">;
-
-const filterCheckboxes: FilterOptionKey[] = ["stacked", "commercial", "gas"];
 
 export const useTechnicianFilters = () => {
   const [filterParams, setFilterParams] = useSearchParams();
@@ -61,42 +59,32 @@ export const useTechnicianFilters = () => {
     updateFilter("stacked", filter.isStacked ? null : "1");
   }, [filter.isStacked, updateFilter]);
 
-  // Toggle Commercial option
-  const toggleCommercial = useCallback(() => {
-    updateFilter("commercial", filter.isCommercial ? null : "1");
-  }, [filter.isCommercial, updateFilter]);
-
   // Toggle Gas option
   const toggleGas = useCallback(() => {
     updateFilter("gas", filter.isGas ? null : "1");
   }, [filter.isGas, updateFilter]);
 
+  // Toggle Commercial option
+  const toggleCommercial = useCallback(() => {
+    updateFilter("commercial", filter.isCommercial ? null : "1");
+  }, [filter.isCommercial, updateFilter]);
+
   // -------- Clear Filter Options --------
 
-  const clearFilterOption = useCallback(
-    (key: FilterOptionKey) => updateFilter(key, null),
-    [updateFilter],
+  const clearOptionByKeys = useCallback(
+    (keysArr: JobOptionKey[]) => {
+      const newParams = new URLSearchParams(filterParams);
+      keysArr.forEach((key) => newParams.delete(key));
+      setFilterParams(newParams, { replace: true });
+    },
+    [filterParams, setFilterParams],
   );
 
-  const clearStacked = useCallback(() => {
-    clearFilterOption("stacked");
-  }, [clearFilterOption]);
-
-  const clearCommercial = useCallback(() => {
-    clearFilterOption("commercial");
-  }, [clearFilterOption]);
-
-  const clearGas = useCallback(() => {
-    clearFilterOption("gas");
-  }, [clearFilterOption]);
-
   // Clear all checkboxes
-  const clearOptions = useCallback(() => {
-    const newParams = new URLSearchParams(filterParams);
-    filterCheckboxes.forEach((c) => newParams.delete(c));
-
-    setFilterParams(newParams, { replace: true });
-  }, [filterParams, setFilterParams]);
+  const clearAllOptions = useCallback(
+    () => clearOptionByKeys(filterCheckboxes),
+    [clearOptionByKeys],
+  );
 
   const clearUnits = useCallback(() => {
     updateFilter("units", null);
@@ -109,9 +97,7 @@ export const useTechnicianFilters = () => {
     toggleStacked,
     toggleCommercial,
     toggleGas,
-    clearStacked,
-    clearCommercial,
-    clearGas,
-    clearOptions,
+    clearOptionByKeys,
+    clearAllOptions,
   };
 };

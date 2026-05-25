@@ -4,3 +4,5 @@ export type FilterState = {
   isCommercial: boolean;
   isStacked: boolean;
 };
+
+export type JobOptionKey = "gas" | "stacked" | "commercial";

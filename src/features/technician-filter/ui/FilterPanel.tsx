@@ -1,5 +1,6 @@
 import { headingStyle } from "../../../shared/styles/styles";
 import BrandSelect from "./BrandSelect";
+import JobOptions from "./JobOptions";
 import UnitSelector from "./UnitSelector";
 
 function FilterPanel() {
@@ -10,6 +11,8 @@ function FilterPanel() {
         <h2 className={headingStyle}>Filter by Brand</h2>
         <BrandSelect />
       </section>
+
+      <JobOptions />
 
       {/* Unit List */}
       <section>
