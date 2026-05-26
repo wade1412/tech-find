@@ -4,4 +4,6 @@ export const queryKeys = {
   specificIssues: ["specific-issues"],
   brands: ["brands"],
   brandGroups: ["brand_groups"],
+  technicianSkillSet: ["technician_skill_set"],
+  technicianIgnoreList: ["technician_ignore_list"],
 } as const;

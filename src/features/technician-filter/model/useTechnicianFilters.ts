@@ -1,8 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { useSearchParams } from "react-router";
 import type { FilterState, JobOptionKey } from "./filter.types";
-import { filterCheckboxes } from "./filter.constants";
-
 type FilterParamKey =
   | "units"
   | "brands"
@@ -147,7 +145,6 @@ export const useTechnicianFilters = () => {
     toggleCommercial,
     toggleGas,
     clearOptionByKeys,
-    clearAllOptions,
     resetFilters,
   };
 };
