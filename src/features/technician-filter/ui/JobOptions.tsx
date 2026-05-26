@@ -87,10 +87,10 @@ function JobOptions() {
 
   return (
     <div
-      className={`overflow-hidden transition-all duration-200 ${isOptionsActive ? "mb-3 max-h-16" : "max-h-0"}`}
+      className={`overflow-hidden transition-all duration-200 ${isOptionsActive ? "mb-3 max-h-24 md:max-h-16" : "max-h-0"}`}
     >
-      <div className="flex flex-col md:flex-row justify-between gap-4">
-        <div className="flex flex-row gap-4 justify-center">
+      <div className="flex flex-col justify-between gap-2 md:flex-row md:gap-4">
+        <div className="flex justify-center gap-4">
           {filterCheckboxes
             .filter((optionName: JobOptionKey) => options[optionName].visible)
             .map((optionName: JobOptionKey) => (
@@ -104,7 +104,8 @@ function JobOptions() {
         </div>
 
         <button
-          className={`text-main-500 hover:text-main-400 text-sm font-medium transition-all duration-200 ${hasChecked ? "cursor-pointer opacity-100" : "pointer-events-none opacity-0"}`}
+          disabled={!hasChecked}
+          className="text-main-500 hover:text-main-400 disabled:hover:text-main-500 text-sm font-medium transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-35"
           onClick={clearAllOptions}
         >
           Clear

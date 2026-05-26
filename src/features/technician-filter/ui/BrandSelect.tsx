@@ -1,18 +1,19 @@
 import { Autocomplete, Skeleton, TextField } from "@mui/material";
 import { useBrandsQuery } from "../../../entities/brand/useBrandsQuery";
 import { useBrandGroupsQuery } from "../../../entities/brandGroup/useBrandGroupsQuery";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, type SyntheticEvent } from "react";
+import { useTechnicianFilters } from "../model/useTechnicianFilters";
 
 type BrandOption = {
   id: string;
+  slug: string;
   label: string;
   groupLabel: string;
   groupOrder: number;
 };
 
 function BrandSelect() {
-  const [selectedBrands, setSelectedBrands] = useState<BrandOption[]>([]);
-
+  const { filter, updateBrandSlugs, clearBrands } = useTechnicianFilters();
   const {
     data: brands,
     isPending: isBrandsPending,
@@ -41,6 +42,7 @@ function BrandSelect() {
 
       return {
         id: brand.id,
+        slug: brand.slug,
         label: brand.name,
         groupLabel: group ? group.name : "No group",
         groupOrder: group ? group.display_order : 999, // last in order if no value
@@ -59,9 +61,25 @@ function BrandSelect() {
     return sorted;
   }, [brands, brandGroups]);
 
-  if (isBrandsPending || isBrandGroupsPending) {
-    return <Skeleton variant="rounded" height={56} />;
-  }
+  const selectedBrands = useMemo(() => {
+    return brandOptions.filter((option) =>
+      filter.brandSlugs.includes(option.slug),
+    );
+  }, [brandOptions, filter.brandSlugs]);
+
+  const handleOptionChange = (
+    _: SyntheticEvent<Element, Event>,
+    newValue: BrandOption[],
+  ) => {
+    const slugs = newValue.map((v) => v.slug);
+    updateBrandSlugs(slugs);
+  };
+
+  useEffect(() => {
+    if (filter.isCommercial && filter.brandSlugs.length > 0) {
+      clearBrands();
+    }
+  }, [filter.isCommercial, filter.brandSlugs, clearBrands]);
 
   if (isBrandsError || isBrandGroupsError) {
     return (
@@ -71,26 +89,46 @@ function BrandSelect() {
     );
   }
 
+  if (isBrandsPending || isBrandGroupsPending) {
+    return <Skeleton variant="rounded" height={56} />;
+  }
+
   return (
-    <Autocomplete
-      multiple
-      value={selectedBrands}
-      onChange={(_, newValue) => {
-        setSelectedBrands(newValue);
-      }}
-      isOptionEqualToValue={(option, value) => option.id === value.id}
-      options={brandOptions}
-      groupBy={(option) => option.groupLabel}
-      getOptionLabel={(option) => option.label}
-      slotProps={{
-        chip: { color: "primary", variant: "outlined", size: "small" },
-      }}
-      sx={{
-        "& .MuiOutlinedInput-root": { borderRadius: "0.75rem" },
-        "& .MuiChip-root": { borderRadius: "0.5rem", fontWeight: 600 },
-      }}
-      renderInput={(params) => <TextField {...params} label="Brand" />}
-    />
+    <div className="flex flex-col gap-1.5">
+      <div className={filter.isCommercial ? "cursor-not-allowed" : ""}>
+        <Autocomplete
+          disabled={filter.isCommercial}
+          multiple
+          value={selectedBrands}
+          onChange={handleOptionChange}
+          isOptionEqualToValue={(option, value) => option.id === value.id}
+          options={brandOptions}
+          groupBy={(option) => option.groupLabel}
+          getOptionLabel={(option) => option.label}
+          slotProps={{
+            chip: { color: "primary", variant: "outlined", size: "small" },
+          }}
+          sx={{
+            "& .MuiOutlinedInput-root": { borderRadius: "0.75rem" },
+            "& .MuiChip-root": { borderRadius: "0.5rem", fontWeight: 600 },
+            "& .MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-notchedOutline":
+              {
+                borderStyle: "dashed",
+              },
+            "& .MuiOutlinedInput-root.Mui-disabled": { pointerEvents: "none" },
+          }}
+          renderInput={(params) => <TextField {...params} label="Brand" />}
+        />
+
+        <div
+          className={`overflow-hidden transition-all duration-200 ${filter.isCommercial ? "max-h-6" : "max-h-0"}`}
+        >
+          <p className="text-xs text-zinc-400 dark:text-zinc-500 px-1 py-1">
+            Brand filter is unavailable for commercial jobs
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
 

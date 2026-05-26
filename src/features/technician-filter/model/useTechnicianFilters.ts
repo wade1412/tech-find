@@ -3,13 +3,14 @@ import { useSearchParams } from "react-router";
 import type { FilterState, JobOptionKey } from "./filter.types";
 import { filterCheckboxes } from "./filter.constants";
 
-type FilterParamKey = "units" | "stacked" | "commercial" | "gas";
+type FilterParamKey = "units" | "brands" | "stacked" | "commercial" | "gas";
 
 export const useTechnicianFilters = () => {
   const [filterParams, setFilterParams] = useSearchParams();
 
   const filter: FilterState = useMemo(() => {
     const unitsParam = filterParams.get("units");
+    const brandsParam = filterParams.get("brands");
     return {
       unitSlugs: unitsParam
         ? [...new Set(unitsParam.split(",").filter(Boolean))]
@@ -17,6 +18,9 @@ export const useTechnicianFilters = () => {
       isGas: filterParams.get("gas") === "1",
       isStacked: filterParams.get("stacked") === "1",
       isCommercial: filterParams.get("commercial") === "1",
+      brandSlugs: brandsParam
+        ? [...new Set(brandsParam.split(",").filter(Boolean))]
+        : [],
     };
   }, [filterParams]);
 
@@ -36,6 +40,17 @@ export const useTechnicianFilters = () => {
     },
     [filterParams, setFilterParams],
   );
+
+  const updateBrandSlugs = useCallback(
+    (newValue: string[]) => {
+      updateFilter("brands", newValue.length > 0 ? newValue.join(",") : null);
+    },
+    [updateFilter],
+  );
+
+  const clearBrands = useCallback(() => {
+    updateFilter("brands", null);
+  }, [updateFilter]);
 
   // -------- Toggle Filter Options --------
 
@@ -73,6 +88,8 @@ export const useTechnicianFilters = () => {
 
   const clearOptionByKeys = useCallback(
     (keysArr: JobOptionKey[]) => {
+      if (keysArr.length === 0) return;
+
       const newParams = new URLSearchParams(filterParams);
       keysArr.forEach((key) => newParams.delete(key));
       setFilterParams(newParams, { replace: true });
@@ -92,6 +109,8 @@ export const useTechnicianFilters = () => {
 
   return {
     filter,
+    updateBrandSlugs,
+    clearBrands,
     toggleUnit,
     clearUnits,
     toggleStacked,
