@@ -1,3 +1,4 @@
+import SpecificIssueSelect from "../../../entities/specific-issue/ui/SpecificIssueSelect";
 import { headingStyle } from "../../../shared/styles/styles";
 import BrandSelect from "./BrandSelect";
 import JobOptions from "./JobOptions";
@@ -10,6 +11,11 @@ function FilterPanel() {
       <section>
         <h2 className={headingStyle}>Filter by Brand</h2>
         <BrandSelect />
+      </section>
+
+      <section>
+        <h2 className={headingStyle}>Specific Issues</h2>
+        <SpecificIssueSelect />
       </section>
 
       <JobOptions />

@@ -3,7 +3,13 @@ import { useSearchParams } from "react-router";
 import type { FilterState, JobOptionKey } from "./filter.types";
 import { filterCheckboxes } from "./filter.constants";
 
-type FilterParamKey = "units" | "brands" | "stacked" | "commercial" | "gas";
+type FilterParamKey =
+  | "units"
+  | "brands"
+  | "specific_issues"
+  | "stacked"
+  | "commercial"
+  | "gas";
 
 export const useTechnicianFilters = () => {
   const [filterParams, setFilterParams] = useSearchParams();
@@ -11,6 +17,7 @@ export const useTechnicianFilters = () => {
   const filter: FilterState = useMemo(() => {
     const unitsParam = filterParams.get("units");
     const brandsParam = filterParams.get("brands");
+    const specificIssuesParam = filterParams.get("specific_issues");
     return {
       unitSlugs: unitsParam
         ? [...new Set(unitsParam.split(",").filter(Boolean))]
@@ -20,6 +27,9 @@ export const useTechnicianFilters = () => {
       isCommercial: filterParams.get("commercial") === "1",
       brandSlugs: brandsParam
         ? [...new Set(brandsParam.split(",").filter(Boolean))]
+        : [],
+      specificIssueSlugs: specificIssuesParam
+        ? [...new Set(specificIssuesParam.split(",").filter(Boolean))]
         : [],
     };
   }, [filterParams]);
@@ -41,11 +51,25 @@ export const useTechnicianFilters = () => {
     [filterParams, setFilterParams],
   );
 
-  const updateBrandSlugs = useCallback(
-    (newValue: string[]) => {
-      updateFilter("brands", newValue.length > 0 ? newValue.join(",") : null);
+  // -------- Update Filter Options --------
+
+  const updateSlugsArray = useCallback(
+    (key: FilterParamKey, newValue: string[]) => {
+      updateFilter(key, newValue.length > 0 ? newValue.join(",") : null);
     },
     [updateFilter],
+  );
+
+  // Update specific issue slugs array
+  const updateSpecificIssueSlugs = useCallback(
+    (newValue: string[]) => updateSlugsArray("specific_issues", newValue),
+    [updateSlugsArray],
+  );
+
+  // Update brand Slugs array
+  const updateBrandSlugs = useCallback(
+    (newValue: string[]) => updateSlugsArray("brands", newValue),
+    [updateSlugsArray],
   );
 
   // -------- Toggle Filter Options --------
@@ -115,6 +139,7 @@ export const useTechnicianFilters = () => {
   return {
     filter,
     updateBrandSlugs,
+    updateSpecificIssueSlugs,
     toggleUnit,
     clearUnits,
     toggleStacked,

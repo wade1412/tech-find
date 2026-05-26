@@ -38,14 +38,14 @@ function TechnicianCard({ technician, isOpen, onToggle }: TechnicianCardProps) {
             className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors
             ${isOpen ? "bg-main-500 text-zinc-900" : "bg-zinc-100 text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300"}`}
           >
-            {technician.name.charAt(0).toUpperCase()}
+            {(technician.alias || technician.name).charAt(0).toUpperCase()}
           </span>
         </div>
         <div>
           <p
             className={`font-heading text-base font-semibold transition-colors ${isOpen ? "text-main-500" : "text-zinc-800 dark:text-zinc-100"}`}
           >
-            {technician.name}
+            {technician.alias || technician.name}
           </p>
 
           <p className="text-xs text-zinc-400 dark:text-zinc-500">
