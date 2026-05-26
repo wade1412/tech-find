@@ -11,6 +11,8 @@ type FilterParamKey =
   | "commercial"
   | "gas";
 
+type SlugArrayParamKey = "brands" | "specific_issues";
+
 export const useTechnicianFilters = () => {
   const [filterParams, setFilterParams] = useSearchParams();
 
@@ -54,8 +56,9 @@ export const useTechnicianFilters = () => {
   // -------- Update Filter Options --------
 
   const updateSlugsArray = useCallback(
-    (key: FilterParamKey, newValue: string[]) => {
-      updateFilter(key, newValue.length > 0 ? newValue.join(",") : null);
+    (key: SlugArrayParamKey, newValue: string[]) => {
+      const uniqueSlugs = [...new Set(newValue)];
+      updateFilter(key, uniqueSlugs.length > 0 ? uniqueSlugs.join(",") : null);
     },
     [updateFilter],
   );
