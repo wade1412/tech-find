@@ -129,15 +129,13 @@ export const useTechnicianFilters = () => {
     [filterParams, setFilterParams],
   );
 
-  // Clear all checkboxes
-  const clearAllOptions = useCallback(
-    () => clearOptionByKeys(filterCheckboxes),
-    [clearOptionByKeys],
-  );
-
   const clearUnits = useCallback(() => {
     updateFilter("units", null);
   }, [updateFilter]);
+
+  const resetFilters = useCallback(() => {
+    setFilterParams({});
+  }, [setFilterParams]);
 
   return {
     filter,
@@ -150,5 +148,6 @@ export const useTechnicianFilters = () => {
     toggleGas,
     clearOptionByKeys,
     clearAllOptions,
+    resetFilters,
   };
 };

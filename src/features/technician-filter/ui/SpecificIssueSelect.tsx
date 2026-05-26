@@ -3,7 +3,6 @@ import { useSpecificIssuesQuery } from "../../../entities/specific-issue/useSpec
 import { useUnitsQuery } from "../../../entities/unit/useUnitsQuery";
 import { useTechnicianFilters } from "../model/useTechnicianFilters";
 import { Autocomplete, Skeleton, TextField } from "@mui/material";
-import { headingStyle } from "../../../shared/styles/styles";
 
 type IssueOption = {
   id: string;
@@ -120,31 +119,44 @@ function SpecificIssueSelect() {
 
   return (
     <div className={`flex flex-col gap-1.5`}>
-      <h2 className={headingStyle}>Specific Issues</h2>
-      <Autocomplete
-        disabled={availableOptions.length === 0}
-        multiple
-        value={selectedIssues}
-        onChange={handleOptionChange}
-        isOptionEqualToValue={(option, value) => option.id === value.id}
-        options={availableOptions}
-        getOptionLabel={(option) => option.label}
-        slotProps={{
-          chip: { color: "primary", variant: "outlined", size: "small" },
-        }}
-        sx={{
-          "& .MuiOutlinedInput-root": { borderRadius: "0.75rem" },
-          "& .MuiChip-root": { borderRadius: "0.5rem", fontWeight: 600 },
-          "& .MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-notchedOutline":
-            {
-              borderStyle: "dashed",
-            },
-          "& .MuiOutlinedInput-root.Mui-disabled": { pointerEvents: "none" },
-        }}
-        renderInput={(params) => (
-          <TextField {...params} label="Specific issue" />
-        )}
-      />
+      <div
+        className={availableOptions.length === 0 ? "cursor-not-allowed" : ""}
+      >
+        <Autocomplete
+          disabled={availableOptions.length === 0}
+          multiple
+          value={selectedIssues}
+          onChange={handleOptionChange}
+          isOptionEqualToValue={(option, value) => option.id === value.id}
+          options={availableOptions}
+          getOptionLabel={(option) => option.label}
+          slotProps={{
+            chip: { color: "primary", variant: "outlined", size: "small" },
+          }}
+          sx={{
+            "& .MuiOutlinedInput-root": { borderRadius: "0.75rem" },
+            "& .MuiChip-root": { borderRadius: "0.5rem", fontWeight: 600 },
+            "& .MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-notchedOutline":
+              {
+                borderStyle: "dashed",
+              },
+            "& .MuiOutlinedInput-root.Mui-disabled": { pointerEvents: "none" },
+          }}
+          renderInput={(params) => (
+            <TextField {...params} label="Specific issue" />
+          )}
+        />
+      </div>
+
+      <div
+        className={`overflow-hidden transition-all duration-200 ${
+          availableOptions.length === 0 ? "max-h-6" : "max-h-0"
+        }`}
+      >
+        <p className="text-xs text-zinc-400 dark:text-zinc-500">
+          Select a unit to see specific issues
+        </p>
+      </div>
     </div>
   );
 }

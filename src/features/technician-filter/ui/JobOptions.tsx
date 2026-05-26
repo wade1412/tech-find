@@ -14,7 +14,6 @@ function JobOptions() {
     toggleCommercial,
     toggleGas,
     clearOptionByKeys,
-    clearAllOptions,
   } = useTechnicianFilters();
 
   const selectedUnits =
@@ -50,7 +49,6 @@ function JobOptions() {
   };
 
   const isOptionsActive = canBeGas || canBeStacked || canBeCommercial;
-  const hasChecked = filter.isGas || filter.isStacked || filter.isCommercial;
 
   // Sync URL params
   useEffect(() => {
@@ -102,14 +100,6 @@ function JobOptions() {
               />
             ))}
         </div>
-
-        <button
-          disabled={!hasChecked}
-          className="text-main-500 hover:text-main-400 disabled:hover:text-main-500 text-sm font-medium transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-35"
-          onClick={clearAllOptions}
-        >
-          Clear
-        </button>
       </div>
     </div>
   );

@@ -117,7 +117,7 @@ function BrandSelect() {
         <div
           className={`overflow-hidden transition-all duration-200 ${filter.isCommercial ? "max-h-6" : "max-h-0"}`}
         >
-          <p className="text-xs text-zinc-400 dark:text-zinc-500 px-1 py-1">
+          <p className="text-xs text-zinc-400 dark:text-zinc-500">
             Brand filter is unavailable for commercial jobs
           </p>
         </div>
