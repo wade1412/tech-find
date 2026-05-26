@@ -1,7 +1,7 @@
 import { Autocomplete, Skeleton, TextField } from "@mui/material";
 import { useBrandsQuery } from "../../../entities/brand/useBrandsQuery";
 import { useBrandGroupsQuery } from "../../../entities/brandGroup/useBrandGroupsQuery";
-import { useEffect, useMemo, type SyntheticEvent } from "react";
+import { useMemo, type SyntheticEvent } from "react";
 import { useTechnicianFilters } from "../model/useTechnicianFilters";
 
 type BrandOption = {
@@ -13,7 +13,7 @@ type BrandOption = {
 };
 
 function BrandSelect() {
-  const { filter, updateBrandSlugs, clearBrands } = useTechnicianFilters();
+  const { filter, updateBrandSlugs } = useTechnicianFilters();
   const {
     data: brands,
     isPending: isBrandsPending,
@@ -75,12 +75,6 @@ function BrandSelect() {
     updateBrandSlugs(slugs);
   };
 
-  useEffect(() => {
-    if (filter.isCommercial && filter.brandSlugs.length > 0) {
-      clearBrands();
-    }
-  }, [filter.isCommercial, filter.brandSlugs, clearBrands]);
-
   if (isBrandsError || isBrandGroupsError) {
     return (
       <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-400">
@@ -99,7 +93,7 @@ function BrandSelect() {
         <Autocomplete
           disabled={filter.isCommercial}
           multiple
-          value={selectedBrands}
+          value={filter.isCommercial ? [] : selectedBrands}
           onChange={handleOptionChange}
           isOptionEqualToValue={(option, value) => option.id === value.id}
           options={brandOptions}

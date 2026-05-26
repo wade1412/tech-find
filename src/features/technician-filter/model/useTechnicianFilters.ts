@@ -48,10 +48,6 @@ export const useTechnicianFilters = () => {
     [updateFilter],
   );
 
-  const clearBrands = useCallback(() => {
-    updateFilter("brands", null);
-  }, [updateFilter]);
-
   // -------- Toggle Filter Options --------
 
   // Toggle Unit from a units Array
@@ -79,10 +75,19 @@ export const useTechnicianFilters = () => {
     updateFilter("gas", filter.isGas ? null : "1");
   }, [filter.isGas, updateFilter]);
 
-  // Toggle Commercial option
+  // Toggle Commercial option - has to disable selected brands
   const toggleCommercial = useCallback(() => {
-    updateFilter("commercial", filter.isCommercial ? null : "1");
-  }, [filter.isCommercial, updateFilter]);
+    const newParams = new URLSearchParams(filterParams);
+
+    if (filter.isCommercial) {
+      newParams.delete("commercial");
+    } else {
+      newParams.set("commercial", "1");
+      newParams.delete("brands");
+    }
+
+    setFilterParams(newParams, { replace: true });
+  }, [filter.isCommercial, filterParams, setFilterParams]);
 
   // -------- Clear Filter Options --------
 
@@ -110,7 +115,6 @@ export const useTechnicianFilters = () => {
   return {
     filter,
     updateBrandSlugs,
-    clearBrands,
     toggleUnit,
     clearUnits,
     toggleStacked,
