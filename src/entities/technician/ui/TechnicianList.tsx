@@ -2,9 +2,11 @@ import { useState } from "react";
 import { useTechniciansQuery } from "../useTechniciansQuery";
 import TechnicianCard from "./TechnicianCard";
 import TechnicianSkeleton from "./TechnicianSkeleton";
+import { useFilteredTechnicians } from "../../../features/technician-filter/model/useFilteredTechnicians";
 
 function TechnicianList() {
-  const { data, isPending, isError, error } = useTechniciansQuery();
+  const { error } = useTechniciansQuery();
+  const { filteredTechnicians, isPending, isError } = useFilteredTechnicians();
 
   const [openTechnicianId, setOpenTechnicianId] = useState<string | null>(null);
 
@@ -13,14 +15,14 @@ function TechnicianList() {
   if (isError)
     return (
       <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-400">
-        {error.message}
+        {error?.message}
       </div>
     );
 
   return (
     <div className="flex flex-col gap-2.5">
-      {data && data.length > 0 ? (
-        data.map((technician) => (
+      {filteredTechnicians && filteredTechnicians.length > 0 ? (
+        filteredTechnicians.map((technician) => (
           <TechnicianCard
             key={technician.id}
             technician={technician}

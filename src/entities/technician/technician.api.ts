@@ -20,7 +20,7 @@ export const getTechnicians = async (): Promise<Technician[]> => {
         can_service_stacked_dryer`,
     )
     .eq("active", true)
-    .order("name");
+    .order("alias");
 
   if (error) throw error;
 
