@@ -14,46 +14,53 @@ export const useFilteredTechnicians = () => {
     data: technicians,
     isPending: isTechniciansPending,
     isError: techniciansError,
+    error: techniciansErrorObject,
   } = useTechniciansQuery();
   const {
     data: units,
     isPending: isUnitsPending,
     isError: unitsError,
+    error: unitsErrorObject,
   } = useUnitsQuery();
   const {
     data: brands,
     isPending: isBrandsPending,
     isError: brandsError,
+    error: brandsErrorObject,
   } = useBrandsQuery();
   const {
     data: specificIssues,
     isPending: isIssuesPending,
     isError: specificIssuesError,
+    error: specificIssuesErrorObject,
   } = useSpecificIssuesQuery();
   const {
     data: skills,
     isPending: isSkillsPending,
-    isError: technicianSkillsError,
+    isError: skillsError,
+    error: skillsErrorObject,
   } = useTechnicianSkillSetQuery();
   const {
     data: ignoreLists,
     isPending: isIgnoreListsPending,
-    isError: techniciansIgnoreError,
+    isError: ignoreError,
+    error: ignoreErrorObject,
   } = useTechnicianIgnoreListQuery();
 
-  const selectedUnitIds = useMemo(() => {
-    if (!units) return new Set<string>();
+  const selectedUnits = useMemo(() => {
+    if (!units) return [];
 
     // Get selected unit Slugs
     const selectedSlugs = new Set(filter.unitSlugs);
 
     // Return a set from array of id's of selected Units
-    return new Set(
-      units
-        .filter((unit) => selectedSlugs.has(unit.slug))
-        .map((unit) => unit.id),
-    );
+    return units.filter((unit) => selectedSlugs.has(unit.slug));
   }, [units, filter.unitSlugs]);
+
+  const selectedUnitIds = useMemo(
+    () => new Set(selectedUnits.map((unit) => unit.id)),
+    [selectedUnits],
+  );
 
   const selectedBrands = useMemo(() => {
     if (!brands) return [];
@@ -66,15 +73,15 @@ export const useFilteredTechnicians = () => {
   }, [brands, filter.brandSlugs]);
 
   const selectedBrandIds = useMemo(() => {
-    return selectedBrands.map((b) => b.id);
+    return new Set(selectedBrands.map((b) => b.id));
   }, [selectedBrands]);
 
   const selectedBrandGroupIds = useMemo(() => {
-    return selectedBrands.map((b) => b.group_id);
+    return new Set(selectedBrands.map((b) => b.group_id));
   }, [selectedBrands]);
 
   const specificIssueIds = useMemo(() => {
-    if (!specificIssues) return [];
+    if (!specificIssues) return new Set<string>();
 
     // Get selected specific issues
     const selectedIssuesSlugs = new Set(filter.specificIssueSlugs);
@@ -99,8 +106,16 @@ export const useFilteredTechnicians = () => {
     unitsError ||
     brandsError ||
     specificIssuesError ||
-    technicianSkillsError ||
-    techniciansIgnoreError;
+    skillsError ||
+    ignoreError;
+
+  const error =
+    techniciansErrorObject ??
+    unitsErrorObject ??
+    brandsErrorObject ??
+    specificIssuesErrorObject ??
+    skillsErrorObject ??
+    ignoreErrorObject;
 
   const filteredTechnicians = useMemo(() => {
     if (isPending || isError || !technicians || !skills || !ignoreLists) {
@@ -108,16 +123,36 @@ export const useFilteredTechnicians = () => {
     }
 
     return filterTechnicians({
+      filter,
       technicians,
       skills,
-      ignoreLists,
+      selectedUnits,
       selectedUnitIds,
+      selectedBrands,
+      selectedBrandIds,
+      selectedBrandGroupIds,
+      specificIssueIds,
+      ignoreLists,
     });
-  }, [isPending, isError, technicians, skills, ignoreLists, selectedUnitIds]);
+  }, [
+    filter,
+    isPending,
+    isError,
+    technicians,
+    skills,
+    selectedUnits,
+    selectedUnitIds,
+    selectedBrands,
+    selectedBrandIds,
+    selectedBrandGroupIds,
+    specificIssueIds,
+    ignoreLists,
+  ]);
 
   return {
     filteredTechnicians,
     isPending,
     isError,
+    error,
   };
 };

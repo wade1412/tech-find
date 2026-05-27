@@ -1,12 +1,11 @@
 import { useState } from "react";
-import { useTechniciansQuery } from "../useTechniciansQuery";
 import TechnicianCard from "./TechnicianCard";
 import TechnicianSkeleton from "./TechnicianSkeleton";
 import { useFilteredTechnicians } from "../../../features/technician-filter/model/useFilteredTechnicians";
 
 function TechnicianList() {
-  const { error } = useTechniciansQuery();
-  const { filteredTechnicians, isPending, isError } = useFilteredTechnicians();
+  const { filteredTechnicians, isPending, isError, error } =
+    useFilteredTechnicians();
 
   const [openTechnicianId, setOpenTechnicianId] = useState<string | null>(null);
 
