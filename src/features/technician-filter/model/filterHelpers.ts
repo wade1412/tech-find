@@ -9,7 +9,7 @@ type IgnoredCheckFunction = (
 ) => boolean;
 
 // Helper for creating data maps by Id
-export const createTechnicianDataMapById = <
+export const createDataMapByTechnicianId = <
   T extends { technician_id: string },
 >(
   technicianData: T[],
@@ -25,7 +25,6 @@ export const createTechnicianDataMapById = <
   }, {});
 };
 
-// Check is the skill is basic for this unit
 export const matchesBaseUnitSkill = (
   skill: TechnicianSkill,
   unitId: string,
@@ -37,7 +36,6 @@ export const matchesCommercialMode = (
   condition: boolean,
 ): boolean => skill.commercial === condition;
 
-// Check if the technician has skills for selected specific issues
 export const hasSpecificIssueSkill = (
   technicianSkills: TechnicianSkill[],
   unitId: string,
@@ -55,7 +53,6 @@ export const hasSpecificIssueSkill = (
   );
 };
 
-// Check if the technician has skills the selected brand groups
 export const hasBrandGroupSkill = (
   technicianSkills: TechnicianSkill[],
   unitId: string,
