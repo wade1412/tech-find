@@ -9,7 +9,6 @@ export const getTechnicianIgnoreList = async (): Promise<
         brand_id,
         id,
         specific_issue_id, 
-        specificIssue_id, 
         technician_id,
         unit_id
         `,

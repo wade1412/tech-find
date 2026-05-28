@@ -1,25 +1,17 @@
-import type { TechnicianIgnoreList } from "../../../entities/technician-ignore-list/technicianIgnoreList.types";
-import type { TechnicianSkill as TechnicianSkill } from "../../../entities/technician-skill-set/technicianSkillSet.types";
 import type { Technician } from "../../../entities/technician/technician.types";
-import type { Unit } from "../../../entities/unit/unit.types";
-import type { FilterState } from "./filter.types";
 
-type FilterTechniciansParams = {
-  filter: FilterState;
-  technicians: Technician[];
-  skills: TechnicianSkill[];
-  selectedUnits: Unit[];
-  selectedUnitIds: Set<string>;
-  selectedBrandIds: Set<string>;
-  selectedBrandGroupIds: Set<string>;
-  selectedIssueIdsByUnitId: Map<string, Set<string>>;
-  ignoreLists: TechnicianIgnoreList[];
-};
-
-type BooleanCondition = {
-  isActive: boolean;
-  check: (technician: Technician) => boolean;
-};
+import type {
+  FilterBooleanCondition,
+  FilterTechniciansParams,
+} from "./filter.types";
+import {
+  createTechnicianDataMapById,
+  hasBrandGroupSkill,
+  hasSpecificIssueSkill,
+  isIgnoredByTechnician,
+  matchesCommercialMode,
+  matchesBaseUnitSkill,
+} from "./filterHelpers";
 
 export const filterTechnicians = ({
   filter,
@@ -29,6 +21,7 @@ export const filterTechnicians = ({
   selectedUnitIds,
   selectedBrandIds,
   selectedBrandGroupIds,
+  selectedIssueIds,
   selectedIssueIdsByUnitId,
   ignoreLists,
 }: FilterTechniciansParams): Technician[] => {
@@ -52,7 +45,7 @@ export const filterTechnicians = ({
   const hasDryer = stackedUnitSlugs.has("dryer");
   const hasWasher = stackedUnitSlugs.has("washer");
 
-  const options: BooleanCondition[] = [
+  const options: FilterBooleanCondition[] = [
     {
       isActive: filter.isStacked,
       check: (technician) => {
@@ -86,116 +79,78 @@ export const filterTechnicians = ({
     },
   ];
 
+  const activeOptions = options.filter((opt) => opt.isActive);
   // Get relevant technicians that pass the boolean checks
-  const getRelevantTechnicians = () => {
-    const activeOptions = options.filter((opt) => opt.isActive);
-    return technicians.filter((technician) =>
-      activeOptions.every((option) => option.check(technician)),
-    );
-  };
-
-  const relevantTechnicians = getRelevantTechnicians();
-
-  // Create a skill map -  technicianId: all skills for this technician
-  const skillsByTechId = skills.reduce<Record<string, TechnicianSkill[]>>(
-    (acc, skill) => {
-      if (!acc[skill.technician_id]) {
-        acc[skill.technician_id] = [];
-      }
-      acc[skill.technician_id].push(skill);
-      return acc;
-    },
-    {},
+  const relevantTechnicians: Technician[] = technicians.filter((technician) =>
+    activeOptions.every((option) => option.check(technician)),
   );
 
-  type SkillCheck = (
-    skill: TechnicianSkill,
-    unitId?: string,
-    groupId?: string,
-  ) => boolean;
+  // Create a skill map -  technicianId: skills for this technician
+  const skillsByTechId = createTechnicianDataMapById(skills);
 
-  // Check is the skill is basic for this unit
-  const matchesUnit: SkillCheck = (skill, unitId) =>
-    skill.unit_id === unitId && !skill.specific_issue_id;
+  // Create an ignore map - technician Id: ignore list
+  const ignoreListsByTechId = createTechnicianDataMapById(ignoreLists);
 
-  // Check if the technician has commerial skill
-  const isCommercialSkill: SkillCheck = (skill) =>
-    skill.commercial === filter.isCommercial;
+  //Return early if no technicians passed boolean checks
+  if (relevantTechnicians.length === 0) return relevantTechnicians;
 
-  const hasSpecificIssueSkill = (
-    techSkills: TechnicianSkill[],
-    unitId: string,
-  ) => {
-    // Get Set of speceific issues for this unit
-    const issueIds = selectedIssueIdsByUnitId.get(unitId);
-    // Return early on empty Set
-    if (!issueIds?.size) return true;
+  return relevantTechnicians.filter((technician) => {
+    // Get Skills by technician Id from map
+    const techSkills = skillsByTechId[technician.id] || [];
+    // Get Ignore
+    const ignoreList = ignoreListsByTechId[technician.id] || [];
 
-    return techSkills.some(
-      (skill) =>
-        // Check if the skill is for relevant unit and has a correct issue id
-        skill.unit_id === unitId && issueIds.has(skill.specific_issue_id ?? ""),
-    );
-  };
-  // Check if the technician has skills the selected brand groups
-  const hasBrandGroupSkill = (
-    techSkills: TechnicianSkill[],
-    unitId: string,
-    groupId: string,
-  ): boolean =>
-    techSkills.some(
-      (skill) => matchesUnit(skill, unitId) && skill.brand_group_id === groupId,
-    );
+    // Check if service is ignored by technician
+    if (
+      isIgnoredByTechnician(
+        ignoreList,
+        selectedUnitIds,
+        selectedBrandIds,
+        selectedIssueIds,
+      )
+    ) {
+      return false;
+    }
 
-  function applyFilters(): Technician[] {
-    //Return early if no technicians passed boolean checks
-    if (relevantTechnicians.length === 0) return relevantTechnicians;
+    return Array.from(selectedUnitIds).every((unitId) => {
+      // Skill check by units
+      if (
+        !techSkills.some((skill) => {
+          // Commercial check on comercial flag
+          if (!matchesCommercialMode(skill, filter.isCommercial)) {
+            return false;
+          }
+          // Unit Skill Check
+          if (!matchesBaseUnitSkill(skill, unitId)) {
+            return false;
+          }
 
-    return relevantTechnicians.filter((technician) => {
-      // Find Skills by technician Id
-      const techSkills = skillsByTechId[technician.id] || [];
+          return true;
+        })
+      ) {
+        return false;
+      }
 
-      return Array.from(selectedUnitIds).every((unitId) => {
-        // Skill check by units
-        if (
-          !techSkills.some((skill) => {
-            // Commercial check
-            if (filter.isCommercial && !isCommercialSkill(skill, unitId))
-              return false;
-            // Unit Skill Check
-            if (!matchesUnit(skill, unitId)) return false;
+      // Brand groups check: ignore if commercial flag or no brands selected
+      if (
+        !filter.isCommercial &&
+        selectedBrandIds.size > 0 &&
+        !Array.from(selectedBrandGroupIds).every((groupId) =>
+          hasBrandGroupSkill(techSkills, unitId, groupId),
+        )
+      ) {
+        return false;
+      }
 
-            return true;
-          })
-        ) {
-          return false;
-        }
+      // Specific Issues check: ignore if no specific issues selected
+      if (
+        selectedIssueIdsByUnitId.size > 0 &&
+        !hasSpecificIssueSkill(techSkills, unitId, selectedIssueIdsByUnitId)
+      ) {
+        return false;
+      }
 
-        // Brand groups check: ignore if commercial flag or no brands selected
-        if (
-          !filter.isCommercial &&
-          selectedBrandIds.size > 0 &&
-          !Array.from(selectedBrandGroupIds).every((groupId) =>
-            hasBrandGroupSkill(techSkills, unitId, groupId),
-          )
-        ) {
-          return false;
-        }
-
-        // Specific Issues check: ignore if no specific issues selected
-        if (
-          selectedIssueIdsByUnitId.size > 0 &&
-          !hasSpecificIssueSkill(techSkills, unitId)
-        ) {
-          return false;
-        }
-
-        return true;
-      });
+      return true;
     });
-  }
-
-  const filtered = applyFilters();
-
-  return filtered;
+  });
 };
