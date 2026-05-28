@@ -33,8 +33,8 @@ export const matchesBaseUnitSkill = (
 // Check if the technician has commerial skill
 export const matchesCommercialMode = (
   skill: TechnicianSkill,
-  condition: boolean,
-): boolean => skill.commercial === condition;
+  isCommercial: boolean,
+): boolean => skill.commercial === isCommercial;
 
 export const hasSpecificIssueSkill = (
   technicianSkills: TechnicianSkill[],

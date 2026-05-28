@@ -26,8 +26,3 @@ export interface FilterTechniciansParams {
   selectedIssueIdsByUnitId: Map<string, Set<string>>;
   ignoreLists: TechnicianIgnoreList[];
 }
-
-export type FilterBooleanCondition = {
-  isActive: boolean;
-  check: (technician: Technician) => boolean;
-};

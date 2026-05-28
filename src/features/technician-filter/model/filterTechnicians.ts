@@ -1,12 +1,6 @@
 import type { TechnicianSkill } from "../../../entities/technician-skill-set/technicianSkillSet.types";
 import type { Technician } from "../../../entities/technician/technician.types";
-
-type SkillSetCheck = (techSkills: TechnicianSkill[], unitId: string) => boolean;
-
-import type {
-  FilterBooleanCondition,
-  FilterTechniciansParams,
-} from "./filter.types";
+import type { FilterTechniciansParams } from "./filter.types";
 import {
   createDataMapByTechnicianId,
   hasBrandGroupSkill,
@@ -16,6 +10,12 @@ import {
   matchesBaseUnitSkill,
 } from "./filterHelpers";
 
+type SkillSetCheck = (techSkills: TechnicianSkill[], unitId: string) => boolean;
+type FilterBooleanCondition = {
+  isActive: boolean;
+  check: (technician: Technician) => boolean;
+};
+
 export const filterTechnicians = ({
   filter,
   technicians,
@@ -24,12 +24,14 @@ export const filterTechnicians = ({
   selectedUnitIds,
   selectedBrandIds,
   selectedBrandGroupIds,
+  //id set for ignore check
   selectedIssueIds,
+  // id map needed for skill matching
   selectedIssueIdsByUnitId,
   ignoreLists,
 }: FilterTechniciansParams): Technician[] => {
   // If there are no units selected - return all technicians
-  if (selectedUnitIds.size === 0 && selectedBrandIds.size === 0) {
+  if (selectedUnitIds.size === 0) {
     return technicians;
   }
 
@@ -113,16 +115,6 @@ export const filterTechnicians = ({
     );
   };
 
-  const hasRequiredSpecificIssues: SkillSetCheck = (techSkills, unitId) => {
-    const issueIdsForUnit = selectedIssueIdsByUnitId.get(unitId);
-
-    if (!issueIdsForUnit || issueIdsForUnit.size === 0) {
-      return true;
-    }
-
-    return hasSpecificIssueSkill(techSkills, unitId, selectedIssueIdsByUnitId);
-  };
-
   return relevantTechnicians.filter((technician) => {
     // Get Skills and Ignores by technician Id from map
     const techSkills = skillsByTechId[technician.id] || [];
@@ -141,7 +133,8 @@ export const filterTechnicians = ({
     return selectedUnitIdList.every((unitId) => {
       if (!hasUnitSkill(techSkills, unitId)) return false;
       if (!hasRequiredBrandGroups(techSkills, unitId)) return false;
-      if (!hasRequiredSpecificIssues(techSkills, unitId)) return false;
+      if (!hasSpecificIssueSkill(techSkills, unitId, selectedIssueIdsByUnitId))
+        return false;
 
       return true;
     });

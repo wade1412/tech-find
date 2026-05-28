@@ -89,7 +89,7 @@ function TechnicianCard({ technician, isOpen, onToggle }: TechnicianCardProps) {
                 {specificSkills.map((skill) => (
                   <span
                     key={skill}
-                    className="rounded-md bg-main-500/10 px-3 py-0.5 text-sx font-light text-main-500"
+                    className="rounded-md bg-main-500/10 px-3 py-0.5 text-sm font-light text-main-500"
                   >
                     {skill}
                   </span>

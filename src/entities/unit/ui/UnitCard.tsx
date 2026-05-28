@@ -20,7 +20,7 @@ function UnitCard({ unit, isSelected, onToggle }: UnitCardProps) {
         ${
           isSelected
             ? "border-2 border-main-500 bg-main-500/10 text-main-500 shadow-inner dark:bg-main-500/10"
-            : "border border-zinc-200 bg-white text-zinc-700 shadow-sm hover:-translat-y-0.5 hover:border-zinc-300 hover:shadow-md dark:border-zinc-700/60 dark:bg-zinc-800/50 dark:text-zinc-200 dark:hover:border-zinc-600"
+            : "border border-zinc-200 bg-white text-zinc-700 shadow-sm hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-md dark:border-zinc-700/60 dark:bg-zinc-800/50 dark:text-zinc-200 dark:hover:border-zinc-600"
         }
         `}
     >
