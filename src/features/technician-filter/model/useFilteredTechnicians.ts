@@ -80,18 +80,25 @@ export const useFilteredTechnicians = () => {
     return new Set(selectedBrands.map((b) => b.group_id));
   }, [selectedBrands]);
 
-  const specificIssueIds = useMemo(() => {
-    if (!specificIssues) return new Set<string>();
+  const selectedIssueSlugs = new Set(filter.specificIssueSlugs);
 
-    // Get selected specific issues
-    const selectedIssuesSlugs = new Set(filter.specificIssueSlugs);
+  // Get the map of issues unitId: issue
+  const getIssuesMap = () => {
+    const map = new Map<string, Set<string>>();
 
-    return new Set(
-      specificIssues
-        .filter((issue) => selectedIssuesSlugs.has(issue.slug))
-        .map((issue) => issue.id),
-    );
-  }, [specificIssues, filter.specificIssueSlugs]);
+    for (const issue of specificIssues || []) {
+      // Skip to the next issue if the current is not selected
+      if (!selectedIssueSlugs.has(issue.slug)) continue;
+
+      const ids = map.get(issue.unit_id) ?? new Set<string>();
+      ids.add(issue.id);
+      map.set(issue.unit_id, ids);
+    }
+
+    return map;
+  };
+
+  const selectedIssueIdsByUnitId = getIssuesMap();
 
   const isPending =
     isTechniciansPending ||
@@ -128,10 +135,9 @@ export const useFilteredTechnicians = () => {
       skills,
       selectedUnits,
       selectedUnitIds,
-      selectedBrands,
       selectedBrandIds,
       selectedBrandGroupIds,
-      specificIssueIds,
+      selectedIssueIdsByUnitId,
       ignoreLists,
     });
   }, [
@@ -142,10 +148,9 @@ export const useFilteredTechnicians = () => {
     skills,
     selectedUnits,
     selectedUnitIds,
-    selectedBrands,
     selectedBrandIds,
     selectedBrandGroupIds,
-    specificIssueIds,
+    selectedIssueIdsByUnitId,
     ignoreLists,
   ]);
 

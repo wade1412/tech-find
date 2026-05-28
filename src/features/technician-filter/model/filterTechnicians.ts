@@ -1,4 +1,3 @@
-import type { Brand } from "../../../entities/brand/brand.types";
 import type { TechnicianIgnoreList } from "../../../entities/technician-ignore-list/technicianIgnoreList.types";
 import type { TechnicianSkill as TechnicianSkill } from "../../../entities/technician-skill-set/technicianSkillSet.types";
 import type { Technician } from "../../../entities/technician/technician.types";
@@ -11,10 +10,9 @@ type FilterTechniciansParams = {
   skills: TechnicianSkill[];
   selectedUnits: Unit[];
   selectedUnitIds: Set<string>;
-  selectedBrands: Brand[];
   selectedBrandIds: Set<string>;
   selectedBrandGroupIds: Set<string>;
-  specificIssueIds: Set<string>;
+  selectedIssueIdsByUnitId: Map<string, Set<string>>;
   ignoreLists: TechnicianIgnoreList[];
 };
 
@@ -29,10 +27,9 @@ export const filterTechnicians = ({
   skills,
   selectedUnits,
   selectedUnitIds,
-  selectedBrands,
   selectedBrandIds,
   selectedBrandGroupIds,
-  specificIssueIds,
+  selectedIssueIdsByUnitId,
   ignoreLists,
 }: FilterTechniciansParams): Technician[] => {
   // If there are no units selected - return all technicians
@@ -99,7 +96,7 @@ export const filterTechnicians = ({
 
   const relevantTechnicians = getRelevantTechnicians();
 
-  // Create a map -  technicianId: all skills for this technician
+  // Create a skill map -  technicianId: all skills for this technician
   const skillsByTechId = skills.reduce<Record<string, TechnicianSkill[]>>(
     (acc, skill) => {
       if (!acc[skill.technician_id]) {
@@ -125,6 +122,21 @@ export const filterTechnicians = ({
   const isCommercialSkill: SkillCheck = (skill) =>
     skill.commercial === filter.isCommercial;
 
+  const hasSpecificIssueSkill = (
+    techSkills: TechnicianSkill[],
+    unitId: string,
+  ) => {
+    // Get Set of speceific issues for this unit
+    const issueIds = selectedIssueIdsByUnitId.get(unitId);
+    // Return early on empty Set
+    if (!issueIds?.size) return true;
+
+    return techSkills.some(
+      (skill) =>
+        // Check if the skill is for relevant unit and has a correct issue id
+        skill.unit_id === unitId && issueIds.has(skill.specific_issue_id ?? ""),
+    );
+  };
   // Check if the technician has skills the selected brand groups
   const hasBrandGroupSkill = (
     techSkills: TechnicianSkill[],
@@ -144,6 +156,7 @@ export const filterTechnicians = ({
       const techSkills = skillsByTechId[technician.id] || [];
 
       return Array.from(selectedUnitIds).every((unitId) => {
+        // Skill check by units
         if (
           !techSkills.some((skill) => {
             // Commercial check
@@ -154,8 +167,9 @@ export const filterTechnicians = ({
 
             return true;
           })
-        )
+        ) {
           return false;
+        }
 
         // Brand groups check: ignore if commercial flag or no brands selected
         if (
@@ -164,6 +178,14 @@ export const filterTechnicians = ({
           !Array.from(selectedBrandGroupIds).every((groupId) =>
             hasBrandGroupSkill(techSkills, unitId, groupId),
           )
+        ) {
+          return false;
+        }
+
+        // Specific Issues check: ignore if no specific issues selected
+        if (
+          selectedIssueIdsByUnitId.size > 0 &&
+          !hasSpecificIssueSkill(techSkills, unitId)
         ) {
           return false;
         }
