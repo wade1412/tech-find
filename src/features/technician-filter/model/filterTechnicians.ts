@@ -1,6 +1,6 @@
 import type { Brand } from "../../../entities/brand/brand.types";
 import type { TechnicianIgnoreList } from "../../../entities/technician-ignore-list/technicianIgnoreList.types";
-import type { TechnicianSkillSet } from "../../../entities/technician-skill-set/technicianSkillSet.types";
+import type { TechnicianSkill as TechnicianSkill } from "../../../entities/technician-skill-set/technicianSkillSet.types";
 import type { Technician } from "../../../entities/technician/technician.types";
 import type { Unit } from "../../../entities/unit/unit.types";
 import type { FilterState } from "./filter.types";
@@ -8,7 +8,7 @@ import type { FilterState } from "./filter.types";
 type FilterTechniciansParams = {
   filter: FilterState;
   technicians: Technician[];
-  skills: TechnicianSkillSet[];
+  skills: TechnicianSkill[];
   selectedUnits: Unit[];
   selectedUnitIds: Set<string>;
   selectedBrands: Brand[];
@@ -40,6 +40,7 @@ export const filterTechnicians = ({
     return technicians;
   }
 
+  // Get Boolean options
   const getStackedUnitSlugs = () => {
     if (!filter.isStacked) return new Set<string>();
 
@@ -88,6 +89,7 @@ export const filterTechnicians = ({
     },
   ];
 
+  // Get relevant technicians that pass the boolean checks
   const getRelevantTechnicians = () => {
     const activeOptions = options.filter((opt) => opt.isActive);
     return technicians.filter((technician) =>
@@ -98,7 +100,7 @@ export const filterTechnicians = ({
   const relevantTechnicians = getRelevantTechnicians();
 
   // Create a map -  technicianId: all skills for this technician
-  const skillsByTechId = skills.reduce<Record<string, TechnicianSkillSet[]>>(
+  const skillsByTechId = skills.reduce<Record<string, TechnicianSkill[]>>(
     (acc, skill) => {
       if (!acc[skill.technician_id]) {
         acc[skill.technician_id] = [];
@@ -109,7 +111,32 @@ export const filterTechnicians = ({
     {},
   );
 
+  type SkillCheck = (
+    skill: TechnicianSkill,
+    unitId?: string,
+    groupId?: string,
+  ) => boolean;
+
+  // Check is the skill is basic for this unit
+  const matchesUnit: SkillCheck = (skill, unitId) =>
+    skill.unit_id === unitId && !skill.specific_issue_id;
+
+  // Check if the technician has commerial skill
+  const isCommercialSkill: SkillCheck = (skill) =>
+    skill.commercial === filter.isCommercial;
+
+  // Check if the technician has skills the selected brand groups
+  const hasBrandGroupSkill = (
+    techSkills: TechnicianSkill[],
+    unitId: string,
+    groupId: string,
+  ): boolean =>
+    techSkills.some(
+      (skill) => matchesUnit(skill, unitId) && skill.brand_group_id === groupId,
+    );
+
   function applyFilters(): Technician[] {
+    //Return early if no technicians passed boolean checks
     if (relevantTechnicians.length === 0) return relevantTechnicians;
 
     return relevantTechnicians.filter((technician) => {
@@ -117,16 +144,31 @@ export const filterTechnicians = ({
       const techSkills = skillsByTechId[technician.id] || [];
 
       return Array.from(selectedUnitIds).every((unitId) => {
-        return techSkills.some((skill) => {
-          // Check if technician can service this (false if no entry in his skills row)
-          // - unit
-          if (skill.unit_id !== unitId) return false;
-          // - commerical unit if isCommercial
-          if (filter.isCommercial && !skill.commercial) return false;
-          // - brand group
-          // - specific issue
-          return true;
-        });
+        if (
+          !techSkills.some((skill) => {
+            // Commercial check
+            if (filter.isCommercial && !isCommercialSkill(skill, unitId))
+              return false;
+            // Unit Skill Check
+            if (!matchesUnit(skill, unitId)) return false;
+
+            return true;
+          })
+        )
+          return false;
+
+        // Brand groups check: ignore if commercial flag or no brands selected
+        if (
+          !filter.isCommercial &&
+          selectedBrandIds.size > 0 &&
+          !Array.from(selectedBrandGroupIds).every((groupId) =>
+            hasBrandGroupSkill(techSkills, unitId, groupId),
+          )
+        ) {
+          return false;
+        }
+
+        return true;
       });
     });
   }
