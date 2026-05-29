@@ -24,7 +24,7 @@ function FilterPanel() {
         <button
           disabled={!hasAnyFilter}
           onClick={resetFilters}
-          className="text-sm text-main-500 transition-color hover:text-main-400 cursor-pointer disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:text-main-500"
+          className="text-sm text-main-500 transition-colors hover:text-main-400 cursor-pointer disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:text-main-500"
         >
           Reset
         </button>

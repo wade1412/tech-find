@@ -132,7 +132,7 @@ export const useFilteredTechnicians = () => {
 
   const filteredTechnicians = useMemo(() => {
     if (isPending || isError || !technicians || !skills || !ignoreLists) {
-      return technicians;
+      return [];
     }
 
     return filterTechnicians({

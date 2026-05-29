@@ -2,12 +2,46 @@ import { useState } from "react";
 import TechnicianCard from "./TechnicianCard";
 import TechnicianSkeleton from "./TechnicianSkeleton";
 import { useFilteredTechnicians } from "../../../features/technician-filter/model/useFilteredTechnicians";
+import { useTechnicianFilters } from "../../../features/technician-filter/model/useTechnicianFilters";
+import { AnimatePresence, motion, type Variants } from "motion/react";
+
+const listVariants: Variants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.05,
+    },
+  },
+  exit: {
+    opacity: 0,
+    transition: { duration: 0.12, ease: "easeIn" },
+  },
+};
+
+const cardVariants: Variants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.2, ease: "easeOut" },
+  },
+};
 
 function TechnicianList() {
   const { filteredTechnicians, isPending, isError, error } =
     useFilteredTechnicians();
+  const { filter } = useTechnicianFilters();
 
-  const [openTechnicianId, setOpenTechnicianId] = useState<string | null>(null);
+  const filterKey = JSON.stringify(filter);
+
+  const [openRecord, setOpenRecord] = useState<{
+    filterKey: string;
+    id: string;
+  } | null>(null);
+
+  // open card if filterKey matches
+  const openTechnicianId =
+    openRecord?.filterKey === filterKey ? openRecord.id : null;
 
   if (isPending) return <TechnicianSkeleton />;
 
@@ -19,27 +53,46 @@ function TechnicianList() {
     );
 
   return (
-    <div className="flex flex-col gap-2.5">
-      {filteredTechnicians && filteredTechnicians.length > 0 ? (
-        filteredTechnicians.map((technician) => (
-          <TechnicianCard
-            key={technician.id}
-            technician={technician}
-            isOpen={openTechnicianId === technician.id}
-            //Toggle open on click
-            onToggle={() =>
-              setOpenTechnicianId((prev) =>
-                prev === technician.id ? null : technician.id,
-              )
-            }
-          />
-        ))
-      ) : (
-        <p className="py-8 text-center text-sm text-zinc-400 dark:text-zinc-500">
-          No technicians found
-        </p>
-      )}
-    </div>
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={filterKey}
+        className="flex flex-col gap-2.5"
+        variants={listVariants}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+      >
+        {filteredTechnicians && filteredTechnicians.length > 0 ? (
+          filteredTechnicians.map((technician) => (
+            <motion.div
+              key={technician.id}
+              variants={cardVariants}
+              whileHover={{ y: -2 }}
+              transition={{ duration: 0.15 }}
+            >
+              <TechnicianCard
+                technician={technician}
+                isOpen={openTechnicianId === technician.id}
+                onToggle={() =>
+                  setOpenRecord((prev) =>
+                    prev?.filterKey === filterKey && prev.id === technician.id
+                      ? null
+                      : { filterKey, id: technician.id },
+                  )
+                }
+              />
+            </motion.div>
+          ))
+        ) : (
+          <motion.p
+            variants={cardVariants}
+            className="py-8 text-center text-sm text-zinc-400 dark:text-zinc-500"
+          >
+            No technicians found
+          </motion.p>
+        )}
+      </motion.div>
+    </AnimatePresence>
   );
 }
 
