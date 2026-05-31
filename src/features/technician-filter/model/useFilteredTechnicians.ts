@@ -8,16 +8,7 @@ import { useTechnicianFilters } from "./useTechnicianFilters";
 import { useSpecificIssuesQuery } from "../../../entities/specific-issue/useSpecificIssuesQuery";
 import { filterTechnicians } from "./filterTechnicians";
 import { createDataMapByTechnicianId } from "./filterHelpers";
-
-const SPECIAL_UNIT_SLUGS = new Set([
-  "dryer-vent-line",
-  "ice-maker-standalone",
-  "vent-hood",
-  "microwave",
-  "water-heater",
-]);
-
-const SPECIAL_ISSUE_SLUGS = new Set(["compressor-repair", "freon-recharge"]);
+import { SPECIAL_ISSUE_SLUGS, SPECIAL_UNIT_SLUGS } from "./filter.constants";
 
 export const useFilteredTechnicians = () => {
   const { filter } = useTechnicianFilters();
@@ -57,6 +48,16 @@ export const useFilteredTechnicians = () => {
     isError: ignoreError,
     error: ignoreErrorObject,
   } = useTechnicianIgnoreListQuery();
+
+  const unitsById = useMemo(
+    () => new Map(units?.map((u) => [u.id, u]) ?? []),
+    [units],
+  );
+
+  const issuesById = useMemo(
+    () => new Map(specificIssues?.map((i) => [i.id, i]) ?? []),
+    [specificIssues],
+  );
 
   const selectedUnits = useMemo(() => {
     if (!units) return [];
@@ -118,7 +119,10 @@ export const useFilteredTechnicians = () => {
   }, [specificIssues, selectedIssueSlugs]);
 
   // Create a skill map -  technicianId: skills for this technician
-  const skillsByTechId = createDataMapByTechnicianId(skills || []);
+  const skillsByTechId = useMemo(
+    () => createDataMapByTechnicianId(skills || []),
+    [skills],
+  );
 
   const isPending =
     isTechniciansPending ||
@@ -145,7 +149,13 @@ export const useFilteredTechnicians = () => {
     ignoreErrorObject;
 
   const filteredTechnicians = useMemo(() => {
-    if (isPending || isError || !technicians || !skills || !ignoreLists) {
+    if (
+      isPending ||
+      isError ||
+      !technicians ||
+      !skillsByTechId ||
+      !ignoreLists
+    ) {
       return [];
     }
 
@@ -166,7 +176,6 @@ export const useFilteredTechnicians = () => {
     isPending,
     isError,
     technicians,
-    skills,
     skillsByTechId,
     selectedUnits,
     selectedUnitIds,
@@ -178,9 +187,11 @@ export const useFilteredTechnicians = () => {
   ]);
 
   const technicianBadges = useMemo(() => {
+    if (!technicians) return new Map<string, string[]>();
+
     return technicians?.reduce((badgesMap, technician) => {
-      // Get boolean skills from technician card
-      const specificSkillsBooleans = [
+      // Get boolean badges from technician card
+      const technicianCapabilityBadges = [
         technician.gas && "Gas",
         technician.can_service_built_in && "Built-In",
         technician.can_service_stacked_dryer && "Stacked Dryer",
@@ -193,28 +204,27 @@ export const useFilteredTechnicians = () => {
 
       if (!badgesMap.get(technician.id)) badgesMap.set(technician.id, []);
 
-      const badges = new Set([
-        ...techSkills.map((skill) => {
-          if (skill.specific_issue_id) {
-            const match = specificIssues?.find(
-              (issue) => issue.id === skill.specific_issue_id,
-            );
+      const specificBadges = techSkills.flatMap((skill) => {
+        const currentBadges: string[] = [];
 
-            if (match && SPECIAL_ISSUE_SLUGS.has(match.slug)) return match.name;
-          }
+        const issue = issuesById.get(skill.specific_issue_id || "");
+        if (issue && SPECIAL_ISSUE_SLUGS.has(issue.slug))
+          currentBadges.push(issue.name);
 
-          if (skill.unit_id) {
-            const match = units?.find((unit) => unit.id === skill.unit_id);
+        const unit = unitsById.get(skill.unit_id || "");
+        if (unit && SPECIAL_UNIT_SLUGS.has(unit.slug))
+          currentBadges.push(unit.name);
 
-            if (match && SPECIAL_UNIT_SLUGS.has(match.slug)) return match.name;
-          }
-        }),
-        ...specificSkillsBooleans,
-      ]);
+        return currentBadges;
+      });
+
+      const badges = Array.from(
+        new Set([...technicianCapabilityBadges, ...specificBadges]),
+      );
 
       return badgesMap.set(technician.id, badges);
-    }, new Map());
-  }, [technicians, units, specificIssues, skillsByTechId]);
+    }, new Map<string, string[]>());
+  }, [technicians, unitsById, issuesById, skillsByTechId]);
 
   return {
     filteredTechnicians,
