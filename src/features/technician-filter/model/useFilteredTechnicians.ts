@@ -200,7 +200,7 @@ export const useFilteredTechnicians = () => {
       ].filter(Boolean) as string[];
 
       // Get Skill Set by tech ID from map
-      const techSkills = skillsByTechId[technician.id] || [];
+      const techSkills = skillsByTechId.get(technician.id) || [];
 
       if (!badgesMap.get(technician.id)) badgesMap.set(technician.id, []);
 
@@ -211,10 +211,11 @@ export const useFilteredTechnicians = () => {
         if (issue && SPECIAL_ISSUE_SLUGS.has(issue.slug))
           currentBadges.push(issue.name);
 
-        const unit = unitsById.get(skill.unit_id || "");
-        if (unit && SPECIAL_UNIT_SLUGS.has(unit.slug))
-          currentBadges.push(unit.name);
-
+        if (!skill.specific_issue_id) {
+          const unit = unitsById.get(skill.unit_id || "");
+          if (unit && SPECIAL_UNIT_SLUGS.has(unit.slug))
+            currentBadges.push(unit.name);
+        }
         return currentBadges;
       });
 

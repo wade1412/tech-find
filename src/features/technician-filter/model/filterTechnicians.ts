@@ -115,8 +115,8 @@ export const filterTechnicians = ({
 
   return relevantTechnicians.filter((technician) => {
     // Get Skills and Ignores by technician Id from map
-    const techSkills = skillsByTechId[technician.id] || [];
-    const ignoreList = ignoreListsByTechId[technician.id] || [];
+    const techSkills = skillsByTechId.get(technician.id) || [];
+    const ignoreList = ignoreListsByTechId.get(technician.id) || [];
 
     if (
       isIgnoredByTechnician(

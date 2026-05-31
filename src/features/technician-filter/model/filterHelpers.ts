@@ -9,21 +9,19 @@ type IgnoredCheckFunction = (
 ) => boolean;
 
 // Helper for creating data maps by Id
-export const createDataMapByTechnicianId = <
+export function createDataMapByTechnicianId<
   T extends { technician_id: string },
->(
-  technicianData: T[],
-) => {
-  return technicianData.reduce<Record<string, T[]>>((acc, dataEl) => {
-    if (!acc[dataEl.technician_id]) {
-      acc[dataEl.technician_id] = [];
-    }
+>(technicianData: T[]): Map<string, T[]> {
+  const map = new Map<string, T[]>();
 
-    acc[dataEl.technician_id].push(dataEl);
+  for (const item of technicianData) {
+    const currentItems = map.get(item.technician_id) ?? [];
+    currentItems.push(item);
+    map.set(item.technician_id, currentItems);
+  }
 
-    return acc;
-  }, {});
-};
+  return map;
+}
 
 export const matchesBaseUnitSkill = (
   skill: TechnicianSkill,
