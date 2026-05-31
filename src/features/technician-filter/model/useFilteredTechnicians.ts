@@ -123,6 +123,11 @@ export const useFilteredTechnicians = () => {
     () => createDataMapByTechnicianId(skills || []),
     [skills],
   );
+  // Create an ignore map - technician Id: ignore list
+  const ignoreListsByTechId = useMemo(
+    () => createDataMapByTechnicianId(ignoreLists || []),
+    [ignoreLists],
+  );
 
   const isPending =
     isTechniciansPending ||
@@ -153,8 +158,8 @@ export const useFilteredTechnicians = () => {
       isPending ||
       isError ||
       !technicians ||
-      !skillsByTechId ||
-      !ignoreLists
+      skillsByTechId.size === 0 ||
+      ignoreListsByTechId.size === 0
     ) {
       return [];
     }
@@ -169,7 +174,7 @@ export const useFilteredTechnicians = () => {
       selectedBrandGroupIds,
       selectedIssueIds,
       selectedIssueIdsByUnitId,
-      ignoreLists,
+      ignoreListsByTechId,
     });
   }, [
     filter,
@@ -183,7 +188,7 @@ export const useFilteredTechnicians = () => {
     selectedBrandGroupIds,
     selectedIssueIds,
     selectedIssueIdsByUnitId,
-    ignoreLists,
+    ignoreListsByTechId,
   ]);
 
   const technicianBadges = useMemo(() => {

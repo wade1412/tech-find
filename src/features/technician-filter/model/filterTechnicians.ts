@@ -2,7 +2,6 @@ import type { TechnicianSkill } from "../../../entities/technician-skill-set/tec
 import type { Technician } from "../../../entities/technician/technician.types";
 import type { FilterTechniciansParams } from "./filter.types";
 import {
-  createDataMapByTechnicianId,
   hasBrandGroupSkill,
   hasSpecificIssueSkill,
   isIgnoredByTechnician,
@@ -28,7 +27,7 @@ export const filterTechnicians = ({
   selectedIssueIds,
   // id map needed for skill matching
   selectedIssueIdsByUnitId,
-  ignoreLists,
+  ignoreListsByTechId,
 }: FilterTechniciansParams): Technician[] => {
   // If there are no units selected - return all technicians
   if (selectedUnitIds.size === 0) {
@@ -80,9 +79,6 @@ export const filterTechnicians = ({
   const relevantTechnicians: Technician[] = technicians.filter((technician) =>
     activeOptions.every((option) => option.check(technician)),
   );
-
-  // Create an ignore map - technician Id: ignore list
-  const ignoreListsByTechId = createDataMapByTechnicianId(ignoreLists);
 
   //Return early if no technicians passed boolean checks
   if (relevantTechnicians.length === 0) return relevantTechnicians;

@@ -24,5 +24,5 @@ export interface FilterTechniciansParams {
   selectedBrandGroupIds: Set<string>;
   selectedIssueIds: Set<string>;
   selectedIssueIdsByUnitId: Map<string, Set<string>>;
-  ignoreLists: TechnicianIgnoreList[];
+  ignoreListsByTechId: Map<string, TechnicianIgnoreList[]>;
 }
