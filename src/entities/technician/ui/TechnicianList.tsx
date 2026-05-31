@@ -28,7 +28,7 @@ const cardVariants: Variants = {
 };
 
 function TechnicianList() {
-  const { filteredTechnicians, isPending, isError, error } =
+  const { filteredTechnicians, technicianBadges, isPending, isError, error } =
     useFilteredTechnicians();
   const { filter } = useTechnicianFilters();
 
@@ -72,6 +72,7 @@ function TechnicianList() {
             >
               <TechnicianCard
                 technician={technician}
+                skillBadges={technicianBadges.get(technician.id) || []}
                 isOpen={openTechnicianId === technician.id}
                 onToggle={() =>
                   setOpenRecord((prev) =>

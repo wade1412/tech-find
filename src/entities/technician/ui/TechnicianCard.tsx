@@ -2,19 +2,17 @@ import type { Technician } from "../technician.types";
 
 interface TechnicianCardProps {
   technician: Technician;
+  skillBadges: string[];
   isOpen: boolean;
   onToggle: () => void;
 }
 
-function TechnicianCard({ technician, isOpen, onToggle }: TechnicianCardProps) {
-  const specificSkills = [
-    technician.gas && "Gas",
-    technician.can_service_built_in && "Built-In",
-    technician.can_service_stacked_dryer && "Stacked Dryer",
-    technician.can_service_stacked_washer && "Stacked Washer",
-    technician.commercial && "Commercial",
-  ].filter(Boolean) as string[];
-
+function TechnicianCard({
+  technician,
+  skillBadges,
+  isOpen,
+  onToggle,
+}: TechnicianCardProps) {
   return (
     <div
       onClick={onToggle}
@@ -79,19 +77,19 @@ function TechnicianCard({ technician, isOpen, onToggle }: TechnicianCardProps) {
         className={`overflow-hidden transition-all duration-200 ${isOpen ? "max-h-96" : "max-h-0"}`}
       >
         <div className="border-t border-zinc-100 px-4 py-3 dark:border-zinc-700/60">
-          {specificSkills.length > 0 ? (
+          {skillBadges.length > 0 ? (
             <div className="mb-2.5">
               <p className="mb-1.5 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
                 Specific skills:
               </p>
 
               <div className="flex flex-wrap gap-1.5">
-                {specificSkills.map((skill) => (
+                {skillBadges.map((badge) => (
                   <span
-                    key={skill}
+                    key={badge}
                     className="rounded-md bg-main-500/10 px-3 py-0.5 text-sm font-light text-main-500"
                   >
-                    {skill}
+                    {badge}
                   </span>
                 ))}
               </div>
