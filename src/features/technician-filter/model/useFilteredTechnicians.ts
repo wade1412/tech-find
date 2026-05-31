@@ -8,7 +8,12 @@ import { useTechnicianFilters } from "./useTechnicianFilters";
 import { useSpecificIssuesQuery } from "../../../entities/specific-issue/useSpecificIssuesQuery";
 import { filterTechnicians } from "./filterTechnicians";
 import { createDataMapByTechnicianId } from "./filterHelpers";
-import { SPECIAL_ISSUE_SLUGS, SPECIAL_UNIT_SLUGS } from "./filter.constants";
+import {
+  ISSUE_BADGE_LABELS,
+  SPECIAL_ISSUE_SLUGS,
+  SPECIAL_UNIT_SLUGS,
+} from "./filter.constants";
+import { useBrandGroupsQuery } from "../../../entities/brandGroup/useBrandGroupsQuery";
 
 export const useFilteredTechnicians = () => {
   const { filter } = useTechnicianFilters();
@@ -30,6 +35,7 @@ export const useFilteredTechnicians = () => {
     isError: brandsError,
     error: brandsErrorObject,
   } = useBrandsQuery();
+  const { data: brandGroups } = useBrandGroupsQuery();
   const {
     data: specificIssues,
     isPending: isIssuesPending,
@@ -194,7 +200,19 @@ export const useFilteredTechnicians = () => {
   const technicianBadges = useMemo(() => {
     if (!technicians) return new Map<string, string[]>();
 
-    return technicians?.reduce((badgesMap, technician) => {
+    const highEndGroup = brandGroups?.find(
+      (group) => group.slug === "high-end",
+    );
+    const highEndGroupId = highEndGroup?.id;
+
+    return technicians.reduce((badgesMap, technician) => {
+      // Get Skill Set by tech ID from map
+      const techSkills = skillsByTechId.get(technician.id) ?? [];
+
+      const hasHighEndSkill =
+        highEndGroupId &&
+        techSkills.some((skill) => skill.brand_group_id === highEndGroupId);
+
       // Get boolean badges from technician card
       const technicianCapabilityBadges = [
         technician.gas && "Gas",
@@ -202,22 +220,18 @@ export const useFilteredTechnicians = () => {
         technician.can_service_stacked_dryer && "Stacked Dryer",
         technician.can_service_stacked_washer && "Stacked Washer",
         technician.commercial && "Commercial",
+        hasHighEndSkill && "High-End",
       ].filter(Boolean) as string[];
 
-      // Get Skill Set by tech ID from map
-      const techSkills = skillsByTechId.get(technician.id) || [];
-
-      if (!badgesMap.get(technician.id)) badgesMap.set(technician.id, []);
-
-      const specificBadges = techSkills.flatMap((skill) => {
+      const skillBadges = techSkills.flatMap((skill) => {
         const currentBadges: string[] = [];
 
-        const issue = issuesById.get(skill.specific_issue_id || "");
+        const issue = issuesById.get(skill.specific_issue_id ?? "");
         if (issue && SPECIAL_ISSUE_SLUGS.has(issue.slug))
-          currentBadges.push(issue.name);
+          currentBadges.push(ISSUE_BADGE_LABELS[issue.slug] ?? issue.name);
 
         if (!skill.specific_issue_id) {
-          const unit = unitsById.get(skill.unit_id || "");
+          const unit = unitsById.get(skill.unit_id ?? "");
           if (unit && SPECIAL_UNIT_SLUGS.has(unit.slug))
             currentBadges.push(unit.name);
         }
@@ -225,12 +239,12 @@ export const useFilteredTechnicians = () => {
       });
 
       const badges = Array.from(
-        new Set([...technicianCapabilityBadges, ...specificBadges]),
+        new Set([...technicianCapabilityBadges, ...skillBadges]),
       );
 
       return badgesMap.set(technician.id, badges);
     }, new Map<string, string[]>());
-  }, [technicians, unitsById, issuesById, skillsByTechId]);
+  }, [technicians, brandGroups, unitsById, issuesById, skillsByTechId]);
 
   return {
     filteredTechnicians,

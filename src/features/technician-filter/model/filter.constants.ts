@@ -18,3 +18,7 @@ export const SPECIAL_ISSUE_SLUGS = new Set([
   "compressor-repair",
   "freon-recharge",
 ]);
+
+export const ISSUE_BADGE_LABELS: Record<string, string> = {
+  "compressor-repair": "Compressor Replacement",
+};
