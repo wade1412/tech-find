@@ -19,7 +19,7 @@ type FilterBooleanCondition = {
 export const filterTechnicians = ({
   filter,
   technicians,
-  skills,
+  skillsByTechId,
   selectedUnits,
   selectedUnitIds,
   selectedBrandIds,
@@ -81,8 +81,6 @@ export const filterTechnicians = ({
     activeOptions.every((option) => option.check(technician)),
   );
 
-  // Create a skill map -  technicianId: skills for this technician
-  const skillsByTechId = createDataMapByTechnicianId(skills);
   // Create an ignore map - technician Id: ignore list
   const ignoreListsByTechId = createDataMapByTechnicianId(ignoreLists);
 

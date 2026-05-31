@@ -7,6 +7,17 @@ import { useUnitsQuery } from "../../../entities/unit/useUnitsQuery";
 import { useTechnicianFilters } from "./useTechnicianFilters";
 import { useSpecificIssuesQuery } from "../../../entities/specific-issue/useSpecificIssuesQuery";
 import { filterTechnicians } from "./filterTechnicians";
+import { createDataMapByTechnicianId } from "./filterHelpers";
+
+const SPECIAL_UNIT_SLUGS = new Set([
+  "dryer-vent-line",
+  "ice-maker-standalone",
+  "vent-hood",
+  "microwave",
+  "water-heater",
+]);
+
+const SPECIAL_ISSUE_SLUGS = new Set(["compressor-repair", "freon-recharge"]);
 
 export const useFilteredTechnicians = () => {
   const { filter } = useTechnicianFilters();
@@ -106,6 +117,9 @@ export const useFilteredTechnicians = () => {
     return [activeIssueIds, issueIdsByUnit] as const;
   }, [specificIssues, selectedIssueSlugs]);
 
+  // Create a skill map -  technicianId: skills for this technician
+  const skillsByTechId = createDataMapByTechnicianId(skills || []);
+
   const isPending =
     isTechniciansPending ||
     isUnitsPending ||
@@ -138,7 +152,7 @@ export const useFilteredTechnicians = () => {
     return filterTechnicians({
       filter,
       technicians,
-      skills,
+      skillsByTechId,
       selectedUnits,
       selectedUnitIds,
       selectedBrandIds,
@@ -153,6 +167,7 @@ export const useFilteredTechnicians = () => {
     isError,
     technicians,
     skills,
+    skillsByTechId,
     selectedUnits,
     selectedUnitIds,
     selectedBrandIds,
@@ -162,8 +177,34 @@ export const useFilteredTechnicians = () => {
     ignoreLists,
   ]);
 
+  const technicianBadges = useMemo(() => {
+    return technicians?.reduce((badgesMap, technician) => {
+      const techSkills = skillsByTechId[technician.id] || [];
+      if (!badgesMap.get(technician.id)) badgesMap.set(technician.id, []);
+
+      const badges = techSkills.map((skill) => {
+        if (skill.specific_issue_id) {
+          const match = specificIssues?.find(
+            (issue) => issue.id === skill.specific_issue_id,
+          );
+
+          if (match && SPECIAL_ISSUE_SLUGS.has(match.slug)) return match.name;
+        }
+
+        if (skill.unit_id) {
+          const match = units?.find((unit) => unit.id === skill.unit_id);
+
+          if (match && SPECIAL_UNIT_SLUGS.has(match.slug)) return match.name;
+        }
+      });
+
+      return badgesMap.set(technician.id, badges);
+    }, new Map());
+  }, [technicians, units, specificIssues, skillsByTechId]);
+
   return {
     filteredTechnicians,
+    technicianBadges,
     isPending,
     isError,
     error,

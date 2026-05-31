@@ -17,7 +17,7 @@ export type JobOptionKey = "gas" | "stacked" | "commercial";
 export interface FilterTechniciansParams {
   filter: FilterState;
   technicians: Technician[];
-  skills: TechnicianSkill[];
+  skillsByTechId: Record<string, TechnicianSkill[]>;
   selectedUnits: Unit[];
   selectedUnitIds: Set<string>;
   selectedBrandIds: Set<string>;
