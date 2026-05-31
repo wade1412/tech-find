@@ -179,24 +179,38 @@ export const useFilteredTechnicians = () => {
 
   const technicianBadges = useMemo(() => {
     return technicians?.reduce((badgesMap, technician) => {
+      // Get boolean skills from technician card
+      const specificSkillsBooleans = [
+        technician.gas && "Gas",
+        technician.can_service_built_in && "Built-In",
+        technician.can_service_stacked_dryer && "Stacked Dryer",
+        technician.can_service_stacked_washer && "Stacked Washer",
+        technician.commercial && "Commercial",
+      ].filter(Boolean) as string[];
+
+      // Get Skill Set by tech ID from map
       const techSkills = skillsByTechId[technician.id] || [];
+
       if (!badgesMap.get(technician.id)) badgesMap.set(technician.id, []);
 
-      const badges = techSkills.map((skill) => {
-        if (skill.specific_issue_id) {
-          const match = specificIssues?.find(
-            (issue) => issue.id === skill.specific_issue_id,
-          );
+      const badges = new Set([
+        ...techSkills.map((skill) => {
+          if (skill.specific_issue_id) {
+            const match = specificIssues?.find(
+              (issue) => issue.id === skill.specific_issue_id,
+            );
 
-          if (match && SPECIAL_ISSUE_SLUGS.has(match.slug)) return match.name;
-        }
+            if (match && SPECIAL_ISSUE_SLUGS.has(match.slug)) return match.name;
+          }
 
-        if (skill.unit_id) {
-          const match = units?.find((unit) => unit.id === skill.unit_id);
+          if (skill.unit_id) {
+            const match = units?.find((unit) => unit.id === skill.unit_id);
 
-          if (match && SPECIAL_UNIT_SLUGS.has(match.slug)) return match.name;
-        }
-      });
+            if (match && SPECIAL_UNIT_SLUGS.has(match.slug)) return match.name;
+          }
+        }),
+        ...specificSkillsBooleans,
+      ]);
 
       return badgesMap.set(technician.id, badges);
     }, new Map());
