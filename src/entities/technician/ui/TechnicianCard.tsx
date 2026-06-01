@@ -19,7 +19,10 @@ function TechnicianCard({
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") onToggle();
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onToggle();
+        }
       }}
       className={`cursor-pointer overflow-hidden rounded-xl border transition-[border-color,background-color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-main-500
         ${
@@ -102,9 +105,9 @@ function TechnicianCard({
 
           <div className="mt-2">
             <p className="text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-              Service zone:
+              Service area:
             </p>
-            <p className="mt-1 text-sm text-zinc-400 dark:text-zinc-200">
+            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-200">
               {technician.service_area}
             </p>
           </div>
