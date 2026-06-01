@@ -100,6 +100,15 @@ function TechnicianCard({
             </p>
           )}
 
+          <div className="mt-2">
+            <p className="text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+              Service zone:
+            </p>
+            <p className="mt-1 text-sm text-zinc-400 dark:text-zinc-200">
+              {technician.service_area}
+            </p>
+          </div>
+
           {technician.notes && (
             <div className="mt-2">
               <p className="text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">

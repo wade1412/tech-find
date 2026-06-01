@@ -10,6 +10,7 @@ export const getTechnicians = async (): Promise<Technician[]> => {
         name,
         alias,
         notes,
+        service_area,
         jobs_per_day,
         home_zip_code,
         service_area,
