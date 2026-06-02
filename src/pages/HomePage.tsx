@@ -1,5 +1,6 @@
 import TechnicianList from "../entities/technician/ui/TechnicianList";
 import FilterPanel from "../features/technician-filter/ui/FilterPanel";
+import TechnicianSortSelect from "../features/technician-sort/model/ui/TechnicianSortSelect";
 
 export function HomePage() {
   return (
@@ -19,9 +20,12 @@ export function HomePage() {
 
         {/* Right Column - Technicians List */}
         <section>
-          <h2 className="font-heading text-sm font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-2.5">
-            Technicians
-          </h2>
+          <div>
+            <h2 className="font-heading text-sm font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-2.5">
+              Technicians
+            </h2>
+            <TechnicianSortSelect />
+          </div>
           <TechnicianList />
         </section>
       </div>
