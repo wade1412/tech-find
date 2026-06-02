@@ -1,10 +1,3 @@
-import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  type SelectChangeEvent,
-} from "@mui/material";
 import { sortOptions } from "../model/sort.constants";
 import type { SortTuple } from "../model/technicianSort.types";
 
@@ -21,50 +14,42 @@ const TechnicianSortSelect = ({
 
   const isDefault = value === "default";
   const isDesc = !isDefault && sortOrder === "desc";
-
-  const selectedOption = sortOptions.find((opt) => opt.value === value) || null;
-
-  const handleValueChange = (e: SelectChangeEvent<string>) => {
-    updateSort(`${e.target.value}.${isDesc ? "desc" : "asc"}`);
-  };
-
-  const toggleOrder = () => {
-    if (value) {
-      if (value === "default") {
-        updateSort("default.asc");
-      }
-      updateSort(`${selectedOption?.value}.${isDesc ? "asc" : "desc"}`);
-    }
-  };
-
   return (
-    <div>
-      <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-        <InputLabel id="sort-select">Sort</InputLabel>
-        <Select
-          labelId="sort-select"
-          value={value}
-          onChange={handleValueChange}
-        >
-          {sortOptions.map((option) => (
-            <MenuItem key={option.value} value={option.value}>
-              {option.label}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+    <div className="flex items-center gap-1.5 justify-between">
+      <span className="text-xs text-zinc-400 dark:text-zinc-500">Sort by</span>
 
-      <button
-        onClick={toggleOrder}
-        disabled={isDefault}
-        className="text-sm font-medium text-main-500 hover:text-main-400 transition-colors cursor-pointer"
-      >
-        <div
-          className={`flex text-center align-center transition-transform duration-350 font-light h-fit ${isDesc ? "rotate-180" : "rotate-0"}`}
-        >
-          ↑
-        </div>
-      </button>
+      <div className="flex justify-between">
+        {sortOptions.map((option) => (
+          <button
+            key={option.value}
+            onClick={() =>
+              // Toggle sortOrder on additional clicks
+              updateSort(
+                `${option.value}.${value === option.value && isDesc ? "asc" : "desc"}`,
+              )
+            }
+            className={`
+          flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs transition-all duration-150
+          ${
+            value === option.value
+              ? "bg-zinc-100 font-medium text-zinc-800 dark:bg-zinc-800 dark:text-zinc-100"
+              : "text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300"
+          }
+        `}
+          >
+            {option.label}
+
+            {value === option.value && !isDefault && (
+              // Direction toggle only for not default options
+              <span
+                className={`transition-transform duration-200 ${isDesc ? "rotate-180" : "rotate-0"}`}
+              >
+                ↑
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };

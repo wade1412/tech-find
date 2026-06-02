@@ -59,14 +59,23 @@ function TechnicianList() {
     );
 
   return (
-    <div>
-      <h2 className="font-heading text-sm font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-2.5">
-        Technicians
-      </h2>
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <h2 className="font-heading text-sm font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+          Technicians
+        </h2>
+        {sortedTechnicians && sortedTechnicians.length > 0 && (
+          <span className="text-xs text-zinc-400 dark:text-zinc-500">
+            {sortedTechnicians.length} found
+          </span>
+        )}
+      </div>
+
       <TechnicianSortSelect
         currentSortOption={currentSort}
         updateSort={updateSort}
       />
+
       <AnimatePresence mode="wait">
         <motion.div
           key={filterKey}

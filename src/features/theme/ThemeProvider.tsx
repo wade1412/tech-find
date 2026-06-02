@@ -11,6 +11,8 @@ interface ThemeProviderProps {
   children: ReactNode;
 }
 
+const headingFont = '"Manrope", system-ui, sans-serif';
+
 export function ThemeProvider({ children }: ThemeProviderProps) {
   const [theme, setTheme] = useState<ThemeMode>(() => {
     // Get from local storage
@@ -49,10 +51,11 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
           divider: theme === "dark" ? "#27272a" : "#e4e4e7",
         },
         typography: {
-          fontFamily: '"Inter", system-ui, sans-serif',
-          h1: { fontFamily: '"Manrope", system-ui, sans-serif' },
-          h2: { fontFamily: '"Manrope", system-ui, sans-serif' },
-          h3: { fontFamily: '"Manrope", system-ui, sans-serif' },
+          fontFamily: "inherit",
+          h1: { fontFamily: headingFont },
+          h2: { fontFamily: headingFont },
+          h3: { fontFamily: headingFont },
+          h4: { fontFamily: headingFont },
         },
       }),
     [theme],

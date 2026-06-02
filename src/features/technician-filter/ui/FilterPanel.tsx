@@ -19,7 +19,9 @@ function FilterPanel() {
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center justify-between">
-        <h2 className="">Filters</h2>
+        <h2 className="font-heading text-sm font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+          Filters
+        </h2>
 
         <button
           disabled={!hasAnyFilter}
