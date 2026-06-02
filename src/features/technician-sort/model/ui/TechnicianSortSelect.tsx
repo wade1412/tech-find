@@ -1,8 +1,12 @@
-//Sort Select UI
-
-import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  type SelectChangeEvent,
+} from "@mui/material";
 import type { SortSelectOption } from "../technicianSort.types";
-import { useState } from "react";
+import { useTechnicianFilters } from "../../../technician-filter/model/useTechnicianFilters";
 
 const sortOptions: SortSelectOption[] = [
   { label: "", value: "default" },
@@ -12,7 +16,21 @@ const sortOptions: SortSelectOption[] = [
 ];
 
 const TechnicianSortSelect = () => {
-  const [value, setValue] = useState("");
+  const { filter, updateSort } = useTechnicianFilters();
+  const [value, sortOrder] = filter.sort.split(".");
+  const isDesc = sortOrder === "desc";
+
+  const selectedOption = sortOptions.find((opt) => opt.value === value) || null;
+
+  const handleValueChange = (e: SelectChangeEvent<string>) => {
+    updateSort(`${e.target.value}.${isDesc ? "desc" : "asc"}`);
+  };
+
+  const toggleOrder = () => {
+    if (value) {
+      updateSort(`${selectedOption?.value}.${isDesc ? "asc" : "desc"}`);
+    }
+  };
 
   return (
     <div>
@@ -21,7 +39,7 @@ const TechnicianSortSelect = () => {
         <Select
           labelId="sort-select"
           value={value}
-          onChange={(e) => setValue(e.target.value)}
+          onChange={handleValueChange}
         >
           {sortOptions.map((option) => (
             <MenuItem key={option.value} value={option.value}>
@@ -31,7 +49,16 @@ const TechnicianSortSelect = () => {
         </Select>
       </FormControl>
 
-      <button>↑</button>
+      <button
+        onClick={toggleOrder}
+        className="text-sm font-medium text-main-500 hover:text-main-400 transition-colors cursor-pointer"
+      >
+        <div
+          className={`flex text-center align-center transition-transform duration-350 font-light h-fit ${isDesc ? "rotate-180" : "rotate-0"}`}
+        >
+          👆
+        </div>
+      </button>
     </div>
   );
 };

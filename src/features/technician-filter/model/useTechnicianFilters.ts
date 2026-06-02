@@ -1,13 +1,15 @@
 import { useCallback, useMemo } from "react";
 import { useSearchParams } from "react-router";
 import type { FilterState, JobOptionKey } from "./filter.types";
+
 type FilterParamKey =
   | "units"
   | "brands"
   | "specific_issues"
   | "stacked"
   | "commercial"
-  | "gas";
+  | "gas"
+  | "sort";
 
 type SlugArrayParamKey = "brands" | "specific_issues";
 
@@ -18,6 +20,7 @@ export const useTechnicianFilters = () => {
     const unitsParam = filterParams.get("units");
     const brandsParam = filterParams.get("brands");
     const specificIssuesParam = filterParams.get("specific_issues");
+    const sortParam = filterParams.get("sort");
     return {
       unitSlugs: unitsParam
         ? [...new Set(unitsParam.split(",").filter(Boolean))]
@@ -31,6 +34,7 @@ export const useTechnicianFilters = () => {
       specificIssueSlugs: specificIssuesParam
         ? [...new Set(specificIssuesParam.split(",").filter(Boolean))]
         : [],
+      sort: sortParam ? sortParam : "default.asc",
     };
   }, [filterParams]);
 
@@ -71,6 +75,14 @@ export const useTechnicianFilters = () => {
   const updateBrandSlugs = useCallback(
     (newValue: string[]) => updateSlugsArray("brands", newValue),
     [updateSlugsArray],
+  );
+
+  // Update Sort option
+  const updateSort = useCallback(
+    (newValue: string) => {
+      updateFilter("sort", newValue);
+    },
+    [updateFilter],
   );
 
   // -------- Toggle Filter Options --------
@@ -139,6 +151,7 @@ export const useTechnicianFilters = () => {
     filter,
     updateBrandSlugs,
     updateSpecificIssueSlugs,
+    updateSort,
     toggleUnit,
     clearUnits,
     toggleStacked,
