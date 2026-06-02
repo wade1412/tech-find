@@ -4,7 +4,7 @@ import TechnicianSkeleton from "./TechnicianSkeleton";
 import { useFilteredTechnicians } from "../../../features/technician-filter/model/useFilteredTechnicians";
 import { useTechnicianFilters } from "../../../features/technician-filter/model/useTechnicianFilters";
 import { AnimatePresence, motion, type Variants } from "motion/react";
-import TechnicianSortSelect from "../../../features/technician-sort/model/ui/TechnicianSortSelect";
+import TechnicianSortSelect from "../../../features/technician-sort/ui/TechnicianSortSelect";
 import { useTechnicianSort } from "../../../features/technician-sort/model/useTechnicianSort";
 import { parseStringToSortTuple } from "../../../features/technician-sort/model/sortHelpers";
 

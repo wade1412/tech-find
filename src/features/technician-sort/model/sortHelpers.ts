@@ -1,6 +1,9 @@
-import type { SortDirection } from "@mui/material";
 import { sortModes } from "./sort.constants";
-import type { SortModeValue, SortTuple } from "./technicianSort.types";
+import type {
+  SortDirection,
+  SortModeValue,
+  SortTuple,
+} from "./technicianSort.types";
 
 const isValidSortMode = (mode: string): mode is SortModeValue => {
   return (sortModes as string[]).includes(mode);

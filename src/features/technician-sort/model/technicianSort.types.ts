@@ -4,7 +4,7 @@ export type SortModeValue =
   | "home_zip_code"
   | "service_area";
 
-type SortDirection = "asc" | "desc";
+export type SortDirection = "asc" | "desc";
 
 export type TechnicianSortOption = {
   sortMode: SortModeValue;

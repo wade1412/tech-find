@@ -14,11 +14,8 @@ export function sortTechnicians(
 
   const newArr = [...technicians];
 
-  return [
-    ...newArr.sort((a, b) => {
-      if (sortDirection === "asc")
-        return a[sortMode].localeCompare(b[sortMode]);
-      else return b[sortMode].localeCompare(a[sortMode]);
-    }),
-  ];
+  return newArr.sort((a, b) => {
+    if (sortDirection === "asc") return a[sortMode].localeCompare(b[sortMode]);
+    else return b[sortMode].localeCompare(a[sortMode]);
+  });
 }

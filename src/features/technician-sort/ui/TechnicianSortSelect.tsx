@@ -5,8 +5,8 @@ import {
   Select,
   type SelectChangeEvent,
 } from "@mui/material";
-import { sortOptions } from "../sort.constants";
-import type { SortTuple } from "../technicianSort.types";
+import { sortOptions } from "../model/sort.constants";
+import type { SortTuple } from "../model/technicianSort.types";
 
 interface TechnicianSortSelectProps {
   currentSortOption: SortTuple;
@@ -18,7 +18,9 @@ const TechnicianSortSelect = ({
   updateSort,
 }: TechnicianSortSelectProps) => {
   const [value, sortOrder] = currentSortOption;
-  const isDesc = sortOrder === "desc";
+
+  const isDefault = value === "default";
+  const isDesc = !isDefault && sortOrder === "desc";
 
   const selectedOption = sortOptions.find((opt) => opt.value === value) || null;
 
@@ -28,6 +30,9 @@ const TechnicianSortSelect = ({
 
   const toggleOrder = () => {
     if (value) {
+      if (value === "default") {
+        updateSort("default.asc");
+      }
       updateSort(`${selectedOption?.value}.${isDesc ? "asc" : "desc"}`);
     }
   };
@@ -51,12 +56,13 @@ const TechnicianSortSelect = ({
 
       <button
         onClick={toggleOrder}
+        disabled={isDefault}
         className="text-sm font-medium text-main-500 hover:text-main-400 transition-colors cursor-pointer"
       >
         <div
           className={`flex text-center align-center transition-transform duration-350 font-light h-fit ${isDesc ? "rotate-180" : "rotate-0"}`}
         >
-          👆
+          ↑
         </div>
       </button>
     </div>
