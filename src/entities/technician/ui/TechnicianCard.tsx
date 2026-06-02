@@ -31,31 +31,34 @@ function TechnicianCard({
             : "border-zinc-200 bg-white shadow-sm hover:border-zinc-300 hover:shadow-md dark:border-zinc-700/60 dark:bg-zinc-800/50 dark:hover:border-zinc-600"
         }`}
     >
-      {/* Main Info, visible always */}
-      <div className="flex items-center justify-between px-4 py-3">
-        <div className="flex items-center gap-3">
-          {/* Avatar dot */}
-          <span
-            className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors
+      {/* --- Main Info, visible always --- */}
+      <div className="grid grid-cols-[auto_1fr_auto_auto] gap-3 px-4 py-3">
+        {/* Avatar dot */}
+        <span
+          className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors
             ${isOpen ? "bg-main-500 text-zinc-900" : "bg-zinc-100 text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300"}`}
-          >
-            {technician.alias.charAt(0).toUpperCase()}
-          </span>
-        </div>
-        <div>
+        >
+          {technician.alias.charAt(0).toUpperCase()}
+        </span>
+
+        {/* Name and area info */}
+        <div className="min-w-0">
           <p
             className={`font-heading text-base font-semibold transition-colors ${isOpen ? "text-main-500" : "text-zinc-800 dark:text-zinc-100"}`}
           >
             {technician.alias}
           </p>
 
-          <p className="text-xs text-zinc-400 dark:text-zinc-500">
-            ZIP {technician.home_zip_code}
-          </p>
+          <div className="mt-0.5 truncate gap-0.5 text-xs text-zinc-400 dark:text-zinc-500">
+            <p>
+              ZIP {technician.home_zip_code} · {technician.service_area}
+            </p>
+          </div>
         </div>
 
+        {/* Jobs/day badge */}
         <div className="flex items-center gap-3">
-          <span className="min-w-[12ch] text-center rounded-md bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300">
+          <span className="w-23 text-center shrink-0 rounded-md bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300">
             {technician.jobs_per_day} jobs/day
           </span>
           {/* Chevron */}
@@ -75,7 +78,7 @@ function TechnicianCard({
         </div>
       </div>
 
-      {/* Expanded panel */}
+      {/* --- Expanded panel --- */}
       <div
         className={`overflow-hidden transition-all duration-200 ${isOpen ? "max-h-96" : "max-h-0"}`}
       >
@@ -90,7 +93,7 @@ function TechnicianCard({
                 {skillBadges.map((badge) => (
                   <span
                     key={badge}
-                    className="rounded-md bg-main-500/10 px-3 py-0.5 text-sm font-light text-main-500"
+                    className="rounded-md bg-main-500/10 px-3 py-0.5 text-xs font-medium text-main-500"
                   >
                     {badge}
                   </span>
@@ -102,15 +105,6 @@ function TechnicianCard({
               No specific skills
             </p>
           )}
-
-          <div className="mt-2">
-            <p className="text-xs font-medium uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-              Service area:
-            </p>
-            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-200">
-              {technician.service_area}
-            </p>
-          </div>
 
           {technician.notes && (
             <div className="mt-2">
