@@ -2,13 +2,23 @@
 // get filteredTechs => return sorted techs
 
 import type { Technician } from "../../../entities/technician/technician.types";
-import type { TechnicianSortMode } from "./technicianSort.types";
+import type { TechnicianSortOption } from "./technicianSort.types";
 
 export function sortTechnicians(
   technicians: Technician[],
-  sortMode: TechnicianSortMode,
+  sortOption: TechnicianSortOption,
 ) {
+  const { sortMode, sortDirection } = sortOption;
+
   if (sortMode === "default") return technicians;
 
-  // switch Sort Mode logic
+  const newArr = [...technicians];
+
+  return [
+    ...newArr.sort((a, b) => {
+      if (sortDirection === "asc")
+        return a[sortMode].localeCompare(b[sortMode]);
+      else return b[sortMode].localeCompare(a[sortMode]);
+    }),
+  ];
 }

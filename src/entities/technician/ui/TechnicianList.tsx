@@ -4,6 +4,9 @@ import TechnicianSkeleton from "./TechnicianSkeleton";
 import { useFilteredTechnicians } from "../../../features/technician-filter/model/useFilteredTechnicians";
 import { useTechnicianFilters } from "../../../features/technician-filter/model/useTechnicianFilters";
 import { AnimatePresence, motion, type Variants } from "motion/react";
+import TechnicianSortSelect from "../../../features/technician-sort/model/ui/TechnicianSortSelect";
+import type { SortTuple } from "../../../features/technician-sort/model/technicianSort.types";
+import { useTechnicianSort } from "../../../features/technician-sort/model/useTechnicianSort";
 
 const listVariants: Variants = {
   hidden: {},
@@ -28,9 +31,14 @@ const cardVariants: Variants = {
 };
 
 function TechnicianList() {
+  const { filter, updateSort } = useTechnicianFilters();
   const { filteredTechnicians, technicianBadges, isPending, isError, error } =
     useFilteredTechnicians();
-  const { filter } = useTechnicianFilters();
+
+  const sortedTechnicians = useTechnicianSort(
+    filteredTechnicians,
+    filter.sort.split(".") as SortTuple,
+  );
 
   const filterKey = JSON.stringify(filter);
 
@@ -53,47 +61,56 @@ function TechnicianList() {
     );
 
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={filterKey}
-        className="flex flex-col gap-2.5"
-        variants={listVariants}
-        initial="hidden"
-        animate="visible"
-        exit="exit"
-      >
-        {filteredTechnicians && filteredTechnicians.length > 0 ? (
-          filteredTechnicians.map((technician) => (
-            <motion.div
-              key={technician.id}
+    <div>
+      <h2 className="font-heading text-sm font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-2.5">
+        Technicians
+      </h2>
+      <TechnicianSortSelect
+        currentSortOption={filter.sort.split(".") as SortTuple}
+        updateSort={updateSort}
+      />
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={filterKey}
+          className="flex flex-col gap-2.5"
+          variants={listVariants}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+        >
+          {sortedTechnicians && sortedTechnicians.length > 0 ? (
+            sortedTechnicians.map((technician) => (
+              <motion.div
+                key={technician.id}
+                variants={cardVariants}
+                whileHover={{ y: -2 }}
+                transition={{ duration: 0.15 }}
+              >
+                <TechnicianCard
+                  technician={technician}
+                  skillBadges={technicianBadges.get(technician.id) || []}
+                  isOpen={openTechnicianId === technician.id}
+                  onToggle={() =>
+                    setOpenRecord((prev) =>
+                      prev?.filterKey === filterKey && prev.id === technician.id
+                        ? null
+                        : { filterKey, id: technician.id },
+                    )
+                  }
+                />
+              </motion.div>
+            ))
+          ) : (
+            <motion.p
               variants={cardVariants}
-              whileHover={{ y: -2 }}
-              transition={{ duration: 0.15 }}
+              className="py-8 text-center text-sm text-zinc-400 dark:text-zinc-500"
             >
-              <TechnicianCard
-                technician={technician}
-                skillBadges={technicianBadges.get(technician.id) || []}
-                isOpen={openTechnicianId === technician.id}
-                onToggle={() =>
-                  setOpenRecord((prev) =>
-                    prev?.filterKey === filterKey && prev.id === technician.id
-                      ? null
-                      : { filterKey, id: technician.id },
-                  )
-                }
-              />
-            </motion.div>
-          ))
-        ) : (
-          <motion.p
-            variants={cardVariants}
-            className="py-8 text-center text-sm text-zinc-400 dark:text-zinc-500"
-          >
-            No technicians found
-          </motion.p>
-        )}
-      </motion.div>
-    </AnimatePresence>
+              No technicians found
+            </motion.p>
+          )}
+        </motion.div>
+      </AnimatePresence>
+    </div>
   );
 }
 

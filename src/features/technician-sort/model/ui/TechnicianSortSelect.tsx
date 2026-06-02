@@ -5,8 +5,12 @@ import {
   Select,
   type SelectChangeEvent,
 } from "@mui/material";
-import type { SortSelectOption } from "../technicianSort.types";
-import { useTechnicianFilters } from "../../../technician-filter/model/useTechnicianFilters";
+import type { SortSelectOption, SortTuple } from "../technicianSort.types";
+
+interface TechnicianSortSelectProps {
+  currentSortOption: SortTuple;
+  updateSort: (newValue: string) => void;
+}
 
 const sortOptions: SortSelectOption[] = [
   { label: "", value: "default" },
@@ -15,9 +19,11 @@ const sortOptions: SortSelectOption[] = [
   { label: "Service Area", value: "service_area" },
 ];
 
-const TechnicianSortSelect = () => {
-  const { filter, updateSort } = useTechnicianFilters();
-  const [value, sortOrder] = filter.sort.split(".");
+const TechnicianSortSelect = ({
+  currentSortOption,
+  updateSort,
+}: TechnicianSortSelectProps) => {
+  const [value, sortOrder] = currentSortOption;
   const isDesc = sortOrder === "desc";
 
   const selectedOption = sortOptions.find((opt) => opt.value === value) || null;

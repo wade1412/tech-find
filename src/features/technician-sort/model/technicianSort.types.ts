@@ -11,3 +11,5 @@ export type SortSelectOption = {
   label: string;
   value: SortModeValue;
 };
+
+export type SortTuple = [SortModeValue, SortDirection];
