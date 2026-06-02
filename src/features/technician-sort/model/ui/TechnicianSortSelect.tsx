@@ -5,19 +5,13 @@ import {
   Select,
   type SelectChangeEvent,
 } from "@mui/material";
-import type { SortSelectOption, SortTuple } from "../technicianSort.types";
+import { sortOptions } from "../sort.constants";
+import type { SortTuple } from "../technicianSort.types";
 
 interface TechnicianSortSelectProps {
   currentSortOption: SortTuple;
   updateSort: (newValue: string) => void;
 }
-
-const sortOptions: SortSelectOption[] = [
-  { label: "", value: "default" },
-  { label: "Name", value: "alias" },
-  { label: "Zip", value: "home_zip_code" },
-  { label: "Service Area", value: "service_area" },
-];
 
 const TechnicianSortSelect = ({
   currentSortOption,

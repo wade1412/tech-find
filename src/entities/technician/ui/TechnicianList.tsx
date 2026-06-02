@@ -5,8 +5,8 @@ import { useFilteredTechnicians } from "../../../features/technician-filter/mode
 import { useTechnicianFilters } from "../../../features/technician-filter/model/useTechnicianFilters";
 import { AnimatePresence, motion, type Variants } from "motion/react";
 import TechnicianSortSelect from "../../../features/technician-sort/model/ui/TechnicianSortSelect";
-import type { SortTuple } from "../../../features/technician-sort/model/technicianSort.types";
 import { useTechnicianSort } from "../../../features/technician-sort/model/useTechnicianSort";
+import { parseStringToSortTuple } from "../../../features/technician-sort/model/sortHelpers";
 
 const listVariants: Variants = {
   hidden: {},
@@ -35,10 +35,8 @@ function TechnicianList() {
   const { filteredTechnicians, technicianBadges, isPending, isError, error } =
     useFilteredTechnicians();
 
-  const sortedTechnicians = useTechnicianSort(
-    filteredTechnicians,
-    filter.sort.split(".") as SortTuple,
-  );
+  const currentSort = parseStringToSortTuple(filter.sort);
+  const sortedTechnicians = useTechnicianSort(filteredTechnicians, currentSort);
 
   const filterKey = JSON.stringify(filter);
 
@@ -66,7 +64,7 @@ function TechnicianList() {
         Technicians
       </h2>
       <TechnicianSortSelect
-        currentSortOption={filter.sort.split(".") as SortTuple}
+        currentSortOption={currentSort}
         updateSort={updateSort}
       />
       <AnimatePresence mode="wait">
