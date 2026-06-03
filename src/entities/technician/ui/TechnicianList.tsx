@@ -38,13 +38,18 @@ function TechnicianList() {
     filterKey: string;
     id: string;
   } | null>(null);
+
+  const { sort, ...filterWithoutSort } = filter;
+  const filterKey = JSON.stringify(filterWithoutSort);
+  const orderKey = `${filterKey}|${sort}`;
+
   const [customOrder, setCustomOrder] = useState<{
+    key: string;
     ids: string[];
-    sort: string;
-  }>({ ids: [], sort: "" });
+  }>({ key: "", ids: [] });
+
   const isDragging = useRef(false);
 
-  const filterKey = JSON.stringify({ ...filter, sort: undefined });
   const currentSortTuple = parseStringToSortTuple(filter.sort);
   const sortedTechnicians = useTechnicianSort(
     filteredTechnicians,
@@ -54,21 +59,29 @@ function TechnicianList() {
   const openTechnicianId =
     openRecord?.filterKey === filterKey ? openRecord.id : null;
 
-  const orderedTechncians = useMemo(() => {
-    if (customOrder.ids.length === 0 || customOrder.sort !== filter.sort)
-      return sortedTechnicians;
+  const techById = useMemo(
+    () => new Map(sortedTechnicians.map((t) => [t.id, t])),
+    [sortedTechnicians],
+  );
 
-    const sortedTechsMap = new Map(
-      sortedTechnicians.map((tech) => [tech.id, tech]),
-    );
+  const orderedIds = useMemo(() => {
+    const sortedIds = Array.from(techById.keys());
 
-    return customOrder.ids.flatMap((id) => {
-      const tech = sortedTechsMap.get(id);
-      return tech ? [tech] : [];
-    });
-  }, [customOrder.ids, sortedTechnicians, customOrder.sort, filter.sort]);
+    const hasCustomOrder =
+      customOrder.key === orderKey && customOrder.ids.length > 0;
 
-  // Conditional Renders
+    if (!hasCustomOrder) {
+      return sortedIds;
+    }
+
+    const customOrderSet = new Set(customOrder.ids);
+
+    return [
+      ...customOrder.ids.filter((id) => techById.has(id)),
+      ...sortedIds.filter((id) => !customOrderSet.has(id)),
+    ];
+  }, [customOrder, orderKey, techById]);
+
   if (isPending) return <TechnicianSkeleton />;
 
   if (isError)
@@ -98,13 +111,10 @@ function TechnicianList() {
 
       <AnimatePresence mode="wait">
         <Reorder.Group
-          values={orderedTechncians}
-          onReorder={(newOrder) => {
-            isDragging.current = true;
-            const newIds = newOrder.map((el) => el.id);
-            setCustomOrder({ ids: newIds, sort: "default.desc" });
-            updateSort("default.desc");
-          }}
+          values={orderedIds}
+          onReorder={(newOrder) =>
+            setCustomOrder({ key: orderKey, ids: newOrder })
+          }
           key={filterKey}
           className="flex flex-col gap-2.5"
           variants={listVariants}
@@ -112,34 +122,48 @@ function TechnicianList() {
           animate="visible"
           exit="exit"
         >
-          {orderedTechncians && orderedTechncians.length > 0 ? (
-            orderedTechncians.map((technician) => (
-              <Reorder.Item key={technician.id} value={technician}>
-                <motion.div
-                  variants={cardVariants}
-                  whileHover={{ y: -2 }}
-                  transition={{ duration: 0.15 }}
+          {orderedIds.length > 0 ? (
+            orderedIds.map((id) => {
+              const technician = techById.get(id);
+              if (!technician) return null;
+
+              return (
+                <Reorder.Item
+                  key={technician.id}
+                  value={technician.id}
+                  onDragStart={() => {
+                    isDragging.current = true;
+                  }}
+                  onDragEnd={() =>
+                    window.setTimeout(() => {
+                      isDragging.current = false;
+                    }, 0)
+                  }
+                  className="relative"
                 >
-                  <TechnicianCard
-                    technician={technician}
-                    skillBadges={technicianBadges.get(technician.id) || []}
-                    isOpen={openTechnicianId === technician.id}
-                    onToggle={() => {
-                      if (isDragging.current) {
-                        isDragging.current = false;
-                        return;
-                      }
-                      setOpenRecord((prev) =>
-                        prev?.filterKey === filterKey &&
-                        prev.id === technician.id
-                          ? null
-                          : { filterKey, id: technician.id },
-                      );
-                    }}
-                  />
-                </motion.div>
-              </Reorder.Item>
-            ))
+                  <motion.div
+                    variants={cardVariants}
+                    whileHover={{ y: -2 }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    <TechnicianCard
+                      technician={technician}
+                      skillBadges={technicianBadges.get(technician.id) || []}
+                      isOpen={openTechnicianId === technician.id}
+                      onToggle={() => {
+                        if (isDragging.current) return;
+                        setOpenRecord((prev) =>
+                          prev?.filterKey === filterKey &&
+                          prev.id === technician.id
+                            ? null
+                            : { filterKey, id: technician.id },
+                        );
+                      }}
+                    />
+                  </motion.div>
+                </Reorder.Item>
+              );
+            })
           ) : (
             <motion.p
               variants={cardVariants}

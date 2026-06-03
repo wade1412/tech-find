@@ -16,14 +16,14 @@ function TechnicianCard({
   return (
     <div
       onClick={onToggle}
-      role="button"
-      tabIndex={0}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           onToggle();
         }
       }}
+      role="button"
+      tabIndex={0}
       className={`cursor-pointer overflow-hidden rounded-xl border transition-[border-color,background-color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-main-500
         ${
           isOpen
