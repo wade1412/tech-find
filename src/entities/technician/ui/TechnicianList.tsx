@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import TechnicianCard from "./TechnicianCard";
 import TechnicianSkeleton from "./TechnicianSkeleton";
 import { useFilteredTechnicians } from "../../../features/technician-filter/model/useFilteredTechnicians";
@@ -38,10 +38,13 @@ function TechnicianList() {
     filterKey: string;
     id: string;
   } | null>(null);
-  const [customOrderIds, setCustomOrderIds] = useState<string[]>([]);
+  const [customOrder, setCustomOrder] = useState<{
+    ids: string[];
+    sort: string;
+  }>({ ids: [], sort: "" });
   const isDragging = useRef(false);
 
-  const filterKey = JSON.stringify(filter);
+  const filterKey = JSON.stringify({ ...filter, sort: undefined });
   const currentSortTuple = parseStringToSortTuple(filter.sort);
   const sortedTechnicians = useTechnicianSort(
     filteredTechnicians,
@@ -51,21 +54,19 @@ function TechnicianList() {
   const openTechnicianId =
     openRecord?.filterKey === filterKey ? openRecord.id : null;
 
-  const orderedTechncians =
-    customOrderIds.length > 0
-      ? [...sortedTechnicians].sort(
-          (a, b) => customOrderIds.indexOf(a.id) - customOrderIds.indexOf(b.id),
-        )
-      : sortedTechnicians;
+  const orderedTechncians = useMemo(() => {
+    if (customOrder.ids.length === 0 || customOrder.sort !== filter.sort)
+      return sortedTechnicians;
 
-  useEffect(() => {
-    if (isDragging.current) {
-      isDragging.current = false;
-      return;
-    }
+    const sortedTechsMap = new Map(
+      sortedTechnicians.map((tech) => [tech.id, tech]),
+    );
 
-    setCustomOrderIds([]);
-  }, [filter.sort]);
+    return customOrder.ids.flatMap((id) => {
+      const tech = sortedTechsMap.get(id);
+      return tech ? [tech] : [];
+    });
+  }, [customOrder.ids, sortedTechnicians, customOrder.sort, filter.sort]);
 
   // Conditional Renders
   if (isPending) return <TechnicianSkeleton />;
@@ -100,7 +101,9 @@ function TechnicianList() {
           values={orderedTechncians}
           onReorder={(newOrder) => {
             isDragging.current = true;
-            setCustomOrderIds(newOrder.map((el) => el.id));
+            const newIds = newOrder.map((el) => el.id);
+            setCustomOrder({ ids: newIds, sort: "default.desc" });
+            updateSort("default.desc");
           }}
           key={filterKey}
           className="flex flex-col gap-2.5"
@@ -121,14 +124,18 @@ function TechnicianList() {
                     technician={technician}
                     skillBadges={technicianBadges.get(technician.id) || []}
                     isOpen={openTechnicianId === technician.id}
-                    onToggle={() =>
+                    onToggle={() => {
+                      if (isDragging.current) {
+                        isDragging.current = false;
+                        return;
+                      }
                       setOpenRecord((prev) =>
                         prev?.filterKey === filterKey &&
                         prev.id === technician.id
                           ? null
                           : { filterKey, id: technician.id },
-                      )
-                    }
+                      );
+                    }}
                   />
                 </motion.div>
               </Reorder.Item>
