@@ -32,21 +32,23 @@ function FilterPanel() {
         </button>
       </div>
 
-      <section>
-        <h2 className={headingStyle}>Filter by Brand</h2>
-        <BrandSelect />
-      </section>
+      <main className="flex flex-col gap-2.5">
+        <section>
+          <h2 className={headingStyle}>Filter by Brand</h2>
+          <BrandSelect />
+        </section>
 
-      <section>
-        <h2 className={headingStyle}>Specific Issues</h2>
-        <SpecificIssueSelect />
-      </section>
+        <section>
+          <h2 className={headingStyle}>Specific Issues</h2>
+          <SpecificIssueSelect />
+        </section>
 
-      <section>
-        <h2 className={headingStyle}>Units</h2>
-        <JobOptions />
-        <UnitSelector />
-      </section>
+        <section>
+          <h2 className={headingStyle}>Units</h2>
+          <JobOptions />
+          <UnitSelector />
+        </section>
+      </main>
     </div>
   );
 }
