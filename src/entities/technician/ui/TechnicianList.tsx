@@ -48,6 +48,11 @@ function TechnicianList() {
     ids: string[];
   }>({ key: "", ids: [] });
 
+  const handleSortChange = (newSort: string) => {
+    setCustomOrder({ key: "", ids: [] });
+    updateSort(newSort);
+  };
+
   const isDragging = useRef(false);
 
   const currentSortTuple = parseStringToSortTuple(filter.sort);
@@ -106,16 +111,17 @@ function TechnicianList() {
 
       <TechnicianSortSelect
         currentSortOption={currentSortTuple}
-        updateSort={updateSort}
+        updateSort={handleSortChange}
       />
 
       <AnimatePresence mode="wait">
         <Reorder.Group
           values={orderedIds}
-          onReorder={(newOrder) =>
-            setCustomOrder({ key: orderKey, ids: newOrder })
-          }
-          key={filterKey}
+          onReorder={(newOrder) => {
+            if (!isDragging.current) return;
+            setCustomOrder({ key: orderKey, ids: newOrder });
+          }}
+          key={orderKey}
           className="flex flex-col gap-2.5"
           variants={listVariants}
           initial="hidden"

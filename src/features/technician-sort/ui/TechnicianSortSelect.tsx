@@ -25,7 +25,9 @@ const TechnicianSortSelect = ({
             onClick={() =>
               // Toggle sortOrder on additional clicks
               updateSort(
-                `${option.value}.${value === option.value && isDesc ? "asc" : "desc"}`,
+                option.value === "default"
+                  ? "default.asc"
+                  : `${option.value}.${value === option.value && isDesc ? "asc" : "desc"}`,
               )
             }
             className={`
