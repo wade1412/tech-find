@@ -1,42 +1,52 @@
-//Read sortMode from URL and pass it to sortTechncians and returned sorted array
-
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { sortTechnicians } from "./sortTechnicians";
 import { parseStringToSortTuple } from "./sortHelpers";
 import type { Technician } from "../../../entities/technician/technician.types";
+import type { SortTuple } from "./technicianSort.types";
 
-export const useTechnicianSort = (
+type UseOrderedTechniciansResult = {
+  currentSortTuple: SortTuple;
+  sortedTechnicians: Technician[];
+  techniciansById: Map<string, Technician>;
+  orderedIds: string[];
+  handleSortChange: (newSort: string) => void;
+  handleReorder: (newOrder: string[]) => void;
+  handleDragStart: () => void;
+  handleDragEnd: () => void;
+  shouldIgnoreToggle: () => boolean;
+};
+
+export const useOrderedTechnicians = (
   technicians: Technician[],
   sort: string,
   orderKey: string,
   updateSort: (newSort: string) => void,
-) => {
+): UseOrderedTechniciansResult => {
   const [customOrder, setCustomOrder] = useState<{
     key: string;
     ids: string[];
   }>({ key: "", ids: [] });
   const isDragging = useRef(false);
+  const justDragged = useRef(false);
 
-  const currentSortTuple = parseStringToSortTuple(sort);
-  const [value, direction] = currentSortTuple;
+  const currentSortTuple = useMemo(() => parseStringToSortTuple(sort), [sort]);
+  const [mode, direction] = currentSortTuple;
 
   const sortedTechnicians = useMemo(() => {
-    if (!technicians || !value || !direction) return technicians;
-
     return sortTechnicians(technicians, {
-      sortMode: value,
+      sortMode: mode,
       sortDirection: direction,
     });
-  }, [technicians, value, direction]);
+  }, [technicians, mode, direction]);
 
-  const sortedTechsById = useMemo(
+  const techniciansById = useMemo(
     () => new Map(sortedTechnicians.map((t) => [t.id, t])),
     [sortedTechnicians],
   );
 
   const orderedIds = useMemo(() => {
     const { key, ids } = customOrder;
-    const sortedIds = Array.from(sortedTechsById.keys());
+    const sortedIds = Array.from(techniciansById.keys());
 
     const hasCustomOrder = key === orderKey && ids.length > 0;
 
@@ -48,35 +58,46 @@ export const useTechnicianSort = (
 
     return [
       // Return only relevant ids
-      ...customOrder.ids.filter((id) => sortedTechsById.has(id)),
+      ...customOrder.ids.filter((id) => techniciansById.has(id)),
       ...sortedIds.filter((id) => !customOrderSet.has(id)),
     ];
-  }, [customOrder, orderKey, sortedTechsById]);
+  }, [customOrder, orderKey, techniciansById]);
 
-  const handleSortChange = (newSort: string) => {
-    setCustomOrder({ key: "", ids: [] });
-    updateSort(newSort);
-  };
+  const handleSortChange = useCallback(
+    (newSort: string) => {
+      setCustomOrder({ key: "", ids: [] });
+      updateSort(newSort);
+    },
+    [updateSort],
+  );
 
-  const handleReorder = (newOrder: string[]) => {
-    if (!isDragging.current) return;
-    setCustomOrder({ key: orderKey, ids: newOrder });
-  };
+  const handleReorder = useCallback(
+    (newOrder: string[]) => {
+      if (!isDragging.current) return;
+      setCustomOrder({ key: orderKey, ids: newOrder });
+    },
+    [orderKey],
+  );
 
-  const handleDragStart = () => {
+  const handleDragStart = useCallback(() => {
     isDragging.current = true;
-  };
+  }, []);
 
-  const handleDragEnd = () => {
+  const handleDragEnd = useCallback(() => {
     isDragging.current = false;
-  };
+    justDragged.current = true;
+    setTimeout(() => (justDragged.current = false), 100);
+  }, []);
 
-  const shouldIgnoreToggle = () => isDragging.current;
+  const shouldIgnoreToggle = useCallback(
+    () => isDragging.current || justDragged.current,
+    [],
+  );
 
   return {
     currentSortTuple,
     sortedTechnicians,
-    sortedTechsById,
+    techniciansById,
     orderedIds,
     handleSortChange,
     handleReorder,
