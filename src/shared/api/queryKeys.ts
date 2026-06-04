@@ -7,4 +7,5 @@ export const queryKeys = {
   technicianSkillSet: ["technician_skill_set"],
   technicianIgnoreList: ["technician_ignore_list"],
   serviceZone: ["service_zone"],
+  technicianServiceZone: ["technician_service_zone"],
 } as const;
