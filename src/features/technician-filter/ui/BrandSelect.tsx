@@ -112,15 +112,25 @@ function BrandSelect() {
             "& .MuiOutlinedInput-root.Mui-disabled": { pointerEvents: "none" },
           }}
           renderInput={(params) => <TextField {...params} label="Brand" />}
-        />
+        />{" "}
+      </div>
 
-        <div
-          className={`overflow-hidden transition-all duration-200 ${filter.isCommercial ? "max-h-6" : "max-h-0"}`}
-        >
-          <p className="text-xs text-zinc-400 dark:text-zinc-500">
-            Brand filter is unavailable for commercial jobs
-          </p>
-        </div>
+      <div
+        className={`overflow-hidden transition-all duration-200 ${
+          filter.unitSlugs.length === 0 ? "max-h-6" : "max-h-0"
+        }`}
+      >
+        <p className="text-xs text-zinc-400 dark:text-zinc-500">
+          Select a unit to filter by brands
+        </p>
+      </div>
+
+      <div
+        className={`overflow-hidden transition-all duration-200 ${filter.isCommercial ? "max-h-6" : "max-h-0"}`}
+      >
+        <p className="text-xs text-zinc-400 dark:text-zinc-500">
+          Brand filter is unavailable for commercial jobs
+        </p>
       </div>
     </div>
   );

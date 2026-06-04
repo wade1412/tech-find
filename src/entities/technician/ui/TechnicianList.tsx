@@ -3,10 +3,10 @@ import TechnicianCard from "./TechnicianCard";
 import TechnicianSkeleton from "./TechnicianSkeleton";
 import { useFilteredTechnicians } from "../../../features/technician-filter/model/useFilteredTechnicians";
 import { useTechnicianFilters } from "../../../features/technician-filter/model/useTechnicianFilters";
-import { AnimatePresence, motion, type Variants } from "motion/react";
+import { AnimatePresence, motion, Reorder, type Variants } from "motion/react";
 import TechnicianSortSelect from "../../../features/technician-sort/ui/TechnicianSortSelect";
-import { useTechnicianSort } from "../../../features/technician-sort/model/useTechnicianSort";
-import { parseStringToSortTuple } from "../../../features/technician-sort/model/sortHelpers";
+import { useOrderedTechnicians } from "../../../features/technician-sort/model/useOrderedTechnicians";
+import { createTechnicianFilterKey } from "../../../features/technician-filter/model/filterKey";
 
 const listVariants: Variants = {
   hidden: {},
@@ -35,17 +35,31 @@ function TechnicianList() {
   const { filteredTechnicians, technicianBadges, isPending, isError, error } =
     useFilteredTechnicians();
 
-  const currentSort = parseStringToSortTuple(filter.sort);
-  const sortedTechnicians = useTechnicianSort(filteredTechnicians, currentSort);
-
-  const filterKey = JSON.stringify(filter);
-
   const [openRecord, setOpenRecord] = useState<{
     filterKey: string;
     id: string;
   } | null>(null);
+  const filterKey = createTechnicianFilterKey(filter);
+  const orderKey = `${filterKey}|${filter.sort}`;
 
-  // open card if filterKey matches
+  const {
+    currentSortTuple,
+    sortedTechnicians,
+    techniciansById,
+    orderedIds,
+    handleSortChange,
+    handleReorder,
+    handleDragStart,
+    handleDragEnd,
+    shouldIgnoreToggle,
+  } = useOrderedTechnicians(
+    filteredTechnicians,
+    filter.sort,
+    orderKey,
+    updateSort,
+  );
+
+  // Open card if filterKey matches
   const openTechnicianId =
     openRecord?.filterKey === filterKey ? openRecord.id : null;
 
@@ -72,41 +86,54 @@ function TechnicianList() {
       </div>
 
       <TechnicianSortSelect
-        currentSortOption={currentSort}
-        updateSort={updateSort}
+        currentSortOption={currentSortTuple}
+        updateSort={handleSortChange}
       />
 
       <AnimatePresence mode="wait">
-        <motion.div
-          key={filterKey}
+        <Reorder.Group
+          values={orderedIds}
+          onReorder={handleReorder}
+          key={orderKey}
           className="flex flex-col gap-2.5"
           variants={listVariants}
           initial="hidden"
           animate="visible"
           exit="exit"
         >
-          {sortedTechnicians && sortedTechnicians.length > 0 ? (
-            sortedTechnicians.map((technician) => (
-              <motion.div
-                key={technician.id}
-                variants={cardVariants}
-                whileHover={{ y: -2 }}
-                transition={{ duration: 0.15 }}
-              >
-                <TechnicianCard
-                  technician={technician}
-                  skillBadges={technicianBadges.get(technician.id) || []}
-                  isOpen={openTechnicianId === technician.id}
-                  onToggle={() =>
-                    setOpenRecord((prev) =>
-                      prev?.filterKey === filterKey && prev.id === technician.id
-                        ? null
-                        : { filterKey, id: technician.id },
-                    )
-                  }
-                />
-              </motion.div>
-            ))
+          {orderedIds.length > 0 ? (
+            orderedIds.map((id) => {
+              const technician = techniciansById.get(id);
+              if (!technician) return null;
+
+              return (
+                <Reorder.Item
+                  key={technician.id}
+                  value={technician.id}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                  variants={cardVariants}
+                  whileHover={{ y: -2 }}
+                  transition={{ duration: 0.15 }}
+                  className="relative"
+                >
+                  <TechnicianCard
+                    technician={technician}
+                    skillBadges={technicianBadges.get(technician.id) || []}
+                    isOpen={openTechnicianId === technician.id}
+                    onToggle={() => {
+                      if (shouldIgnoreToggle()) return;
+                      setOpenRecord((prev) =>
+                        prev?.filterKey === filterKey &&
+                        prev.id === technician.id
+                          ? null
+                          : { filterKey, id: technician.id },
+                      );
+                    }}
+                  />
+                </Reorder.Item>
+              );
+            })
           ) : (
             <motion.p
               variants={cardVariants}
@@ -115,7 +142,7 @@ function TechnicianList() {
               No technicians found
             </motion.p>
           )}
-        </motion.div>
+        </Reorder.Group>
       </AnimatePresence>
     </div>
   );
