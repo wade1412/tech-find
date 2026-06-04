@@ -18,9 +18,7 @@ export function HomePage() {
         <FilterPanel />
 
         {/* Right Column - Technicians List */}
-        <section>
-          <TechnicianList />
-        </section>
+        <TechnicianList />
       </div>
     </div>
   );

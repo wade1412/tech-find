@@ -18,7 +18,7 @@ const TechnicianSortSelect = ({
     <div className="flex items-center gap-1.5 justify-between">
       <span className="text-xs text-zinc-400 dark:text-zinc-500">Sort by</span>
 
-      <div className="flex justify-between">
+      <div className="flex items-center gap-0.5 rounded-lg bg-zinc-100 p-0.5 dark:bg-zinc-800/60">
         {sortOptions.map((option) => (
           <button
             key={option.value}
@@ -34,7 +34,7 @@ const TechnicianSortSelect = ({
           flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs transition-all duration-150
           ${
             value === option.value
-              ? "bg-zinc-100 font-medium text-zinc-800 dark:bg-zinc-800 dark:text-zinc-100"
+              ? "bg-white font-medium text-zinc-800 shadow-sm dark:bg-zinc-700 dark:text-zinc-100"
               : "text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300"
           }
         `}
