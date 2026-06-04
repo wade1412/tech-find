@@ -1,12 +1,12 @@
-import { useMemo, useRef, useState } from "react";
+import { useState } from "react";
 import TechnicianCard from "./TechnicianCard";
 import TechnicianSkeleton from "./TechnicianSkeleton";
 import { useFilteredTechnicians } from "../../../features/technician-filter/model/useFilteredTechnicians";
 import { useTechnicianFilters } from "../../../features/technician-filter/model/useTechnicianFilters";
 import { AnimatePresence, motion, Reorder, type Variants } from "motion/react";
 import TechnicianSortSelect from "../../../features/technician-sort/ui/TechnicianSortSelect";
-import { useTechnicianSort } from "../../../features/technician-sort/model/useTechnicianSort";
-import { parseStringToSortTuple } from "../../../features/technician-sort/model/sortHelpers";
+import { useOrderedTechnicians } from "../../../features/technician-sort/model/useOrderedTechnicians";
+import { createTechnicianFilterKey } from "../../../features/technician-filter/model/filterKey";
 
 const listVariants: Variants = {
   hidden: {},
@@ -34,58 +34,34 @@ function TechnicianList() {
   const { filter, updateSort } = useTechnicianFilters();
   const { filteredTechnicians, technicianBadges, isPending, isError, error } =
     useFilteredTechnicians();
+
   const [openRecord, setOpenRecord] = useState<{
     filterKey: string;
     id: string;
   } | null>(null);
+  const filterKey = createTechnicianFilterKey(filter);
+  const orderKey = `${filterKey}|${filter.sort}`;
 
-  const { sort, ...filterWithoutSort } = filter;
-  const filterKey = JSON.stringify(filterWithoutSort);
-  const orderKey = `${filterKey}|${sort}`;
-
-  const [customOrder, setCustomOrder] = useState<{
-    key: string;
-    ids: string[];
-  }>({ key: "", ids: [] });
-
-  const handleSortChange = (newSort: string) => {
-    setCustomOrder({ key: "", ids: [] });
-    updateSort(newSort);
-  };
-
-  const isDragging = useRef(false);
-
-  const currentSortTuple = parseStringToSortTuple(filter.sort);
-  const sortedTechnicians = useTechnicianSort(
-    filteredTechnicians,
+  const {
     currentSortTuple,
+    sortedTechnicians,
+    techniciansById,
+    orderedIds,
+    handleSortChange,
+    handleReorder,
+    handleDragStart,
+    handleDragEnd,
+    shouldIgnoreToggle,
+  } = useOrderedTechnicians(
+    filteredTechnicians,
+    filter.sort,
+    orderKey,
+    updateSort,
   );
+
   // Open card if filterKey matches
   const openTechnicianId =
     openRecord?.filterKey === filterKey ? openRecord.id : null;
-
-  const techById = useMemo(
-    () => new Map(sortedTechnicians.map((t) => [t.id, t])),
-    [sortedTechnicians],
-  );
-
-  const orderedIds = useMemo(() => {
-    const sortedIds = Array.from(techById.keys());
-
-    const hasCustomOrder =
-      customOrder.key === orderKey && customOrder.ids.length > 0;
-
-    if (!hasCustomOrder) {
-      return sortedIds;
-    }
-
-    const customOrderSet = new Set(customOrder.ids);
-
-    return [
-      ...customOrder.ids.filter((id) => techById.has(id)),
-      ...sortedIds.filter((id) => !customOrderSet.has(id)),
-    ];
-  }, [customOrder, orderKey, techById]);
 
   if (isPending) return <TechnicianSkeleton />;
 
@@ -117,10 +93,7 @@ function TechnicianList() {
       <AnimatePresence mode="wait">
         <Reorder.Group
           values={orderedIds}
-          onReorder={(newOrder) => {
-            if (!isDragging.current) return;
-            setCustomOrder({ key: orderKey, ids: newOrder });
-          }}
+          onReorder={handleReorder}
           key={orderKey}
           className="flex flex-col gap-2.5"
           variants={listVariants}
@@ -130,43 +103,34 @@ function TechnicianList() {
         >
           {orderedIds.length > 0 ? (
             orderedIds.map((id) => {
-              const technician = techById.get(id);
+              const technician = techniciansById.get(id);
               if (!technician) return null;
 
               return (
                 <Reorder.Item
                   key={technician.id}
                   value={technician.id}
-                  onDragStart={() => {
-                    isDragging.current = true;
-                  }}
-                  onDragEnd={() =>
-                    window.setTimeout(() => {
-                      isDragging.current = false;
-                    }, 0)
-                  }
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                  variants={cardVariants}
+                  whileHover={{ y: -2 }}
+                  transition={{ duration: 0.15 }}
                   className="relative"
                 >
-                  <motion.div
-                    variants={cardVariants}
-                    whileHover={{ y: -2 }}
-                    transition={{ duration: 0.15 }}
-                  >
-                    <TechnicianCard
-                      technician={technician}
-                      skillBadges={technicianBadges.get(technician.id) || []}
-                      isOpen={openTechnicianId === technician.id}
-                      onToggle={() => {
-                        if (isDragging.current) return;
-                        setOpenRecord((prev) =>
-                          prev?.filterKey === filterKey &&
-                          prev.id === technician.id
-                            ? null
-                            : { filterKey, id: technician.id },
-                        );
-                      }}
-                    />
-                  </motion.div>
+                  <TechnicianCard
+                    technician={technician}
+                    skillBadges={technicianBadges.get(technician.id) || []}
+                    isOpen={openTechnicianId === technician.id}
+                    onToggle={() => {
+                      if (shouldIgnoreToggle()) return;
+                      setOpenRecord((prev) =>
+                        prev?.filterKey === filterKey &&
+                        prev.id === technician.id
+                          ? null
+                          : { filterKey, id: technician.id },
+                      );
+                    }}
+                  />
                 </Reorder.Item>
               );
             })
