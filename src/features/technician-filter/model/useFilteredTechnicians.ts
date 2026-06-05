@@ -14,6 +14,8 @@ import {
   SPECIAL_UNIT_SLUGS,
 } from "./filter.constants";
 import { useBrandGroupsQuery } from "../../../entities/brandGroup/useBrandGroupsQuery";
+import { useServiceZonesQuery } from "../../../entities/service-zone/useServiceZonesQuery";
+import { useTechnicianServiceZonesQuery } from "../../../entities/technician-service-zone/useTechnicianServiceZonesQuery";
 
 export const useFilteredTechnicians = () => {
   const { filter } = useTechnicianFilters();
@@ -23,6 +25,18 @@ export const useFilteredTechnicians = () => {
     isError: techniciansError,
     error: techniciansErrorObject,
   } = useTechniciansQuery();
+  const {
+    data: zones,
+    isPending: isZonesPending,
+    isError: isZonesError,
+    error: zonesErrorObject,
+  } = useServiceZonesQuery();
+  const {
+    data: technicianZones,
+    isPending: isTechnicianZonesPending,
+    isError: isTechnicianZonesError,
+    error: technicianZonesErrorObject,
+  } = useTechnicianServiceZonesQuery();
   const {
     data: units,
     isPending: isUnitsPending,
@@ -65,6 +79,11 @@ export const useFilteredTechnicians = () => {
     [specificIssues],
   );
 
+  const selectedZoneId = useMemo(
+    () => zones?.find((z) => z.slug === filter.zone)?.id || "",
+    [zones, filter.zone],
+  );
+
   const selectedUnits = useMemo(() => {
     if (!units) return [];
 
@@ -103,7 +122,7 @@ export const useFilteredTechnicians = () => {
     [filter.specificIssueSlugs],
   );
 
-  // Get the set of selected issue ids and  map of issues unitId: issue
+  // Set of selected issue ids and  map of issues unitId: issue
   const [selectedIssueIds, selectedIssueIdsByUnitId] = useMemo(() => {
     const issueIdsByUnit = new Map<string, Set<string>>();
     const activeIssueIds = new Set<string>();
@@ -124,12 +143,25 @@ export const useFilteredTechnicians = () => {
     return [activeIssueIds, issueIdsByUnit] as const;
   }, [specificIssues, selectedIssueSlugs]);
 
-  // Create a skill map -  technicianId: skills for this technician
+  // Zone map -  technicianId: zones
+  const zonesByTechId = useMemo(() => {
+    if (!technicianZones) return new Map<string, Set<string>>();
+
+    return technicianZones.reduce((map, techZone) => {
+      const currentZones = map.get(techZone.technician_id) ?? new Set();
+      currentZones.add(techZone.zone_id);
+      map.set(techZone.technician_id, currentZones);
+
+      return map;
+    }, new Map<string, Set<string>>());
+  }, [technicianZones]);
+
+  // Skill map -  technicianId: skills for this technician
   const skillsByTechId = useMemo(
     () => createDataMapByTechnicianId(skills || []),
     [skills],
   );
-  // Create an ignore map - technician Id: ignore list
+  // Ignore map - technician Id: ignore list
   const ignoreListsByTechId = useMemo(
     () => createDataMapByTechnicianId(ignoreLists || []),
     [ignoreLists],
@@ -137,6 +169,8 @@ export const useFilteredTechnicians = () => {
 
   const isPending =
     isTechniciansPending ||
+    isZonesPending ||
+    isTechnicianZonesPending ||
     isUnitsPending ||
     isBrandsPending ||
     isIssuesPending ||
@@ -145,6 +179,8 @@ export const useFilteredTechnicians = () => {
 
   const isError =
     techniciansError ||
+    isZonesError ||
+    isTechnicianZonesError ||
     unitsError ||
     brandsError ||
     specificIssuesError ||
@@ -153,6 +189,8 @@ export const useFilteredTechnicians = () => {
 
   const error =
     techniciansErrorObject ??
+    zonesErrorObject ??
+    technicianZonesErrorObject ??
     unitsErrorObject ??
     brandsErrorObject ??
     specificIssuesErrorObject ??
@@ -173,7 +211,9 @@ export const useFilteredTechnicians = () => {
     return filterTechnicians({
       filter,
       technicians,
+      zonesByTechId,
       skillsByTechId,
+      selectedZoneId,
       selectedUnits,
       selectedUnitIds,
       selectedBrandIds,
@@ -187,7 +227,9 @@ export const useFilteredTechnicians = () => {
     isPending,
     isError,
     technicians,
+    zonesByTechId,
     skillsByTechId,
+    selectedZoneId,
     selectedUnits,
     selectedUnitIds,
     selectedBrandIds,

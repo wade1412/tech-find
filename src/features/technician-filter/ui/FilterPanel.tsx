@@ -10,6 +10,7 @@ function FilterPanel() {
   const { filter, resetFilters } = useTechnicianFilters();
 
   const hasAnyFilter =
+    filter.zone ||
     filter.unitSlugs.length > 0 ||
     filter.brandSlugs.length > 0 ||
     filter.specificIssueSlugs.length > 0 ||

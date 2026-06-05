@@ -2,6 +2,7 @@ import type { FilterState } from "./filter.types";
 
 export const createTechnicianFilterKey = (filter: FilterState): string => {
   return [
+    filter.zone,
     filter.unitSlugs.join(","),
     filter.brandSlugs.join(","),
     filter.specificIssueSlugs.join(","),

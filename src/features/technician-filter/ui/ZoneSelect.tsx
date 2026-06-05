@@ -1,4 +1,4 @@
-import { type SyntheticEvent } from "react";
+import { useMemo, type SyntheticEvent } from "react";
 import { useTechnicianFilters } from "../model/useTechnicianFilters";
 import { Autocomplete, Skeleton, TextField } from "@mui/material";
 import { useServiceZonesQuery } from "../../../entities/service-zone/useServiceZonesQuery";
@@ -12,10 +12,13 @@ function ZoneSelect() {
   const { filter, updateZone } = useTechnicianFilters();
   const { data: zones, isPending, isError, error } = useServiceZonesQuery();
 
-  const zoneOptions: ZoneOption[] =
-    zones?.map((zone) => {
-      return { label: zone.name, value: zone.slug };
-    }) || [];
+  const zoneOptions: ZoneOption[] = useMemo(
+    () =>
+      zones?.map((zone) => {
+        return { label: zone.name, value: zone.slug };
+      }) || [],
+    [zones],
+  );
 
   const selectedZone = filter.zone
     ? zoneOptions.find((zoneOption) => zoneOption.value === filter.zone)
