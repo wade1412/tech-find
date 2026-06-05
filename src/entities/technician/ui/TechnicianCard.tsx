@@ -2,6 +2,7 @@ import type { Technician } from "../technician.types";
 
 interface TechnicianCardProps {
   technician: Technician;
+  zones: string[];
   skillBadges: string[];
   isOpen: boolean;
   onToggle: () => void;
@@ -9,6 +10,7 @@ interface TechnicianCardProps {
 
 function TechnicianCard({
   technician,
+  zones,
   skillBadges,
   isOpen,
   onToggle,
@@ -51,7 +53,7 @@ function TechnicianCard({
 
           <div className="mt-0.5 truncate gap-0.5 text-xs text-zinc-400 dark:text-zinc-500">
             <p>
-              ZIP {technician.home_zip_code} · {technician.service_area}
+              ZIP {technician.home_zip_code} · {zones.join(" - ")}
             </p>
           </div>
         </div>

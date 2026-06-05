@@ -143,6 +143,12 @@ export const useFilteredTechnicians = () => {
     return [activeIssueIds, issueIdsByUnit] as const;
   }, [specificIssues, selectedIssueSlugs]);
 
+  // Zone Names map - zoneId: zoneName
+  const zoneNamesById = useMemo(
+    () => new Map(zones?.map((zone) => [zone.id, zone.name]) ?? []),
+    [zones],
+  );
+
   // Zone map -  technicianId: zones
   const zonesByTechId = useMemo(() => {
     if (!technicianZones) return new Map<string, Set<string>>();
@@ -239,6 +245,20 @@ export const useFilteredTechnicians = () => {
     ignoreListsByTechId,
   ]);
 
+  const technicianZonesNames = useMemo(() => {
+    const map = new Map<string, string[]>();
+
+    for (const [techId, zoneIds] of zonesByTechId) {
+      const names = Array.from(zoneIds)
+        .map((zoneId) => zoneNamesById.get(zoneId))
+        .filter(Boolean) as string[];
+
+      map.set(techId, names);
+    }
+
+    return map;
+  }, [zoneNamesById, zonesByTechId]);
+
   const technicianBadges = useMemo(() => {
     if (!technicians) return new Map<string, string[]>();
 
@@ -290,6 +310,7 @@ export const useFilteredTechnicians = () => {
 
   return {
     filteredTechnicians,
+    technicianZonesNames,
     technicianBadges,
     isPending,
     isError,

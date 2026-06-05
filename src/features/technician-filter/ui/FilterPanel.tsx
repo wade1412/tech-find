@@ -36,6 +36,11 @@ function FilterPanel() {
 
       <main className="flex flex-col gap-2.5">
         <section>
+          <h2 className={headingStyle}>Filter by Zone</h2>
+          <ZoneSelect />
+        </section>
+
+        <section>
           <h2 className={headingStyle}>Filter by Brand</h2>
           <BrandSelect />
         </section>
@@ -43,11 +48,6 @@ function FilterPanel() {
         <section>
           <h2 className={headingStyle}>Specific Issues</h2>
           <SpecificIssueSelect />
-        </section>
-
-        <section>
-          <h2 className={headingStyle}>Zone</h2>
-          <ZoneSelect />
         </section>
 
         <section>
