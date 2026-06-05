@@ -19,7 +19,7 @@ function FilterPanel() {
     filter.isCommercial;
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <h2 className="font-heading text-sm font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
           Filters
@@ -34,7 +34,7 @@ function FilterPanel() {
         </button>
       </div>
 
-      <main className="flex flex-col gap-2.5">
+      <div className="flex flex-col gap-2.5">
         <section>
           <h2 className={headingStyle}>Filter by Zone</h2>
           <ZoneSelect />
@@ -55,7 +55,7 @@ function FilterPanel() {
           <JobOptions />
           <UnitSelector />
         </section>
-      </main>
+      </div>
     </div>
   );
 }

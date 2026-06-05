@@ -44,25 +44,23 @@ function ZoneSelect() {
   }
 
   return (
-    <div className="flex flex-col gap-1.5">
-      <Autocomplete
-        value={selectedZone}
-        onChange={handleZoneChange}
-        options={zoneOptions}
-        isOptionEqualToValue={(option, value) => option?.value === value?.value}
-        getOptionLabel={(option) => option.label}
-        sx={{
-          "& .MuiOutlinedInput-root": { borderRadius: "0.75rem" },
-          "& .MuiChip-root": { borderRadius: "0.5rem", fontWeight: 600 },
-          "& .MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-notchedOutline":
-            {
-              borderStyle: "dashed",
-            },
-          "& .MuiOutlinedInput-root.Mui-disabled": { pointerEvents: "none" },
-        }}
-        renderInput={(params) => <TextField {...params} label="Zone" />}
-      />
-    </div>
+    <Autocomplete
+      value={selectedZone}
+      onChange={handleZoneChange}
+      options={zoneOptions}
+      isOptionEqualToValue={(option, value) => option?.value === value?.value}
+      getOptionLabel={(option) => option.label}
+      sx={{
+        "& .MuiOutlinedInput-root": { borderRadius: "0.75rem" },
+        "& .MuiChip-root": { borderRadius: "0.5rem", fontWeight: 600 },
+        "& .MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-notchedOutline":
+          {
+            borderStyle: "dashed",
+          },
+        "& .MuiOutlinedInput-root.Mui-disabled": { pointerEvents: "none" },
+      }}
+      renderInput={(params) => <TextField {...params} label="Zone" />}
+    />
   );
 }
 
