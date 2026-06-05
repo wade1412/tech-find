@@ -11,6 +11,7 @@ export type FilterState = {
   isCommercial: boolean;
   isStacked: boolean;
   sort: string;
+  zone: string;
 };
 
 export type JobOptionKey = "gas" | "stacked" | "commercial";

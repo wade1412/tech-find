@@ -4,6 +4,7 @@ import BrandSelect from "./BrandSelect";
 import JobOptions from "./JobOptions";
 import UnitSelector from "./UnitSelector";
 import { useTechnicianFilters } from "../model/useTechnicianFilters";
+import ZoneSelect from "./ZoneSelect";
 
 function FilterPanel() {
   const { filter, resetFilters } = useTechnicianFilters();
@@ -41,6 +42,11 @@ function FilterPanel() {
         <section>
           <h2 className={headingStyle}>Specific Issues</h2>
           <SpecificIssueSelect />
+        </section>
+
+        <section>
+          <h2 className={headingStyle}>Zone</h2>
+          <ZoneSelect />
         </section>
 
         <section>

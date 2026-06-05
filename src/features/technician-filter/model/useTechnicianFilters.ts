@@ -9,7 +9,8 @@ type FilterParamKey =
   | "stacked"
   | "commercial"
   | "gas"
-  | "sort";
+  | "sort"
+  | "zone";
 
 type SlugArrayParamKey = "brands" | "specific_issues";
 
@@ -21,6 +22,7 @@ export const useTechnicianFilters = () => {
     const brandsParam = filterParams.get("brands");
     const specificIssuesParam = filterParams.get("specific_issues");
     const sortParam = filterParams.get("sort");
+    const zoneParam = filterParams.get("zone");
     return {
       unitSlugs: unitsParam
         ? [...new Set(unitsParam.split(",").filter(Boolean))]
@@ -35,6 +37,7 @@ export const useTechnicianFilters = () => {
         ? [...new Set(specificIssuesParam.split(",").filter(Boolean))]
         : [],
       sort: sortParam ? sortParam : "default.asc",
+      zone: zoneParam ? zoneParam : "",
     };
   }, [filterParams]);
 
@@ -82,6 +85,12 @@ export const useTechnicianFilters = () => {
     (newValue: string) => {
       updateFilter("sort", newValue);
     },
+    [updateFilter],
+  );
+
+  // Update Zone option
+  const updateZone = useCallback(
+    (newValue: string) => updateFilter("zone", newValue),
     [updateFilter],
   );
 
@@ -152,6 +161,7 @@ export const useTechnicianFilters = () => {
     updateBrandSlugs,
     updateSpecificIssueSlugs,
     updateSort,
+    updateZone,
     toggleUnit,
     clearUnits,
     toggleStacked,
