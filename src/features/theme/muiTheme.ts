@@ -4,8 +4,8 @@ import type { ThemeMode } from "./theme.types";
 const headingFont = '"Manrope", system-ui, sans-serif';
 
 export const themeColors = {
-  light: "fafafa",
-  dark: "09090b",
+  light: "#fafafa",
+  dark: "#09090b",
 };
 
 const palettes = {
@@ -35,7 +35,7 @@ const palettes = {
     autocomplete: {
       paperBorder: "#27272a",
       background: "#18181b",
-      text: "71717a",
+      text: "#71717a",
       hover: "#27272a",
       selected: "rgba(250, 204, 21, 0.1)",
       selectedHover: "rgba(250, 204, 21, 0.15)",
@@ -83,7 +83,7 @@ export const createAppTheme = (mode: ThemeMode) => {
             backgroundColor: colors.autocomplete.background,
             // Styles for groupBy
             "& .MuiAutocomplete-groupLabel": {
-              fontFamily: '"Manrope", system-ui, sans-serif',
+              fontFamily: headingFont,
               fontSize: "0.75rem",
               fontWeight: 700,
               textTransform: "uppercase",
