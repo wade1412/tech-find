@@ -51,7 +51,15 @@ function ZoneSelect() {
       options={zoneOptions}
       isOptionEqualToValue={(option, value) => option?.value === value?.value}
       getOptionLabel={(option) => option.label}
-      sx={(theme) => selectStyle(theme)}
+      sx={(theme) => ({
+        ...selectStyle(theme),
+        ...(selectedZone && {
+          "& .MuiAutocomplete-input": {
+            color: theme.palette.mode === "dark" ? "#facc15" : "#eab308",
+            fontWeight: 500,
+          },
+        }),
+      })}
       renderInput={(params) => <TextField {...params} label="Zone" />}
     />
   );
