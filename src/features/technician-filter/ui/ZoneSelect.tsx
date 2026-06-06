@@ -2,6 +2,7 @@ import { useMemo, type SyntheticEvent } from "react";
 import { useTechnicianFilters } from "../model/useTechnicianFilters";
 import { Autocomplete, Skeleton, TextField } from "@mui/material";
 import { useServiceZonesQuery } from "../../../entities/service-zone/useServiceZonesQuery";
+import { selectStyle } from "../../../shared/styles/muiSelectStyles";
 
 type ZoneOption = {
   label: string;
@@ -50,15 +51,7 @@ function ZoneSelect() {
       options={zoneOptions}
       isOptionEqualToValue={(option, value) => option?.value === value?.value}
       getOptionLabel={(option) => option.label}
-      sx={{
-        "& .MuiOutlinedInput-root": { borderRadius: "0.75rem" },
-        "& .MuiChip-root": { borderRadius: "0.5rem", fontWeight: 600 },
-        "& .MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-notchedOutline":
-          {
-            borderStyle: "dashed",
-          },
-        "& .MuiOutlinedInput-root.Mui-disabled": { pointerEvents: "none" },
-      }}
+      sx={(theme) => selectStyle(theme)}
       renderInput={(params) => <TextField {...params} label="Zone" />}
     />
   );
