@@ -3,7 +3,7 @@ import { ThemeProvider as MuiProvider } from "@mui/material/styles";
 import { ThemeContext } from "./ThemeContext";
 import type { ThemeMode } from "./theme.types";
 import { CssBaseline } from "@mui/material";
-import { createAppTheme } from "./muiTheme";
+import { createAppTheme, themeColors } from "./muiTheme";
 
 interface ThemeProviderProps {
   children: ReactNode;
@@ -24,9 +24,15 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
   // Sync localStorage when the theme changes
   useEffect(() => {
+    const root = document.documentElement;
+    const color = theme === "dark" ? themeColors.dark : themeColors.light;
+
     localStorage.setItem("theme", theme);
-    // Toggle the class on the document
-    document.documentElement.classList.toggle("dark", theme === "dark");
+    root.classList.toggle("dark", theme === "dark");
+    root.style.colorScheme = theme;
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute("content", color);
   }, [theme]);
 
   const toggleTheme = () => {
