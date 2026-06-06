@@ -1,4 +1,10 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import { ThemeProvider as MuiProvider } from "@mui/material/styles";
 import { ThemeContext } from "./ThemeContext";
 import type { ThemeMode } from "./theme.types";
@@ -35,15 +41,20 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       ?.setAttribute("content", color);
   }, [theme]);
 
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
-  };
+  const toggleTheme = useCallback(() => {
+    setTheme((current) => (current === "light" ? "dark" : "light"));
+  }, []);
 
   // Creating MUI Theme
   const muiTheme = useMemo(() => createAppTheme(theme), [theme]);
 
+  const contextValue = useMemo(
+    () => ({ theme, toggleTheme }),
+    [theme, toggleTheme],
+  );
+
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={contextValue}>
       <MuiProvider theme={muiTheme}>
         <CssBaseline />
         {children}
