@@ -9,12 +9,18 @@ interface ThemeProviderProps {
   children: ReactNode;
 }
 
+const getInitialTheme = (): ThemeMode => {
+  const saved = localStorage.getItem("theme");
+
+  if (saved === "light" || saved === "dark") return saved;
+
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+};
+
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<ThemeMode>(() => {
-    // Get from local storage
-    const savedTheme = localStorage.getItem("theme");
-    return savedTheme === "dark" ? "dark" : "light";
-  });
+  const [theme, setTheme] = useState<ThemeMode>(getInitialTheme);
 
   // Sync localStorage when the theme changes
   useEffect(() => {
