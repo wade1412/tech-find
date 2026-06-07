@@ -5,7 +5,7 @@ import { makeTechnician } from "../../technician-filter/model/filterTestFixtures
 describe("sortTechnicians", () => {
   it("sorts technicians by alias ascending", () => {
     const technicians = [
-      makeTechnician({ id: "tech-1", alias: "Bill" }),
+      makeTechnician({ id: "tech-1", alias: "Alex" }),
       makeTechnician({ id: "tech-2", alias: "Bill" }),
     ];
 
@@ -33,8 +33,8 @@ describe("sortTechnicians", () => {
 
   it("does not mutate original array", () => {
     const technicians = [
-      makeTechnician({ id: "tech-2", alias: "Bill" }),
-      makeTechnician({ id: "tech-1", alias: "Alex" }),
+      makeTechnician({ id: "tech-1", alias: "Bill" }),
+      makeTechnician({ id: "tech-2", alias: "Alex" }),
     ];
 
     const originalOrder = technicians.map((tech) => tech.id);

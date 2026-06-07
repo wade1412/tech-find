@@ -136,6 +136,90 @@ describe("filterTechnicians", () => {
     expect(getIds(result)).toEqual(["tech-1"]);
   });
 
+  // --- Brand Group Tests ---
+  it("keeps technician when technician has selected brand group skill", () => {
+    const washer = makeUnit({
+      id: "unit-washer",
+      name: "Washer",
+      slug: "washer",
+    });
+
+    const tech1 = makeTechnician({
+      id: "tech-1",
+      alias: "Alex",
+    });
+
+    const params = makeFilterParams({
+      technicians: [tech1],
+      selectedUnits: [washer],
+      selectedUnitIds: new Set(["unit-washer"]),
+      selectedBrandIds: new Set(["brand-lg"]),
+      selectedBrandGroupIds: new Set(["brand-group-standard"]),
+      skillsByTechId: new Map([
+        [
+          "tech-1",
+          [
+            makeSkill({
+              id: "skill-1",
+              technician_id: "tech-1",
+              unit_id: "unit-washer",
+              brand_group_id: "brand-group-standard",
+            }),
+          ],
+        ],
+      ]),
+      filter: {
+        unitSlugs: ["washer"],
+        brandSlugs: ["lg"],
+      },
+    });
+
+    const result = filterTechnicians(params);
+
+    expect(getIds(result)).toEqual(["tech-1"]);
+  });
+  it("excludes technician when technician does not have selected brand group skill", () => {
+    const washer = makeUnit({
+      id: "unit-washer",
+      name: "Washer",
+      slug: "washer",
+    });
+
+    const tech1 = makeTechnician({
+      id: "tech-1",
+      alias: "Alex",
+    });
+
+    const params = makeFilterParams({
+      technicians: [tech1],
+      selectedUnits: [washer],
+      selectedUnitIds: new Set(["unit-washer"]),
+      selectedBrandIds: new Set(["brand-lg"]),
+      selectedBrandGroupIds: new Set(["brand-group-standard"]),
+      skillsByTechId: new Map([
+        [
+          "tech-1",
+          [
+            makeSkill({
+              id: "skill-1",
+              technician_id: "tech-1",
+              unit_id: "unit-washer",
+              brand_group_id: "brand-group-high-end",
+            }),
+          ],
+        ],
+      ]),
+      filter: {
+        unitSlugs: ["washer"],
+        brandSlugs: ["lg"],
+      },
+    });
+
+    const result = filterTechnicians(params);
+
+    expect(getIds(result)).toEqual([]);
+  });
+
   // --- Ignore List Tests ---
   // Unit Ignore
   it("excludes technician when selected unit is in ignore list", () => {
