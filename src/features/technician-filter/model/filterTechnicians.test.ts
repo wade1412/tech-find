@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   makeFilterParams,
+  makeIgnoreRule,
   makeSkill,
   makeTechnician,
   makeUnit,
@@ -125,6 +126,149 @@ describe("filterTechnicians", () => {
         unitSlugs: ["washer"],
         brandSlugs: ["lg"],
         isCommercial: true,
+      },
+    });
+
+    const result = filterTechnicians(params);
+
+    expect(getIds(result)).toEqual(["tech-1"]);
+  });
+
+  it("excludes technician when selected unit is in ignore list", () => {
+    const washer = makeUnit({
+      id: "unit-washer",
+      name: "Washer",
+      slug: "washer",
+    });
+
+    const tech1 = makeTechnician({
+      id: "tech-1",
+      alias: "Alex",
+    });
+
+    const params = makeFilterParams({
+      technicians: [tech1],
+      selectedUnits: [washer],
+      selectedUnitIds: new Set(["unit-washer"]),
+      skillsByTechId: new Map([
+        [
+          "tech-1",
+          [
+            makeSkill({
+              id: "skill-1",
+              technician_id: "tech-1",
+              unit_id: "unit-washer",
+            }),
+          ],
+        ],
+      ]),
+      ignoreListsByTechId: new Map([
+        [
+          "tech-1",
+          [
+            makeIgnoreRule({
+              id: "ignore-1",
+              technician_id: "tech-1",
+              unit_id: "unit-washer",
+            }),
+          ],
+        ],
+      ]),
+      filter: {
+        unitSlugs: ["washer"],
+      },
+    });
+
+    const result = filterTechnicians(params);
+
+    expect(getIds(result)).toEqual([]);
+  });
+
+  it("excludes technician when selected brand is in ignore list", () => {
+    const washer = makeUnit({
+      id: "unit-washer",
+      name: "Washer",
+      slug: "washer",
+    });
+
+    const tech1 = makeTechnician({
+      id: "tech-1",
+      alias: "Alex",
+    });
+
+    const params = makeFilterParams({
+      technicians: [tech1],
+      selectedUnits: [washer],
+      selectedUnitIds: new Set(["unit-washer"]),
+      selectedBrandIds: new Set(["brand-lg"]),
+      selectedBrandGroupIds: new Set(["brand-group-standard"]),
+      skillsByTechId: new Map([
+        [
+          "tech-1",
+          [
+            makeSkill({
+              id: "skill-1",
+              technician_id: "tech-1",
+              unit_id: "unit-washer",
+              brand_group_id: "brand-group-standard",
+            }),
+          ],
+        ],
+      ]),
+      ignoreListsByTechId: new Map([
+        [
+          "tech-1",
+          [
+            makeIgnoreRule({
+              id: "ignore-1",
+              technician_id: "tech-1",
+              brand_id: "brand-lg",
+            }),
+          ],
+        ],
+      ]),
+      filter: {
+        unitSlugs: ["washer"],
+        brandSlugs: ["lg"],
+      },
+    });
+
+    const result = filterTechnicians(params);
+
+    expect(getIds(result)).toEqual([]);
+  });
+
+  it("keeps technician when ignore list map is empty", () => {
+    const washer = makeUnit({
+      id: "unit-washer",
+      name: "Washer",
+      slug: "washer",
+    });
+
+    const tech1 = makeTechnician({
+      id: "tech-1",
+      alias: "Alex",
+    });
+
+    const params = makeFilterParams({
+      technicians: [tech1],
+      selectedUnits: [washer],
+      selectedUnitIds: new Set(["unit-washer"]),
+      skillsByTechId: new Map([
+        [
+          "tech-1",
+          [
+            makeSkill({
+              id: "skill-1",
+              technician_id: "tech-1",
+              unit_id: "unit-washer",
+            }),
+          ],
+        ],
+      ]),
+      ignoreListsByTechId: new Map(),
+      filter: {
+        unitSlugs: ["washer"],
       },
     });
 
