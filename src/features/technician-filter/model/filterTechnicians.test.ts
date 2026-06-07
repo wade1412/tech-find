@@ -276,4 +276,105 @@ describe("filterTechnicians", () => {
 
     expect(getIds(result)).toEqual(["tech-1"]);
   });
+
+  // --- Specific Issues Tests ---
+  it("keeps technician when selected issue belongs to selected unit and technician supports it", () => {
+    const fridge = makeUnit({
+      id: "unit-fridge",
+      name: "Fridge",
+      slug: "fridge",
+    });
+
+    const tech1 = makeTechnician({
+      id: "tech-1",
+      alias: "Alex",
+    });
+
+    const params = makeFilterParams({
+      technicians: [tech1],
+      selectedUnits: [fridge],
+      selectedUnitIds: new Set(["unit-fridge"]),
+      selectedIssueIds: new Set(["issue-compressor"]),
+      selectedIssueIdsByUnitId: new Map([
+        ["unit-fridge", new Set(["issue-compressor"])],
+      ]),
+      skillsByTechId: new Map([
+        [
+          "tech-1",
+          [
+            makeSkill({
+              id: "skill-base-fridge",
+              technician_id: "tech-1",
+              unit_id: "unit-fridge",
+              specific_issue_id: null,
+            }),
+            makeSkill({
+              id: "skill-compressor",
+              technician_id: "tech-1",
+              unit_id: "unit-fridge",
+              specific_issue_id: "issue-compressor",
+            }),
+          ],
+        ],
+      ]),
+      filter: {
+        unitSlugs: ["fridge"],
+        specificIssueSlugs: ["compressor-repair"],
+      },
+    });
+
+    const result = filterTechnicians(params);
+
+    expect(getIds(result)).toEqual(["tech-1"]);
+  });
+
+  it("does not match issue skill from another unit", () => {
+    const fridge = makeUnit({
+      id: "unit-fridge",
+      name: "Fridge",
+      slug: "fridge",
+    });
+
+    const tech1 = makeTechnician({
+      id: "tech-1",
+      alias: "Alex",
+    });
+
+    const params = makeFilterParams({
+      technicians: [tech1],
+      selectedUnits: [fridge],
+      selectedUnitIds: new Set(["unit-fridge"]),
+      selectedIssueIds: new Set(["issue-compressor"]),
+      selectedIssueIdsByUnitId: new Map([
+        ["unit-fridge", new Set(["issue-compressor"])],
+      ]),
+      skillsByTechId: new Map([
+        [
+          "tech-1",
+          [
+            makeSkill({
+              id: "skill-base-fridge",
+              technician_id: "tech-1",
+              unit_id: "unit-fridge",
+              specific_issue_id: null,
+            }),
+            makeSkill({
+              id: "skill-washer-compressor",
+              technician_id: "tech-1",
+              unit_id: "unit-washer",
+              specific_issue_id: "issue-compressor",
+            }),
+          ],
+        ],
+      ]),
+      filter: {
+        unitSlugs: ["fridge"],
+        specificIssueSlugs: ["compressor-repair"],
+      },
+    });
+
+    const result = filterTechnicians(params);
+
+    expect(getIds(result)).toEqual([]);
+  });
 });
