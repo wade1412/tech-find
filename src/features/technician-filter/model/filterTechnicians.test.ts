@@ -13,6 +13,8 @@ const getIds = (technicians: { id: string }[]) =>
   technicians.map((technician) => technician.id);
 
 describe("filterTechnicians", () => {
+  // --- General Tests ---
+  // Zone match
   it("returns only technicians assigned to selected zone when no units are selected", () => {
     const tech1 = makeTechnician({ id: "tech-1", alias: "Alex" });
     const tech2 = makeTechnician({ id: "tech-2", alias: "Bill" });
@@ -30,7 +32,7 @@ describe("filterTechnicians", () => {
 
     expect(getIds(result)).toEqual(["tech-1"]);
   });
-
+  // Match all selected units
   it("requires technician to match every selected unit", () => {
     const washer = makeUnit({
       id: "unit-washer",
@@ -87,7 +89,7 @@ describe("filterTechnicians", () => {
 
     expect(getIds(result)).toEqual(["tech-1"]);
   });
-
+  // Ignore brands on commercial checked
   it("keeps commercial technician when commercial skill exists and brand group is selected", () => {
     const washer = makeUnit({
       id: "unit-washer",
@@ -134,6 +136,8 @@ describe("filterTechnicians", () => {
     expect(getIds(result)).toEqual(["tech-1"]);
   });
 
+  // --- Ignore List Tests ---
+  // Unit Ignore
   it("excludes technician when selected unit is in ignore list", () => {
     const washer = makeUnit({
       id: "unit-washer",
@@ -183,7 +187,7 @@ describe("filterTechnicians", () => {
 
     expect(getIds(result)).toEqual([]);
   });
-
+  // Brand Ignore
   it("excludes technician when selected brand is in ignore list", () => {
     const washer = makeUnit({
       id: "unit-washer",
@@ -237,7 +241,7 @@ describe("filterTechnicians", () => {
 
     expect(getIds(result)).toEqual([]);
   });
-
+  // Empty Ignore List
   it("keeps technician when ignore list map is empty", () => {
     const washer = makeUnit({
       id: "unit-washer",
@@ -278,6 +282,7 @@ describe("filterTechnicians", () => {
   });
 
   // --- Specific Issues Tests ---
+  // Basic test
   it("keeps technician when selected issue belongs to selected unit and technician supports it", () => {
     const fridge = makeUnit({
       id: "unit-fridge",
@@ -327,7 +332,7 @@ describe("filterTechnicians", () => {
 
     expect(getIds(result)).toEqual(["tech-1"]);
   });
-
+  // Specific issues is not for the selected unit
   it("does not match issue skill from another unit", () => {
     const fridge = makeUnit({
       id: "unit-fridge",
