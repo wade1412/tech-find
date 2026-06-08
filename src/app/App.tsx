@@ -1,7 +1,6 @@
 import { Route, Routes } from "react-router";
 import logoLight from "../shared/assets/techfind-logo-light.svg";
 import logoDark from "../shared/assets/techfind-logo-dark.svg";
-
 import HomePage from "../pages/HomePage";
 import { useTheme } from "../features/theme/useTheme";
 import Header from "../layouts/Header";
