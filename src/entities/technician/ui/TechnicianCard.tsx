@@ -2,6 +2,7 @@ import type { Technician } from "../technician.types";
 
 interface TechnicianCardProps {
   technician: Technician;
+  zones: string[];
   skillBadges: string[];
   isOpen: boolean;
   onToggle: () => void;
@@ -9,6 +10,7 @@ interface TechnicianCardProps {
 
 function TechnicianCard({
   technician,
+  zones,
   skillBadges,
   isOpen,
   onToggle,
@@ -32,7 +34,7 @@ function TechnicianCard({
         }`}
     >
       {/* --- Main Info, visible always --- */}
-      <div className="grid grid-cols-[auto_1fr_auto] items-center gap-4 px-4 py-3">
+      <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3 px-4 py-3">
         {/* Avatar dot */}
         <span
           className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors
@@ -49,9 +51,9 @@ function TechnicianCard({
             {technician.alias}
           </p>
 
-          <div className="mt-0.5 truncate gap-0.5 text-xs text-zinc-400 dark:text-zinc-500 ">
+          <div className="mt-0.5 truncate text-xs text-zinc-400 dark:text-zinc-500">
             <p>
-              ZIP {technician.home_zip_code} · {technician.service_area}
+              ZIP {technician.home_zip_code} · {zones.join(" - ")}
             </p>
           </div>
         </div>

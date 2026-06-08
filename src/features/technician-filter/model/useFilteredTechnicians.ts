@@ -14,8 +14,11 @@ import {
   SPECIAL_UNIT_SLUGS,
 } from "./filter.constants";
 import { useBrandGroupsQuery } from "../../../entities/brandGroup/useBrandGroupsQuery";
+import { useServiceZonesQuery } from "../../../entities/service-zone/useServiceZonesQuery";
+import { useTechnicianServiceZonesQuery } from "../../../entities/technician-service-zone/useTechnicianServiceZonesQuery";
 
 export const useFilteredTechnicians = () => {
+  // --- Queries ---
   const { filter } = useTechnicianFilters();
   const {
     data: technicians,
@@ -23,6 +26,18 @@ export const useFilteredTechnicians = () => {
     isError: techniciansError,
     error: techniciansErrorObject,
   } = useTechniciansQuery();
+  const {
+    data: zones,
+    isPending: isZonesPending,
+    isError: isZonesError,
+    error: zonesErrorObject,
+  } = useServiceZonesQuery();
+  const {
+    data: technicianZones,
+    isPending: isTechnicianZonesPending,
+    isError: isTechnicianZonesError,
+    error: technicianZonesErrorObject,
+  } = useTechnicianServiceZonesQuery();
   const {
     data: units,
     isPending: isUnitsPending,
@@ -55,16 +70,51 @@ export const useFilteredTechnicians = () => {
     error: ignoreErrorObject,
   } = useTechnicianIgnoreListQuery();
 
+  // --- Filtering Maps and Inputs ---
+
+  // 1) General Maps:
+  // Map - unitId: unit
   const unitsById = useMemo(
     () => new Map(units?.map((u) => [u.id, u]) ?? []),
     [units],
   );
-
+  // Map - issueId: issue
   const issuesById = useMemo(
     () => new Map(specificIssues?.map((i) => [i.id, i]) ?? []),
     [specificIssues],
   );
+  // Map - zoneId: zoneName
+  const zoneNamesById = useMemo(
+    () => new Map(zones?.map((zone) => [zone.id, zone.name]) ?? []),
+    [zones],
+  );
 
+  // 2) Technician Maps:
+  // Map -  technicianId: zones
+  const zonesByTechId = useMemo(() => {
+    if (!technicianZones) return new Map<string, Set<string>>();
+
+    return technicianZones.reduce((map, techZone) => {
+      const currentZones = map.get(techZone.technician_id) ?? new Set();
+      currentZones.add(techZone.zone_id);
+      map.set(techZone.technician_id, currentZones);
+
+      return map;
+    }, new Map<string, Set<string>>());
+  }, [technicianZones]);
+  // Map -  technicianId: technicanSkills
+  const skillsByTechId = useMemo(
+    () => createDataMapByTechnicianId(skills || []),
+    [skills],
+  );
+  // Map - technician Id: ignore list
+  const ignoreListsByTechId = useMemo(
+    () => createDataMapByTechnicianId(ignoreLists || []),
+    [ignoreLists],
+  );
+
+  // 3) Array inputs
+  // Input - selected units array
   const selectedUnits = useMemo(() => {
     if (!units) return [];
 
@@ -74,12 +124,7 @@ export const useFilteredTechnicians = () => {
     // Return a set from array of id's of selected Units
     return units.filter((unit) => selectedSlugs.has(unit.slug));
   }, [units, filter.unitSlugs]);
-
-  const selectedUnitIds = useMemo(
-    () => new Set(selectedUnits.map((unit) => unit.id)),
-    [selectedUnits],
-  );
-
+  // Input - selected brands array
   const selectedBrands = useMemo(() => {
     if (!brands) return [];
 
@@ -90,20 +135,28 @@ export const useFilteredTechnicians = () => {
     return brands.filter((brand) => selectedBrandSlugs.has(brand.slug));
   }, [brands, filter.brandSlugs]);
 
+  // 4) Set inputs
+  // Input - set of selected unit Ids
+  const selectedUnitIds = useMemo(
+    () => new Set(selectedUnits.map((unit) => unit.id)),
+    [selectedUnits],
+  );
+  // Input - set of selected brand Ids
   const selectedBrandIds = useMemo(() => {
     return new Set(selectedBrands.map((b) => b.id));
   }, [selectedBrands]);
-
+  // Input - set of selected brand group Ids
   const selectedBrandGroupIds = useMemo(() => {
     return new Set(selectedBrands.map((b) => b.group_id));
   }, [selectedBrands]);
-
+  // Input - set of selected Issue slugs
   const selectedIssueSlugs = useMemo(
     () => new Set(filter.specificIssueSlugs),
     [filter.specificIssueSlugs],
   );
 
-  // Get the set of selected issue ids and  map of issues unitId: issue
+  // 5) Other inputs:
+  // Input - Set of selected issue ids and  map of issues by unitId: issue
   const [selectedIssueIds, selectedIssueIdsByUnitId] = useMemo(() => {
     const issueIdsByUnit = new Map<string, Set<string>>();
     const activeIssueIds = new Set<string>();
@@ -123,20 +176,17 @@ export const useFilteredTechnicians = () => {
 
     return [activeIssueIds, issueIdsByUnit] as const;
   }, [specificIssues, selectedIssueSlugs]);
-
-  // Create a skill map -  technicianId: skills for this technician
-  const skillsByTechId = useMemo(
-    () => createDataMapByTechnicianId(skills || []),
-    [skills],
-  );
-  // Create an ignore map - technician Id: ignore list
-  const ignoreListsByTechId = useMemo(
-    () => createDataMapByTechnicianId(ignoreLists || []),
-    [ignoreLists],
+  // Input - selected Zone Id string
+  const selectedZoneId = useMemo(
+    () => zones?.find((z) => z.slug === filter.zone)?.id || "",
+    [zones, filter.zone],
   );
 
+  // --- Data Filtering ---
   const isPending =
     isTechniciansPending ||
+    isZonesPending ||
+    isTechnicianZonesPending ||
     isUnitsPending ||
     isBrandsPending ||
     isIssuesPending ||
@@ -145,6 +195,8 @@ export const useFilteredTechnicians = () => {
 
   const isError =
     techniciansError ||
+    isZonesError ||
+    isTechnicianZonesError ||
     unitsError ||
     brandsError ||
     specificIssuesError ||
@@ -153,6 +205,8 @@ export const useFilteredTechnicians = () => {
 
   const error =
     techniciansErrorObject ??
+    zonesErrorObject ??
+    technicianZonesErrorObject ??
     unitsErrorObject ??
     brandsErrorObject ??
     specificIssuesErrorObject ??
@@ -160,20 +214,16 @@ export const useFilteredTechnicians = () => {
     ignoreErrorObject;
 
   const filteredTechnicians = useMemo(() => {
-    if (
-      isPending ||
-      isError ||
-      !technicians ||
-      skillsByTechId.size === 0 ||
-      ignoreListsByTechId.size === 0
-    ) {
+    if (isPending || isError || !technicians) {
       return [];
     }
 
     return filterTechnicians({
       filter,
       technicians,
+      zonesByTechId,
       skillsByTechId,
+      selectedZoneId,
       selectedUnits,
       selectedUnitIds,
       selectedBrandIds,
@@ -187,7 +237,9 @@ export const useFilteredTechnicians = () => {
     isPending,
     isError,
     technicians,
+    zonesByTechId,
     skillsByTechId,
+    selectedZoneId,
     selectedUnits,
     selectedUnitIds,
     selectedBrandIds,
@@ -197,6 +249,23 @@ export const useFilteredTechnicians = () => {
     ignoreListsByTechId,
   ]);
 
+  // --- Presentation Maps ---
+
+  // Map - technicianId: zones that he covers
+  const technicianZonesNames = useMemo(() => {
+    const map = new Map<string, string[]>();
+
+    for (const [techId, zoneIds] of zonesByTechId) {
+      const names = Array.from(zoneIds)
+        .map((zoneId) => zoneNamesById.get(zoneId))
+        .filter(Boolean) as string[];
+
+      map.set(techId, names);
+    }
+
+    return map;
+  }, [zoneNamesById, zonesByTechId]);
+  // Map - technicianId: skill badges
   const technicianBadges = useMemo(() => {
     if (!technicians) return new Map<string, string[]>();
 
@@ -248,6 +317,7 @@ export const useFilteredTechnicians = () => {
 
   return {
     filteredTechnicians,
+    technicianZonesNames,
     technicianBadges,
     isPending,
     isError,

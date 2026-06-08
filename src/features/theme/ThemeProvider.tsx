@@ -1,68 +1,60 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
-  ThemeProvider as MuiProvider,
-  createTheme,
-} from "@mui/material/styles";
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
+import { ThemeProvider as MuiProvider } from "@mui/material/styles";
 import { ThemeContext } from "./ThemeContext";
 import type { ThemeMode } from "./theme.types";
 import { CssBaseline } from "@mui/material";
+import { createAppTheme, themeColors } from "./muiTheme";
 
 interface ThemeProviderProps {
   children: ReactNode;
 }
 
-const headingFont = '"Manrope", system-ui, sans-serif';
+const getInitialTheme = (): ThemeMode => {
+  const saved = localStorage.getItem("theme");
+
+  if (saved === "light" || saved === "dark") return saved;
+
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+};
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<ThemeMode>(() => {
-    // Get from local storage
-    const savedTheme = localStorage.getItem("theme");
-    return savedTheme === "dark" ? "dark" : "light";
-  });
+  const [theme, setTheme] = useState<ThemeMode>(getInitialTheme);
 
   // Sync localStorage when the theme changes
   useEffect(() => {
+    const root = document.documentElement;
+    const color = theme === "dark" ? themeColors.dark : themeColors.light;
+
     localStorage.setItem("theme", theme);
-    // Toggle the class on the document
-    document.documentElement.classList.toggle("dark", theme === "dark");
+    root.classList.toggle("dark", theme === "dark");
+    root.style.colorScheme = theme;
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute("content", color);
   }, [theme]);
 
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
-  };
+  const toggleTheme = useCallback(() => {
+    setTheme((current) => (current === "light" ? "dark" : "light"));
+  }, []);
 
   // Creating MUI Theme
-  const muiTheme = useMemo(
-    () =>
-      createTheme({
-        palette: {
-          mode: theme,
-          primary: {
-            main: theme === "dark" ? "#facc15" : "#eab308",
-          },
-          background: {
-            default: theme === "dark" ? "#09090b" : "#fafafa",
-            paper: theme === "dark" ? "#18181b" : "#ffffff",
-          },
-          text: {
-            primary: theme === "dark" ? "#fafafa" : "#18181b",
-            secondary: theme === "dark" ? "#a1a1aa" : "#52525b",
-          },
-          divider: theme === "dark" ? "#27272a" : "#e4e4e7",
-        },
-        typography: {
-          fontFamily: "inherit",
-          h1: { fontFamily: headingFont },
-          h2: { fontFamily: headingFont },
-          h3: { fontFamily: headingFont },
-          h4: { fontFamily: headingFont },
-        },
-      }),
-    [theme],
+  const muiTheme = useMemo(() => createAppTheme(theme), [theme]);
+
+  const contextValue = useMemo(
+    () => ({ theme, toggleTheme }),
+    [theme, toggleTheme],
   );
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={contextValue}>
       <MuiProvider theme={muiTheme}>
         <CssBaseline />
         {children}

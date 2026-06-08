@@ -18,7 +18,9 @@ type FilterBooleanCondition = {
 export const filterTechnicians = ({
   filter,
   technicians,
+  zonesByTechId,
   skillsByTechId,
+  selectedZoneId,
   selectedUnits,
   selectedUnitIds,
   selectedBrandIds,
@@ -29,9 +31,17 @@ export const filterTechnicians = ({
   selectedIssueIdsByUnitId,
   ignoreListsByTechId,
 }: FilterTechniciansParams): Technician[] => {
+  //Filter by zone
+  const techniciansInZone = selectedZoneId
+    ? technicians.filter((technician) => {
+        const techZones = zonesByTechId.get(technician.id) ?? new Set();
+        return techZones.has(selectedZoneId);
+      })
+    : technicians;
+
   // If there are no units selected - return all technicians
   if (selectedUnitIds.size === 0) {
-    return technicians;
+    return techniciansInZone;
   }
 
   const hasDryer =
@@ -76,8 +86,8 @@ export const filterTechnicians = ({
   const activeOptions = options.filter((opt) => opt.isActive);
 
   // Get relevant technicians that pass the boolean checks
-  const relevantTechnicians: Technician[] = technicians.filter((technician) =>
-    activeOptions.every((option) => option.check(technician)),
+  const relevantTechnicians: Technician[] = techniciansInZone.filter(
+    (technician) => activeOptions.every((option) => option.check(technician)),
   );
 
   //Return early if no technicians passed boolean checks

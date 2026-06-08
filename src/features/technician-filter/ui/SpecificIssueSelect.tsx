@@ -3,6 +3,7 @@ import { useSpecificIssuesQuery } from "../../../entities/specific-issue/useSpec
 import { useUnitsQuery } from "../../../entities/unit/useUnitsQuery";
 import { useTechnicianFilters } from "../model/useTechnicianFilters";
 import { Autocomplete, Skeleton, TextField } from "@mui/material";
+import { selectStyle } from "../../../shared/styles/muiSelectStyles";
 
 type IssueOption = {
   id: string;
@@ -133,15 +134,7 @@ function SpecificIssueSelect() {
           slotProps={{
             chip: { color: "primary", variant: "outlined", size: "small" },
           }}
-          sx={{
-            "& .MuiOutlinedInput-root": { borderRadius: "0.75rem" },
-            "& .MuiChip-root": { borderRadius: "0.5rem", fontWeight: 600 },
-            "& .MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-notchedOutline":
-              {
-                borderStyle: "dashed",
-              },
-            "& .MuiOutlinedInput-root.Mui-disabled": { pointerEvents: "none" },
-          }}
+          sx={(theme) => selectStyle(theme)}
           renderInput={(params) => (
             <TextField {...params} label="Specific issue" />
           )}

@@ -1,6 +1,26 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <meta name="theme-color" content="#fafafa" />
+    <script>
+      const saved = localStorage.getItem("theme");
+      const systemDark = matchMedia("(prefers-color-scheme: dark)").matches;
+      const mode =
+        saved === "light" || saved === "dark"
+          ? saved
+          : systemDark
+            ? "dark"
+            : "light";
+
+      const themeColor = mode === "dark" ? "#09090b" : "#fafafa";
+
+      document
+        .querySelector('meta[name="theme-color"]')
+        ?.setAttribute("content", themeColor);
+
+      document.documentElement.classList.toggle("dark", mode === "dark");
+      document.documentElement.style.colorScheme = mode;
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -20,16 +40,6 @@
     <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png" />
     <link rel="manifest" href="/brand/site.webmanifest" />
 
-    <meta
-      name="theme-color"
-      content="#fafafa"
-      media="(prefers-color-scheme: light)"
-    />
-    <meta
-      name="theme-color"
-      content="#09090b"
-      media="(prefers-color-scheme: dark)"
-    />
     <title>TechFind</title>
   </head>
   <body>

@@ -87,19 +87,17 @@ function JobOptions() {
     <div
       className={`overflow-hidden transition-all duration-200 ${isOptionsActive ? "mb-3 max-h-24 md:max-h-16" : "max-h-0"}`}
     >
-      <div className="flex flex-col justify-between gap-2 md:flex-row md:gap-4">
-        <div className="flex justify-center gap-4">
-          {filterCheckboxes
-            .filter((optionName: JobOptionKey) => options[optionName].visible)
-            .map((optionName: JobOptionKey) => (
-              <OptionCheckbox
-                key={optionName}
-                name={optionName}
-                checked={options[optionName].checked}
-                onChange={options[optionName].onChange}
-              />
-            ))}
-        </div>
+      <div className="flex flex-row gap-4">
+        {filterCheckboxes
+          .filter((optionName: JobOptionKey) => options[optionName].visible)
+          .map((optionName: JobOptionKey) => (
+            <OptionCheckbox
+              key={optionName}
+              name={optionName}
+              checked={options[optionName].checked}
+              onChange={options[optionName].onChange}
+            />
+          ))}
       </div>
     </div>
   );

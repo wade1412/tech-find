@@ -3,6 +3,10 @@ import { useBrandsQuery } from "../../../entities/brand/useBrandsQuery";
 import { useBrandGroupsQuery } from "../../../entities/brandGroup/useBrandGroupsQuery";
 import { useMemo, type SyntheticEvent } from "react";
 import { useTechnicianFilters } from "../model/useTechnicianFilters";
+import {
+  selectSlotPropsStyle,
+  selectStyle,
+} from "../../../shared/styles/muiSelectStyles";
 
 type BrandOption = {
   id: string;
@@ -100,17 +104,13 @@ function BrandSelect() {
           groupBy={(option) => option.groupLabel}
           getOptionLabel={(option) => option.label}
           slotProps={{
-            chip: { color: "primary", variant: "outlined", size: "small" },
+            chip: {
+              variant: "filled",
+              size: "small",
+              sx: (theme) => selectSlotPropsStyle(theme),
+            },
           }}
-          sx={{
-            "& .MuiOutlinedInput-root": { borderRadius: "0.75rem" },
-            "& .MuiChip-root": { borderRadius: "0.5rem", fontWeight: 600 },
-            "& .MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-notchedOutline":
-              {
-                borderStyle: "dashed",
-              },
-            "& .MuiOutlinedInput-root.Mui-disabled": { pointerEvents: "none" },
-          }}
+          sx={(theme) => selectStyle(theme)}
           renderInput={(params) => <TextField {...params} label="Brand" />}
         />{" "}
       </div>

@@ -11,6 +11,7 @@ export type FilterState = {
   isCommercial: boolean;
   isStacked: boolean;
   sort: string;
+  zone: string;
 };
 
 export type JobOptionKey = "gas" | "stacked" | "commercial";
@@ -18,8 +19,10 @@ export type JobOptionKey = "gas" | "stacked" | "commercial";
 export interface FilterTechniciansParams {
   filter: FilterState;
   technicians: Technician[];
+  zonesByTechId: Map<string, Set<string>>;
   skillsByTechId: Map<string, TechnicianSkill[]>;
   selectedUnits: Unit[];
+  selectedZoneId: string;
   selectedUnitIds: Set<string>;
   selectedBrandIds: Set<string>;
   selectedBrandGroupIds: Set<string>;

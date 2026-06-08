@@ -32,8 +32,14 @@ const cardVariants: Variants = {
 
 function TechnicianList() {
   const { filter, updateSort } = useTechnicianFilters();
-  const { filteredTechnicians, technicianBadges, isPending, isError, error } =
-    useFilteredTechnicians();
+  const {
+    filteredTechnicians,
+    technicianZonesNames,
+    technicianBadges,
+    isPending,
+    isError,
+    error,
+  } = useFilteredTechnicians();
 
   const [openRecord, setOpenRecord] = useState<{
     filterKey: string;
@@ -73,7 +79,7 @@ function TechnicianList() {
     );
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex h-full min-h-0 flex-col gap-4">
       <div className="flex items-center justify-between">
         <h2 className="font-heading text-sm font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
           Technicians
@@ -119,6 +125,7 @@ function TechnicianList() {
                 >
                   <TechnicianCard
                     technician={technician}
+                    zones={technicianZonesNames.get(technician.id) || []}
                     skillBadges={technicianBadges.get(technician.id) || []}
                     isOpen={openTechnicianId === technician.id}
                     onToggle={() => {

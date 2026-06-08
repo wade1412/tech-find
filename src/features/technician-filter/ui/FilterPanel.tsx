@@ -4,11 +4,13 @@ import BrandSelect from "./BrandSelect";
 import JobOptions from "./JobOptions";
 import UnitSelector from "./UnitSelector";
 import { useTechnicianFilters } from "../model/useTechnicianFilters";
+import ZoneSelect from "./ZoneSelect";
 
 function FilterPanel() {
   const { filter, resetFilters } = useTechnicianFilters();
 
   const hasAnyFilter =
+    filter.zone ||
     filter.unitSlugs.length > 0 ||
     filter.brandSlugs.length > 0 ||
     filter.specificIssueSlugs.length > 0 ||
@@ -17,7 +19,7 @@ function FilterPanel() {
     filter.isCommercial;
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <h2 className="font-heading text-sm font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
           Filters
@@ -32,7 +34,12 @@ function FilterPanel() {
         </button>
       </div>
 
-      <main className="flex flex-col gap-2.5">
+      <div className="flex flex-col gap-2.5">
+        <section>
+          <h2 className={headingStyle}>Filter by Zone</h2>
+          <ZoneSelect />
+        </section>
+
         <section>
           <h2 className={headingStyle}>Filter by Brand</h2>
           <BrandSelect />
@@ -48,7 +55,7 @@ function FilterPanel() {
           <JobOptions />
           <UnitSelector />
         </section>
-      </main>
+      </div>
     </div>
   );
 }
