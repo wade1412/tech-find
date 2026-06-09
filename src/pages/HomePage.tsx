@@ -6,11 +6,9 @@ export function HomePage() {
     <div className="mx-auto max-w-6xl p-4 md:p-6">
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {/* Left Column - filtering options: Units, Brands and others */}
-
         <FilterPanel />
 
         {/* Right Column - Technicians List */}
-
         <TechnicianList />
       </div>
     </div>
