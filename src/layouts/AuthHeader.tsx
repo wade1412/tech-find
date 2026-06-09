@@ -9,14 +9,14 @@ function AuthHeader() {
   const logoSource = theme === "dark" ? logoDark : logoLight;
 
   return (
-    <header className="sticky top-0 z-10 border-b border-zinc-200 bg-zinc-50/80 backdrop-blur-sm transition-colors dark:border-zinc-800 dark:bg-zinc-950/80">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:px-6">
-        <Link to="/login" className="flex gap-1 items-center">
+    <header className="sticky top-0 z-50 w-full border-b border-zinc-200/80 bg-zinc-50/80 backdrop-blur-md transition-colors dark:border-zinc-800/80 dark:bg-zinc-950/80">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
+        <Link to="/login" className="flex items-center gap-2 group">
           <img
             src={logoSource}
             alt=""
             aria-hidden="true"
-            className="h-10 w-10"
+            className="h-9 w-9 transition-transform duration-200 group-hover:scale-105"
           />
           <h2 className="font-heading text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
             TechFind

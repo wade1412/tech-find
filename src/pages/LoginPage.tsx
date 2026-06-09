@@ -21,7 +21,6 @@ function LoginPage() {
 
   const handleSubmit = async (event: React.SyntheticEvent) => {
     event.preventDefault();
-
     setFormError("");
     setIsSubmitting(true);
 
@@ -39,20 +38,24 @@ function LoginPage() {
     <div className="flex min-h-screen flex-col bg-zinc-50 text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50">
       <AuthHeader />
 
-      <main className="flex flex-1 items-center justify-center px-4">
+      <main className="flex flex-1 items-center justify-center px-4 py-12">
         <form
           onSubmit={handleSubmit}
-          className="w-full max-w-sm rounded-2xl p-6 border-zinc-200 bg-white shadow-sm  dark:border-zinc-700/60 dark:bg-zinc-800/50"
+          className="w-full max-w-sm rounded-2xl border border-zinc-200/80 bg-white p-6 shadow-xl shadow-zinc-200/30 dark:border-zinc-800 dark:bg-zinc-900/50 dark:shadow-none"
         >
           {/* Header */}
-          <div className="mb-6">
-            <h1 className="font-heading text-2xl font-semibold">TechFind</h1>
-            <p>Sign in to continue</p>
+          <div className="mb-6 space-y-1">
+            <h1 className="font-heading text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+              TechFind
+            </h1>
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+              Sign in to continue to your account
+            </p>
           </div>
+
           {/* Inputs */}
           <div className="flex flex-col gap-4">
-            <label className="flex flex-col gap-1.5 text-sm">
-              {" "}
+            <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700 dark:text-zinc-300">
               Email
               <input
                 value={email}
@@ -61,17 +64,16 @@ function LoginPage() {
                 type="email"
                 autoComplete="email"
                 required
-                className="rounded-xl border border-zinc-300 bg-transparent px-3 py-2 outline-none transition-colors focus:border-main-500 dark:border-zinc-700"
+                className="rounded-xl border border-zinc-200 bg-zinc-50/50 px-3.5 py-2 text-zinc-900 outline-none transition-all focus:border-main-500 focus:bg-white focus:ring-2 focus:ring-main-500/20 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-main-500 dark:focus:bg-zinc-950"
               />
             </label>
-            <label className="flex flex-col text-sm">
+
+            <label className="flex flex-col text-sm font-medium text-zinc-700 dark:text-zinc-300">
               Password
               <div
                 className={`overflow-hidden transition-[height] duration-200 ${password.trim().length === 0 ? "h-0" : "h-5"}`}
               >
-                <p
-                  className={`text-xs font-medium text-zinc-400 dark:text-zinc-500`}
-                >
+                <p className="text-xs font-normal text-zinc-400 dark:text-zinc-500">
                   Must have at least 6 characters
                 </p>
               </div>
@@ -81,18 +83,20 @@ function LoginPage() {
                 type="password"
                 autoComplete="current-password"
                 required
-                className="mt-1.5 rounded-xl border border-zinc-300 bg-transparent px-3 py-2 outline-none transition-colors focus:border-main-500 dark:border-zinc-700"
+                className="mt-1.5 rounded-xl border border-zinc-200 bg-zinc-50/50 px-3.5 py-2 text-zinc-900 outline-none transition-all focus:border-main-500 focus:bg-white focus:ring-2 focus:ring-main-500/20 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-main-500 dark:focus:bg-zinc-950"
               />
             </label>
+
             {formError && (
-              <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-400">
+              <p className="rounded-xl border border-red-200 bg-red-50/50 px-3.5 py-2 text-xs font-medium text-red-600 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-400">
                 {formError}
               </p>
-            )}{" "}
+            )}
+
             <button
               type="submit"
               disabled={isSubmitting}
-              className="rounded-xl bg-main-500 px-4 py-2 font-semibold text-zinc-950 transition-colors hover:bg-main-400 disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-2 rounded-xl bg-main-500 px-4 py-2.5 text-sm font-semibold text-zinc-950 transition-all hover:bg-main-400 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-main-500 focus-visible:ring-offset-2"
             >
               {isSubmitting ? "Signing in..." : "Sign in"}
             </button>
