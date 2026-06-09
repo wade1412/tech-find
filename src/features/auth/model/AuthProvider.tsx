@@ -14,49 +14,62 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     let isMounted = true;
 
+    const loadProfileForSession = async (nextSession: Session | null) => {
+      try {
+        setSession(nextSession);
+
+        if (!nextSession?.user) {
+          setProfile(null);
+          return;
+        }
+
+        const userProfile = await getCurrentUserProfile(nextSession.user.id);
+
+        if (!isMounted) return;
+
+        setProfile(userProfile);
+      } catch (error) {
+        console.error("Failed to load user profile:", error);
+
+        if (!isMounted) return;
+
+        setProfile(null);
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
     const loadSession = async () => {
       setIsLoading(true);
 
       const { data, error } = await supabase.auth.getSession();
 
       if (error) {
-        console.error(error);
-      }
+        console.error("Failed to get session:", error);
 
-      const currentSession = data.session;
-
-      if (!isMounted) return;
-
-      setSession(currentSession);
-
-      if (currentSession?.user) {
-        const userProfile = await getCurrentUserProfile(currentSession.user.id);
         if (isMounted) {
-          setProfile(userProfile);
+          setSession(null);
+          setProfile(null);
+          setIsLoading(false);
         }
-      } else {
-        setProfile(null);
+
+        return;
       }
 
-      if (isMounted) {
-        setIsLoading(false);
-      }
+      await loadProfileForSession(data.session);
     };
 
     loadSession();
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (_event, nextSession) => {
-        setSession(nextSession);
+      (_event, nextSession) => {
+        setIsLoading(true);
 
-        if (nextSession?.user) {
-          const userProfile = await getCurrentUserProfile(nextSession.user.id);
-          setProfile(userProfile);
-        } else {
-          setProfile(null);
-        }
-
-        setIsLoading(false);
+        window.setTimeout(() => {
+          loadProfileForSession(nextSession);
+        }, 0);
       },
     );
 
