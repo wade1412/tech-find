@@ -64,7 +64,7 @@ function LoginPage() {
                 type="email"
                 autoComplete="email"
                 required
-                className="rounded-xl border border-zinc-200 bg-zinc-50/50 px-3.5 py-2 text-zinc-900 outline-none transition-all focus:border-main-500 focus:bg-white focus:ring-2 focus:ring-main-500/20 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-main-500 dark:focus:bg-zinc-950"
+                className="focus:border-main-500 focus:ring-main-500/20 dark:focus:border-main-500 rounded-xl border border-zinc-200 bg-zinc-50/50 px-3.5 py-2 text-zinc-900 transition-all outline-none focus:bg-white focus:ring-2 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:bg-zinc-950"
               />
             </label>
 
@@ -83,7 +83,7 @@ function LoginPage() {
                 type="password"
                 autoComplete="current-password"
                 required
-                className="mt-1.5 rounded-xl border border-zinc-200 bg-zinc-50/50 px-3.5 py-2 text-zinc-900 outline-none transition-all focus:border-main-500 focus:bg-white focus:ring-2 focus:ring-main-500/20 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-main-500 dark:focus:bg-zinc-950"
+                className="focus:border-main-500 focus:ring-main-500/20 dark:focus:border-main-500 mt-1.5 rounded-xl border border-zinc-200 bg-zinc-50/50 px-3.5 py-2 text-zinc-900 transition-all outline-none focus:bg-white focus:ring-2 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:bg-zinc-950"
               />
             </label>
 
@@ -96,7 +96,7 @@ function LoginPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="mt-2 rounded-xl bg-main-500 px-4 py-2.5 text-sm font-semibold text-zinc-950 transition-all hover:bg-main-400 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-main-500 focus-visible:ring-offset-2"
+              className="bg-main-500 hover:bg-main-400 focus-visible:ring-main-500 mt-2 cursor-pointer rounded-xl px-4 py-2.5 text-sm font-semibold text-zinc-950 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isSubmitting ? "Signing in..." : "Sign in"}
             </button>

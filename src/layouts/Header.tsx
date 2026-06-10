@@ -63,15 +63,17 @@ function Header({ logoSource }: HeaderProps) {
 
           {/* User Profile */}
           <div className="hidden flex-col items-end gap-1 sm:flex">
-            <span className="text-sm leading-none font-semibold text-zinc-900 dark:text-zinc-100">
-              {workName}
-            </span>
-
-            {realName && (
-              <span className="max-w-37.5 truncate text-xs font-medium text-zinc-400 dark:text-zinc-500">
-                {realName}
+            <div className="flex flex-col gap-px items-end">
+              <span className="text-sm leading-none font-semibold text-zinc-900 dark:text-zinc-100">
+                {workName}
               </span>
-            )}
+
+              {realName && (
+                <span className="max-w-37.5 truncate text-[11px] font-medium text-zinc-400 dark:text-zinc-500">
+                  {realName}
+                </span>
+              )}
+            </div>
 
             <span
               className={`inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-medium tracking-wide uppercase ${roleStyles[role]}`}
@@ -84,7 +86,7 @@ function Header({ logoSource }: HeaderProps) {
           <button
             type="button"
             onClick={handleSignOut}
-            className="cursor-pointer rounded-xl px-3 py-1.5 text-sm font-medium text-zinc-500 transition-all duration-200 hover:text-red-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2  dark:text-zinc-400 dark:hover:text-red-400"
+            className="cursor-pointer rounded-lg px-3 py-1.5 text-xs font-medium text-zinc-500 transition-all duration-200 hover:text-red-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2  dark:text-zinc-400 dark:hover:text-red-400"
           >
             Sign Out
           </button>
