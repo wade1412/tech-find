@@ -1,48 +1,65 @@
 import type { Session } from "@supabase/supabase-js";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import type { AuthContextValue, UserProfile } from "./auth.types";
 import { supabase } from "../../../shared/api/supabase/supabaseClient";
-import { getCurrentUserProfile } from "./auth.api";
+import { getUserProfile } from "./auth.api";
 import { AuthContext } from "./AuthContext";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const hasInitializedAuthRef = useRef(false);
+  const sessionUserIdRef = useRef<string | null>(null);
+  const profileRef = useRef(profile);
+
+  const setSessionState = useCallback((session: Session | null) => {
+    setSession(session);
+    sessionUserIdRef.current = session?.user.id ?? null;
+  }, []);
+
+  const setProfileState = useCallback((profile: UserProfile | null) => {
+    setProfile(profile);
+    profileRef.current = profile;
+  }, []);
+
+  const clearAuthState = useCallback(() => {
+    setSessionState(null);
+    setProfileState(null);
+  }, [setProfileState, setSessionState]);
+
+  const finishInitialAuth = useCallback(() => {
+    setIsLoading(false);
+    hasInitializedAuthRef.current = true;
+  }, []);
 
   // Session load and update
   useEffect(() => {
     let isMounted = true;
 
-    const loadProfileForSession = async (nextSession: Session | null) => {
+    const fetchProfile = async (id: string): Promise<UserProfile | null> => {
       try {
-        setSession(nextSession);
+        const userProfile = await getUserProfile(id);
 
-        if (!nextSession?.user) {
-          setProfile(null);
-          return;
-        }
-
-        const userProfile = await getCurrentUserProfile(nextSession.user.id);
-
-        if (!isMounted) return;
-
-        setProfile(userProfile);
+        return userProfile;
       } catch (error) {
         console.error("Failed to load user profile:", error);
-
-        if (!isMounted) return;
-
-        setProfile(null);
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
       }
+
+      return null;
     };
 
-    const loadSession = async () => {
-      setIsLoading(true);
+    const loadInitialSession = async () => {
+      if (!hasInitializedAuthRef.current) {
+        setIsLoading(true);
+      }
 
       const { data, error } = await supabase.auth.getSession();
 
@@ -50,34 +67,68 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         console.error("Failed to get session:", error);
 
         if (isMounted) {
-          setSession(null);
-          setProfile(null);
-          setIsLoading(false);
+          clearAuthState();
+          finishInitialAuth();
         }
 
         return;
       }
 
-      await loadProfileForSession(data.session);
+      if (!data || !data.session?.user) {
+        if (isMounted) {
+          clearAuthState();
+          finishInitialAuth();
+        }
+        return;
+      }
+
+      const currentProfile = await fetchProfile(data.session.user.id);
+
+      if (!isMounted) return;
+
+      setSessionState(data.session);
+      setProfileState(currentProfile);
+      finishInitialAuth();
     };
 
-    loadSession();
+    const handleAuthStateChange = async (nextSession: Session | null) => {
+      if (!isMounted) return;
+
+      if (!nextSession) {
+        clearAuthState();
+        setIsLoading(false);
+        return;
+      }
+
+      setSessionState(nextSession);
+
+      const nextProfileId = nextSession.user.id;
+
+      if (!profileRef.current || profileRef.current.id !== nextProfileId) {
+        setProfileState(null);
+        const nextProfile = await fetchProfile(nextProfileId);
+
+        if (!isMounted) return;
+        if (sessionUserIdRef.current !== nextProfileId) return;
+
+        setProfileState(nextProfile);
+      }
+    };
+
+    loadInitialSession();
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
-      (_event, nextSession) => {
-        setIsLoading(true);
-
+      (_event, nextSession) =>
         window.setTimeout(() => {
-          loadProfileForSession(nextSession);
-        }, 0);
-      },
+          handleAuthStateChange(nextSession);
+        }, 0),
     );
 
     return () => {
       isMounted = false;
       authListener.subscription.unsubscribe();
     };
-  }, []);
+  }, [clearAuthState, setSessionState, setProfileState, finishInitialAuth]);
 
   const value = useMemo<AuthContextValue>(() => {
     const user = session?.user ?? null;
