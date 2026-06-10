@@ -7,8 +7,8 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-50 text-zinc-500 dark:bg-zinc-950 dark:text-zinc-400">
-        Loading...
+      <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-950">
+        <div className="h-7 w-7 animate-spin rounded-full border-2 border-zinc-200 border-t-main-500 dark:border-zinc-700 dark:border-t-main-400" />
       </div>
     );
   }
