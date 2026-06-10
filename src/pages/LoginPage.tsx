@@ -71,7 +71,7 @@ function LoginPage() {
             <label className="flex flex-col text-sm font-medium text-zinc-700 dark:text-zinc-300">
               Password
               <div
-                className={`overflow-hidden transition-[height] duration-200 ${password.trim().length === 0 ? "h-0" : "h-5"}`}
+                className={`overflow-hidden transition-all duration-200 ${password.trim().length < 5 ? "max-h-0" : "max-h-5"}`}
               >
                 <p className="text-xs font-normal text-zinc-400 dark:text-zinc-500">
                   Must have at least 6 characters

@@ -41,7 +41,7 @@ function ThemeToggle() {
       type="button"
       onClick={toggleTheme}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-      className=" cursor-pointer inline-flex h-9 w-9 items-center justify-center rounded-lg border border-main-400 bg-main-400/10 text-main-600 transition-all duration-200 hover:bg-main-500 hover:text-zinc-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-main-500 focus-visible:ring-offset-2 dark:border-main-500/40 dark:bg-main-500/10 dark:text-main-400 dark:hover:bg-main-500 dark:hover:text-zinc-950"
+      className=" cursor-pointer inline-flex h-9 w-9 items-center justify-center rounded-lg border border-main-400 bg-main-400/10 text-zinc-500 transition-all duration-200 hover:bg-zinc-100 hover:text-zinc-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-main-500 focus-visible:ring-offset-2  dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
     >
       {isDark ? <SunIcon /> : <MoonIcon />}
     </button>

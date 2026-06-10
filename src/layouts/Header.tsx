@@ -59,20 +59,22 @@ function Header({ logoSource }: HeaderProps) {
           <ThemeToggle />
 
           {/* Vertical Divider */}
-          <div className="h-6 w-px bg-zinc-200 dark:bg-zinc-500" />
+          <div className="h-6 w-px bg-zinc-200 dark:bg-zinc-700" />
 
           {/* User Profile */}
-          <div className="hidden flex-col items-end gap-0.5 sm:flex">
+          <div className="hidden flex-col items-end gap-1 sm:flex">
             <span className="text-sm leading-none font-semibold text-zinc-900 dark:text-zinc-100">
               {workName}
             </span>
+
             {realName && (
-              <span className="max-w-37.5 truncate text-[11px] font-medium text-zinc-400 dark:text-zinc-500">
+              <span className="max-w-37.5 truncate text-xs font-medium text-zinc-400 dark:text-zinc-500">
                 {realName}
               </span>
             )}
+
             <span
-              className={`mt-1 inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-medium tracking-wide uppercase ${roleStyles[role]}`}
+              className={`inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-medium tracking-wide uppercase ${roleStyles[role]}`}
             >
               {roleLabel}
             </span>
@@ -82,7 +84,7 @@ function Header({ logoSource }: HeaderProps) {
           <button
             type="button"
             onClick={handleSignOut}
-            className="cursor-pointer rounded-lg border border-zinc-200 bg-white px-3.5 py-2 text-sm font-medium text-zinc-700 transition-all duration-200 hover:border-red-200 hover:bg-red-50 hover:text-red-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-red-900/50 dark:hover:bg-red-950/30 dark:hover:text-red-400"
+            className="cursor-pointer rounded-xl px-3 py-1.5 text-sm font-medium text-zinc-500 transition-all duration-200 hover:text-red-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2  dark:text-zinc-400 dark:hover:text-red-400"
           >
             Sign Out
           </button>
