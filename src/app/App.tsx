@@ -1,5 +1,4 @@
-import HomePage from "../pages/HomePage";
-import LoginPage from "../pages/LoginPage";
+import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router";
 import { useTheme } from "../features/theme/useTheme";
 import logoLight from "../shared/assets/techfind-logo-light.svg";
@@ -7,6 +6,9 @@ import logoDark from "../shared/assets/techfind-logo-dark.svg";
 import Header from "../layouts/Header";
 import Footer from "../layouts/Footer";
 import ProtectedRoute from "../features/auth/ui/ProtectedRoute";
+
+const HomePage = lazy(() => import("../pages/HomePage"));
+const LoginPage = lazy(() => import("../pages/LoginPage"));
 
 function AppLayout() {
   const { theme } = useTheme();
@@ -17,7 +19,9 @@ function AppLayout() {
       <Header logoSource={logoSource} />
 
       <main className="flex-1">
-        <HomePage />
+        <Suspense fallback={<div>Loading page...</div>}>
+          <HomePage />
+        </Suspense>
       </main>
 
       <Footer />
@@ -28,7 +32,14 @@ function AppLayout() {
 function App() {
   return (
     <Routes>
-      <Route path="/login" element={<LoginPage />} />
+      <Route
+        path="/login"
+        element={
+          <Suspense fallback={<div>Loading...</div>}>
+            <LoginPage />
+          </Suspense>
+        }
+      />
 
       <Route
         path="/"
