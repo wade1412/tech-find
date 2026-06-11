@@ -6,6 +6,7 @@ import logoDark from "../shared/assets/techfind-logo-dark.svg";
 import Header from "../layouts/Header";
 import Footer from "../layouts/Footer";
 import ProtectedRoute from "../features/auth/ui/ProtectedRoute";
+import { FullPageSpinner, InlineSpinner } from "../shared/ui/Spinners";
 
 const HomePage = lazy(() => import("../pages/HomePage"));
 const LoginPage = lazy(() => import("../pages/LoginPage"));
@@ -19,7 +20,7 @@ function AppLayout() {
       <Header logoSource={logoSource} />
 
       <main className="flex-1">
-        <Suspense fallback={<div>Loading page...</div>}>
+        <Suspense fallback={<InlineSpinner />}>
           <HomePage />
         </Suspense>
       </main>
@@ -35,7 +36,7 @@ function App() {
       <Route
         path="/login"
         element={
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense fallback={<FullPageSpinner />}>
             <LoginPage />
           </Suspense>
         }

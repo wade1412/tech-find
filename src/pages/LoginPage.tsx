@@ -41,15 +41,15 @@ function LoginPage() {
       <main className="flex flex-1 items-center justify-center px-4 py-12">
         <form
           onSubmit={handleSubmit}
-          className="w-full max-w-sm rounded-2xl border border-zinc-200/80 bg-white p-6 shadow-xl shadow-zinc-200/30 dark:border-zinc-800 dark:bg-zinc-900/50 dark:shadow-none"
+          className="w-full max-w-sm rounded-2xl border border-zinc-200/80 bg-white p-6 shadow-lg shadow-zinc-200/30 dark:border-zinc-800 dark:bg-zinc-900/50 dark:shadow-none"
         >
           {/* Header */}
           <div className="mb-6 space-y-1">
-            <h1 className="font-heading text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-              TechFind
+            <h1 className="font-heading text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+              Sign In
             </h1>
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              Sign in to continue to your account
+              Enter your credentials to continue
             </p>
           </div>
 
@@ -71,7 +71,7 @@ function LoginPage() {
             <label className="flex flex-col text-sm font-medium text-zinc-700 dark:text-zinc-300">
               Password
               <div
-                className={`overflow-hidden transition-all duration-200 ${password.trim().length < 5 ? "max-h-5" : "max-h-0"}`}
+                className={`overflow-hidden transition-all duration-200 ${password.trim().length > 0 && password.trim().length < 6 ? "max-h-5" : "max-h-0"}`}
               >
                 <p className="text-xs font-normal text-zinc-400 dark:text-zinc-500">
                   Must have at least 6 characters
