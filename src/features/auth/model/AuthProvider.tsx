@@ -1,4 +1,4 @@
-import type { Session } from "@supabase/supabase-js";
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 import {
   useCallback,
   useEffect,
@@ -7,134 +7,243 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { AuthContextValue, UserProfile } from "./auth.types";
+import type { AppAuthError, AuthContextValue, UserProfile } from "./auth.types";
 import { supabase } from "../../../shared/api/supabase/supabaseClient";
 import { getUserProfile } from "./auth.api";
 import { AuthContext } from "./AuthContext";
+import { useQueryClient } from "@tanstack/react-query";
+
+const createAuthError = (
+  code: AppAuthError["code"],
+  message: string,
+  cause?: unknown,
+) => {
+  return { code, message, cause };
+};
+
+const isAppAuthError = (error: unknown): error is AppAuthError => {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    "message" in error
+  );
+};
+
+const getProfileError = (error: unknown) => {
+  if (isAppAuthError(error)) {
+    return error;
+  }
+
+  return createAuthError(
+    "profile_request_failed",
+    "We could not load your account profile. Please try again.",
+    error,
+  );
+};
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const queryClient = useQueryClient();
+
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isProfileLoading, setIsProfileLoading] = useState(false);
+  const [authError, setAuthError] = useState<AppAuthError | null>(null);
 
-  const hasInitializedAuthRef = useRef(false);
-  const sessionUserIdRef = useRef<string | null>(null);
-  const profileRef = useRef(profile);
+  const profileRequestIdRef = useRef(0);
 
-  const setSessionState = useCallback((session: Session | null) => {
-    setSession(session);
-    sessionUserIdRef.current = session?.user.id ?? null;
-  }, []);
-
-  const setProfileState = useCallback((profile: UserProfile | null) => {
-    setProfile(profile);
-    profileRef.current = profile;
+  const clearAuthError = useCallback(() => {
+    setAuthError(null);
   }, []);
 
   const clearAuthState = useCallback(() => {
-    setSessionState(null);
-    setProfileState(null);
+    profileRequestIdRef.current += 1;
+    setSession(null);
+    setProfile(null);
     setIsProfileLoading(false);
-  }, [setProfileState, setSessionState]);
-
-  const finishInitialAuth = useCallback(() => {
-    setIsLoading(false);
-    hasInitializedAuthRef.current = true;
   }, []);
+
+  const resolveSession = useCallback(
+    async (nextSession: Session | null) => {
+      if (!nextSession) {
+        clearAuthState();
+        return;
+      }
+
+      // Get Req Id
+      const requestId = ++profileRequestIdRef.current;
+
+      // Session setup, clearing profile, reseting error
+      setAuthError(null);
+      setSession(nextSession);
+      setProfile(null);
+      setIsProfileLoading(true);
+
+      try {
+        // Get Profile
+        const nextProfileId = nextSession.user.id;
+        const nextProfile = await getUserProfile(nextProfileId);
+
+        // Req Id check to avoid race condition
+        if (requestId !== profileRequestIdRef.current) return;
+
+        // Sign out and error message on invalid profile
+        if (!nextProfile) {
+          const error = createAuthError(
+            "missing_profile",
+            "Your user profile was not found. Please contact an administrator.",
+          );
+
+          setAuthError(error);
+
+          try {
+            await supabase.auth.signOut();
+          } finally {
+            clearAuthState();
+          }
+
+          throw error;
+        }
+
+        // Sign out and error message on inactive profile
+        if (!nextProfile.active) {
+          const error = createAuthError(
+            "inactive_profile",
+            "Your account is inactive. Please contact an administator.",
+          );
+
+          setAuthError(error);
+
+          try {
+            await supabase.auth.signOut();
+          } finally {
+            clearAuthState();
+          }
+
+          throw error;
+        }
+
+        setProfile(nextProfile);
+        setAuthError(null);
+      } catch (error) {
+        if (requestId !== profileRequestIdRef.current) return;
+
+        const profileError = getProfileError(error);
+        setAuthError(profileError);
+
+        throw profileError;
+      } finally {
+        if (requestId === profileRequestIdRef.current) {
+          setIsProfileLoading(false);
+        }
+      }
+    },
+    [clearAuthState],
+  );
+
+  const retryProfile = useCallback(async () => {
+    if (!session) return;
+
+    await resolveSession(session);
+  }, [session, resolveSession]);
 
   // Session load and update
   useEffect(() => {
     let isMounted = true;
 
-    const fetchProfile = async (id: string): Promise<UserProfile | null> => {
-      try {
-        const userProfile = await getUserProfile(id);
-
-        return userProfile;
-      } catch (error) {
-        console.error("Failed to load user profile:", error);
-        return null;
-      }
-    };
-
     const loadInitialSession = async () => {
-      if (!hasInitializedAuthRef.current) {
-        setIsLoading(true);
-      }
+      try {
+        const { data, error } = await supabase.auth.getSession();
 
-      const { data, error } = await supabase.auth.getSession();
-
-      if (error) {
-        console.error("Failed to get session:", error);
-
-        if (isMounted) {
-          clearAuthState();
-          finishInitialAuth();
+        if (error) {
+          throw error;
         }
 
-        return;
-      }
-
-      if (!data || !data.session?.user) {
         if (isMounted) {
-          clearAuthState();
-          finishInitialAuth();
+          await resolveSession(data.session);
         }
-        return;
+      } catch (error) {
+        if (!isMounted) return;
+
+        const authError = getProfileError(error);
+        setAuthError(authError);
+
+        if (authError.code !== "profile_request_failed") {
+          clearAuthState();
+        }
+
+        console.error("Initial auth failed:", error);
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
-
-      setIsProfileLoading(true);
-      const currentProfile = await fetchProfile(data.session.user.id);
-
-      if (!isMounted) return;
-
-      setSessionState(data.session);
-      setProfileState(currentProfile);
-      setIsProfileLoading(false);
-      finishInitialAuth();
     };
 
-    const handleAuthStateChange = async (nextSession: Session | null) => {
+    const handleAuthStateChange = async (
+      event: AuthChangeEvent,
+      nextSession: Session | null,
+    ) => {
       if (!isMounted) return;
 
-      if (!nextSession) {
-        clearAuthState();
-        setIsLoading(false);
-        return;
-      }
+      try {
+        switch (event) {
+          case "INITIAL_SESSION": {
+            return;
+          }
 
-      setSessionState(nextSession);
+          case "TOKEN_REFRESHED": {
+            if (nextSession) {
+              setSession(nextSession);
+            } else {
+              clearAuthState();
+            }
 
-      const nextProfileId = nextSession.user.id;
+            return;
+          }
 
-      if (!profileRef.current || profileRef.current.id !== nextProfileId) {
-        setProfileState(null);
-        setIsProfileLoading(true);
-        const nextProfile = await fetchProfile(nextProfileId);
+          case "SIGNED_OUT": {
+            clearAuthState();
+            return;
+          }
 
+          case "SIGNED_IN":
+          case "USER_UPDATED": {
+            await resolveSession(nextSession);
+            return;
+          }
+
+          default: {
+            return;
+          }
+        }
+      } catch (error) {
         if (!isMounted) return;
-        if (sessionUserIdRef.current !== nextProfileId) return;
 
-        setProfileState(nextProfile);
+        const authError = getProfileError(error);
+        setAuthError(authError);
         setIsProfileLoading(false);
+
+        console.error("Auth state change failed", error);
       }
     };
 
     loadInitialSession();
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
-      (_event, nextSession) =>
+      (event, nextSession) =>
         window.setTimeout(() => {
-          handleAuthStateChange(nextSession);
+          void handleAuthStateChange(event, nextSession);
         }, 0),
     );
 
     return () => {
       isMounted = false;
+      profileRequestIdRef.current += 1;
       authListener.subscription.unsubscribe();
     };
-  }, [clearAuthState, setSessionState, setProfileState, finishInitialAuth]);
+  }, [clearAuthState, setSession, setProfile, resolveSession]);
 
   const value = useMemo<AuthContextValue>(() => {
     const user = session?.user ?? null;
@@ -143,28 +252,74 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       session,
       user,
       profile,
+
       isLoading,
       isProfileLoading,
       isAuthenticated: Boolean(session && profile?.active),
+
+      authError,
+      clearAuthError,
+      retryProfile,
+
       signIn: async (email: string, password: string) => {
-        const { error } = await supabase.auth.signInWithPassword({
+        clearAuthError();
+
+        const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
 
         if (error) {
-          throw error;
+          const authError = createAuthError(
+            "invalid_credentials",
+            "Invalid email or password.",
+            error,
+          );
+
+          setAuthError(authError);
+          throw authError;
+        }
+
+        if (data.session) {
+          await resolveSession(data.session);
         }
       },
+
       signOut: async () => {
+        clearAuthError();
+
         const { error } = await supabase.auth.signOut();
 
         if (error) {
-          throw error;
+          const authError = createAuthError(
+            "sign_out_failed",
+            "We could not sign you out on the server. Local session was cleared.",
+            error,
+          );
+
+          setAuthError(authError);
+          clearAuthState();
+          queryClient.clear();
+
+          throw authError;
         }
+
+        clearAuthState();
+        queryClient.clear();
       },
     };
-  }, [session, profile, isLoading, isProfileLoading]);
+  }, [
+    session,
+    profile,
+    isLoading,
+    isProfileLoading,
+    authError,
+    clearAuthError,
+    retryProfile,
+    resolveSession,
+    clearAuthState,
+    queryClient,
+  ]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
