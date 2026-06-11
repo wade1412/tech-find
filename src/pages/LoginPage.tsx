@@ -1,11 +1,10 @@
-import { Navigate, useLocation, useNavigate } from "react-router";
+import { Navigate, useLocation } from "react-router";
 import { useAuth } from "../features/auth/model/AuthContext";
-import { useState } from "react";
 import AuthHeader from "../layouts/AuthHeader";
+import { useState } from "react";
 
 function LoginPage() {
-  const { signIn, isAuthenticated, isLoading } = useAuth();
-  const navigate = useNavigate();
+  const { signIn, isAuthenticated, isLoading, isProfileLoading } = useAuth();
   const location = useLocation();
 
   const [email, setEmail] = useState("");
@@ -15,21 +14,25 @@ function LoginPage() {
 
   const from = location.state?.from?.pathname || "/";
 
-  if (!isLoading && isAuthenticated) {
+  const isSubmitDisabled =
+    isSubmitting || isLoading || isProfileLoading || isAuthenticated;
+
+  if (!isLoading && !isProfileLoading && isAuthenticated) {
     return <Navigate to={from} replace />;
   }
 
   const handleSubmit = async (event: React.SyntheticEvent) => {
     event.preventDefault();
+
+    if (isSubmitDisabled) return;
+
     setFormError("");
     setIsSubmitting(true);
 
     try {
       await signIn(email, password);
-      navigate(from, { replace: true });
     } catch {
       setFormError("Invalid email or password");
-    } finally {
       setIsSubmitting(false);
     }
   };
@@ -95,10 +98,10 @@ function LoginPage() {
 
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitDisabled}
               className="bg-main-500 hover:bg-main-400 focus-visible:ring-main-500 mt-2 cursor-pointer rounded-xl px-4 py-2.5 text-sm font-semibold text-zinc-950 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {isSubmitting ? "Signing in..." : "Sign in"}
+              {isSubmitting || isProfileLoading ? "Signing in..." : "Sign in"}
             </button>
           </div>
         </form>

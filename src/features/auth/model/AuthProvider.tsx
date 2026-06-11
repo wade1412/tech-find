@@ -16,6 +16,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isProfileLoading, setIsProfileLoading] = useState(false);
+
   const hasInitializedAuthRef = useRef(false);
   const sessionUserIdRef = useRef<string | null>(null);
   const profileRef = useRef(profile);
@@ -33,6 +35,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const clearAuthState = useCallback(() => {
     setSessionState(null);
     setProfileState(null);
+    setIsProfileLoading(false);
   }, [setProfileState, setSessionState]);
 
   const finishInitialAuth = useCallback(() => {
@@ -51,9 +54,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return userProfile;
       } catch (error) {
         console.error("Failed to load user profile:", error);
+        return null;
       }
-
-      return null;
     };
 
     const loadInitialSession = async () => {
@@ -82,12 +84,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
 
+      setIsProfileLoading(true);
       const currentProfile = await fetchProfile(data.session.user.id);
 
       if (!isMounted) return;
 
       setSessionState(data.session);
       setProfileState(currentProfile);
+      setIsProfileLoading(false);
       finishInitialAuth();
     };
 
@@ -106,12 +110,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (!profileRef.current || profileRef.current.id !== nextProfileId) {
         setProfileState(null);
+        setIsProfileLoading(true);
         const nextProfile = await fetchProfile(nextProfileId);
 
         if (!isMounted) return;
         if (sessionUserIdRef.current !== nextProfileId) return;
 
         setProfileState(nextProfile);
+        setIsProfileLoading(false);
       }
     };
 
@@ -138,6 +144,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       user,
       profile,
       isLoading,
+      isProfileLoading,
       isAuthenticated: Boolean(session && profile?.active),
       signIn: async (email: string, password: string) => {
         const { error } = await supabase.auth.signInWithPassword({
@@ -157,7 +164,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
       },
     };
-  }, [session, profile, isLoading]);
+  }, [session, profile, isLoading, isProfileLoading]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
