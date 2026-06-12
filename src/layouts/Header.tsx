@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router";
 import ThemeToggle from "../features/theme/ThemeToggle";
 import { useAuth } from "../features/auth/model/AuthContext";
+import { useState } from "react";
 
 interface HeaderProps {
   logoSource: string;
@@ -23,6 +24,8 @@ const roleStyles = {
 };
 
 function Header({ logoSource }: HeaderProps) {
+  const [isSigningOut, setIsSigningOut] = useState(false);
+
   const { profile, signOut } = useAuth();
   const navigate = useNavigate();
 
@@ -34,8 +37,18 @@ function Header({ logoSource }: HeaderProps) {
   const roleLabel = roleLabelMap[role];
 
   const handleSignOut = async () => {
-    await signOut();
-    navigate("/login", { replace: true });
+    if (isSigningOut) return;
+
+    setIsSigningOut(true);
+
+    try {
+      await signOut();
+      navigate("/login", { replace: true });
+    } catch {
+      navigate("/login", { replace: true });
+    } finally {
+      setIsSigningOut(false);
+    }
   };
 
   return (
@@ -59,20 +72,24 @@ function Header({ logoSource }: HeaderProps) {
           <ThemeToggle />
 
           {/* Vertical Divider */}
-          <div className="h-6 w-px bg-zinc-200 dark:bg-zinc-500" />
+          <div className="h-6 w-px bg-zinc-200 dark:bg-zinc-700" />
 
           {/* User Profile */}
-          <div className="hidden flex-col items-end gap-0.5 sm:flex">
-            <span className="text-sm leading-none font-semibold text-zinc-900 dark:text-zinc-100">
-              {workName}
-            </span>
-            {realName && (
-              <span className="max-w-37.5 truncate text-[11px] font-medium text-zinc-400 dark:text-zinc-500">
-                {realName}
+          <div className="hidden flex-col items-end gap-1 sm:flex">
+            <div className="flex flex-col gap-px items-end">
+              <span className="text-sm leading-none font-semibold text-zinc-900 dark:text-zinc-100">
+                {workName}
               </span>
-            )}
+
+              {realName && (
+                <span className="max-w-37.5 truncate text-[11px] font-medium text-zinc-400 dark:text-zinc-500">
+                  {realName}
+                </span>
+              )}
+            </div>
+
             <span
-              className={`mt-1 inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-medium tracking-wide uppercase ${roleStyles[role]}`}
+              className={`inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-medium tracking-wide uppercase ${roleStyles[role]}`}
             >
               {roleLabel}
             </span>
@@ -81,10 +98,11 @@ function Header({ logoSource }: HeaderProps) {
           {/* Sign Out Button */}
           <button
             type="button"
+            disabled={isSigningOut}
             onClick={handleSignOut}
-            className="cursor-pointer rounded-lg border border-zinc-200 bg-white px-3.5 py-2 text-sm font-medium text-zinc-700 transition-all duration-200 hover:border-red-200 hover:bg-red-50 hover:text-red-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-red-900/50 dark:hover:bg-red-950/30 dark:hover:text-red-400"
+            className="cursor-pointer rounded-lg px-3 py-1.5 text-xs font-medium text-zinc-500 transition-[color,opacity] duration-200 enabled:hover:text-red-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2  dark:text-zinc-400 enabled:dark:hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Sign Out
+            {isSigningOut ? "Signing out..." : "Sign out"}
           </button>
         </div>
       </div>
