@@ -12,35 +12,11 @@ import { supabase } from "../../../shared/api/supabase/supabaseClient";
 import { getUserProfile } from "./auth.api";
 import { AuthContext } from "./AuthContext";
 import { useQueryClient } from "@tanstack/react-query";
-
-const createAuthError = (
-  code: AppAuthError["code"],
-  message: string,
-  cause?: unknown,
-) => {
-  return { code, message, cause };
-};
-
-const isAppAuthError = (error: unknown): error is AppAuthError => {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "code" in error &&
-    "message" in error
-  );
-};
-
-const getProfileError = (error: unknown) => {
-  if (isAppAuthError(error)) {
-    return error;
-  }
-
-  return createAuthError(
-    "profile_request_failed",
-    "We could not load your account profile. Please try again.",
-    error,
-  );
-};
+import {
+  createAuthError,
+  getProfileError,
+  isAppAuthError,
+} from "./auth.errors";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
@@ -51,7 +27,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isProfileLoading, setIsProfileLoading] = useState(false);
   const [authError, setAuthError] = useState<AppAuthError | null>(null);
 
+  const profileRef = useRef<UserProfile | null>(null);
+  const resolvingUserIdRef = useRef<string | null>(null);
   const profileRequestIdRef = useRef(0);
+
+  const setProfileState = useCallback((newProfile: UserProfile | null) => {
+    setProfile(newProfile);
+    profileRef.current = newProfile;
+  }, []);
 
   const clearAuthError = useCallback(() => {
     setAuthError(null);
@@ -59,30 +42,54 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const clearAuthState = useCallback(() => {
     profileRequestIdRef.current += 1;
+    resolvingUserIdRef.current = null;
+
     setSession(null);
-    setProfile(null);
+    setProfileState(null);
     setIsProfileLoading(false);
-  }, []);
+  }, [setProfileState]);
 
   const resolveSession = useCallback(
-    async (nextSession: Session | null) => {
+    async (
+      nextSession: Session | null,
+      options: { forceProfileReload?: boolean } = {},
+    ) => {
       if (!nextSession) {
         clearAuthState();
         return;
       }
 
-      // Get Req Id
-      const requestId = ++profileRequestIdRef.current;
+      // Get Id
+      const nextProfileId = nextSession.user.id;
 
-      // Session setup, clearing profile, reseting error
-      setAuthError(null);
       setSession(nextSession);
-      setProfile(null);
+
+      // Check if it is the same user
+      if (
+        !options.forceProfileReload &&
+        profileRef.current?.id === nextProfileId
+      ) {
+        setAuthError(null);
+        return;
+      }
+
+      if (resolvingUserIdRef.current === nextProfileId) {
+        return;
+      }
+
+      // Setup Refs, clear error, start loading
+      const requestId = ++profileRequestIdRef.current;
+      resolvingUserIdRef.current = nextProfileId;
+      setAuthError(null);
       setIsProfileLoading(true);
+
+      // Reset before refetch only on new user
+      if (profileRef.current?.id !== nextProfileId) {
+        setProfileState(null);
+      }
 
       try {
         // Get Profile
-        const nextProfileId = nextSession.user.id;
         const nextProfile = await getUserProfile(nextProfileId);
 
         // Req Id check to avoid race condition
@@ -124,9 +131,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           throw error;
         }
 
-        setProfile(nextProfile);
+        setProfileState(nextProfile);
         setAuthError(null);
       } catch (error) {
+        if (isAppAuthError(error)) {
+          throw error;
+        }
+
         if (requestId !== profileRequestIdRef.current) return;
 
         const profileError = getProfileError(error);
@@ -137,15 +148,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (requestId === profileRequestIdRef.current) {
           setIsProfileLoading(false);
         }
+        if (resolvingUserIdRef.current === nextProfileId) {
+          resolvingUserIdRef.current = null;
+        }
       }
     },
-    [clearAuthState],
+    [clearAuthState, setProfileState],
   );
 
   const retryProfile = useCallback(async () => {
     if (!session) return;
 
-    await resolveSession(session);
+    await resolveSession(session, { forceProfileReload: true });
   }, [session, resolveSession]);
 
   // Session load and update
@@ -208,9 +222,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             return;
           }
 
-          case "SIGNED_IN":
-          case "USER_UPDATED": {
+          case "SIGNED_IN": {
             await resolveSession(nextSession);
+            return;
+          }
+
+          case "USER_UPDATED": {
+            await resolveSession(nextSession, {
+              forceProfileReload: true,
+            });
             return;
           }
 
@@ -241,9 +261,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => {
       isMounted = false;
       profileRequestIdRef.current += 1;
+      resolvingUserIdRef.current = null;
       authListener.subscription.unsubscribe();
     };
-  }, [clearAuthState, setSession, setProfile, resolveSession]);
+  }, [clearAuthState, resolveSession]);
 
   const value = useMemo<AuthContextValue>(() => {
     const user = session?.user ?? null;

@@ -3,11 +3,11 @@ import { useAuth } from "../features/auth/model/AuthContext";
 import AuthHeader from "../layouts/AuthHeader";
 import { useState } from "react";
 import { FullPageSpinner } from "../shared/ui/Spinners";
+import { isAppAuthError } from "../features/auth/model/auth.errors";
 
 function LoginPage() {
   const {
     signIn,
-    authError,
     clearAuthError,
     isAuthenticated,
     isLoading,
@@ -21,7 +21,11 @@ function LoginPage() {
   const [formError, setFormError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const from = location.state?.from?.pathname || "/";
+  const previousLocation = location.state?.from;
+
+  const from = previousLocation
+    ? `${previousLocation.pathname}${previousLocation.search}${previousLocation.hash}`
+    : "/";
 
   const isAuthPending = isSubmitting || isProfileLoading;
   const isSubmitDisabled =
@@ -43,12 +47,12 @@ function LoginPage() {
     try {
       await signIn(email, password);
     } catch (error) {
-      if (authError?.message) {
-        setFormError(authError.message);
+      if (isAppAuthError(error)) {
+        setFormError(error.message);
       } else if (error instanceof Error) {
         setFormError(error.message);
       } else {
-        setFormError("Invalid email or password");
+        setFormError("Unable to sign in");
       }
     } finally {
       setIsSubmitting(false);
@@ -101,7 +105,6 @@ function LoginPage() {
               >
                 <p
                   id="password-help"
-                  role="alert"
                   aria-live="polite"
                   className="text-xs font-normal text-zinc-400 dark:text-zinc-500"
                 >
@@ -122,7 +125,10 @@ function LoginPage() {
             </label>
 
             {formError && (
-              <p className="rounded-xl border border-red-200 bg-red-50/50 px-3.5 py-2 text-xs font-medium text-red-600 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-400">
+              <p
+                role="alert"
+                className="rounded-xl border border-red-200 bg-red-50/50 px-3.5 py-2 text-xs font-medium text-red-600 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-400"
+              >
                 {formError}
               </p>
             )}
