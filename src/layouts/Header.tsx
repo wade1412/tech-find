@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router";
 import ThemeToggle from "../features/theme/ThemeToggle";
 import { useAuth } from "../features/auth/model/AuthContext";
+import { useState } from "react";
 
 interface HeaderProps {
   logoSource: string;
@@ -23,6 +24,9 @@ const roleStyles = {
 };
 
 function Header({ logoSource }: HeaderProps) {
+  const [isSigningOut, setIsSigningOut] = useState(false);
+  const [signOutError, setSignOutError] = useState("");
+
   const { profile, signOut } = useAuth();
   const navigate = useNavigate();
 
@@ -34,8 +38,20 @@ function Header({ logoSource }: HeaderProps) {
   const roleLabel = roleLabelMap[role];
 
   const handleSignOut = async () => {
-    await signOut();
-    navigate("/login", { replace: true });
+    if (isSigningOut) return;
+
+    setSignOutError("");
+    setIsSigningOut(true);
+
+    try {
+      await signOut();
+      navigate("/login", { replace: true });
+    } catch {
+      setSignOutError("Could not sign out");
+      navigate("/login", { replace: true });
+    } finally {
+      setIsSigningOut(false);
+    }
   };
 
   return (
@@ -83,13 +99,21 @@ function Header({ logoSource }: HeaderProps) {
           </div>
 
           {/* Sign Out Button */}
-          <button
-            type="button"
-            onClick={handleSignOut}
-            className="cursor-pointer rounded-lg px-3 py-1.5 text-xs font-medium text-zinc-500 transition-all duration-200 hover:text-red-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2  dark:text-zinc-400 dark:hover:text-red-400"
-          >
-            Sign Out
-          </button>
+
+          {signOutError ? (
+            <p role="alert" className="text-xs text-red-500">
+              {signOutError}
+            </p>
+          ) : (
+            <button
+              type="button"
+              disabled={isSigningOut}
+              onClick={handleSignOut}
+              className="cursor-pointer rounded-lg px-3 py-1.5 text-xs font-medium text-zinc-500 transition-[color,opacity] duration-200 enabled:hover:text-red-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2  dark:text-zinc-400 enabled:dark:hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isSigningOut ? "Signing out..." : "Sign out"}
+            </button>
+          )}
         </div>
       </div>
     </header>

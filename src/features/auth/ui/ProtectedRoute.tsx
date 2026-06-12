@@ -14,10 +14,6 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   const location = useLocation();
 
-  if (isLoading || isProfileLoading) {
-    return <FullPageSpinner />;
-  }
-
   if (session && authError?.code === "profile_request_failed") {
     return (
       <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4 text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50">
@@ -30,13 +26,17 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
           <button
             type="button"
             onClick={() => void retryProfile()}
-            className="bg-main-500 hover:bg-main-400 mt-5 rounded-xl px-4 py-2.5 text-sm font-semibold text-zinc-950 transition-all"
+            className="bg-main-500 hover:bg-main-400 focus-visible:ring-main-500 mt-4 cursor-pointer rounded-xl px-4 py-2.5 text-sm font-semibold text-zinc-950 transition-[background-color, transform] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98]"
           >
             Try again
           </button>
         </div>
       </div>
     );
+  }
+
+  if (isLoading || isProfileLoading) {
+    return <FullPageSpinner />;
   }
 
   if (!isAuthenticated) {
