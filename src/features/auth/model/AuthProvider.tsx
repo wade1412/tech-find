@@ -17,6 +17,7 @@ import {
   getProfileError,
   isAppAuthError,
 } from "./auth.errors";
+import { shouldLoadProfile } from "./auth.session";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
@@ -64,16 +65,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       setSession(nextSession);
 
-      // Check if it is the same user
+      // Check if the new profile should be loaded
       if (
-        !options.forceProfileReload &&
-        profileRef.current?.id === nextProfileId
+        !shouldLoadProfile({
+          userId: nextProfileId,
+          profileUserId: profileRef.current?.id,
+          resolvingUserId: resolvingUserIdRef.current ?? undefined,
+          force: options.forceProfileReload,
+        })
       ) {
         setAuthError(null);
-        return;
-      }
-
-      if (resolvingUserIdRef.current === nextProfileId) {
         return;
       }
 
