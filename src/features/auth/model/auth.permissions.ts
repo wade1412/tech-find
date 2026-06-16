@@ -44,7 +44,7 @@ export function hasRoleLevelOf(role: unknown, minimumRole: AppRole): boolean {
   return getRoleLevel(role) >= ROLE_LEVEL[minimumRole];
 }
 
-export function hasAnyRole(
+export function isAllowedRole(
   role: unknown,
   allowedRoles: readonly AppRole[],
 ): boolean {
