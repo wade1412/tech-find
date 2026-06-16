@@ -1,12 +1,5 @@
-import Header from "../layouts/Header";
-
 function OwnerToolsPage() {
-  return (
-    <div>
-      <Header />
-      OwnerToolsPage
-    </div>
-  );
+  return <section>OwnerToolsPage</section>;
 }
 
 export default OwnerToolsPage;

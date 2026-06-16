@@ -1,12 +1,5 @@
-import Header from "../layouts/Header";
-
 function ManageServicesPage() {
-  return (
-    <div>
-      <Header />
-      ManageServicesPage
-    </div>
-  );
+  return <section>ManageServicesPage</section>;
 }
 
 export default ManageServicesPage;

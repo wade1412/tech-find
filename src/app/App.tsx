@@ -1,32 +1,17 @@
 import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router";
-import Header from "../layouts/Header";
-import Footer from "../layouts/Footer";
 import ProtectedRoute from "../features/auth/ui/ProtectedRoute";
-import { FullPageSpinner, InlineSpinner } from "../shared/ui/Spinners";
-import ManageTechniciansPage from "../pages/ManageTechniciansPage";
-import ManageServicesPage from "../pages/ManageServicesPage";
-import ManageUsersPage from "../pages/ManageUsersPage";
-import OwnerToolsPage from "../pages/OwnerToolsPage";
+import { FullPageSpinner } from "../shared/ui/Spinners";
+import AuthenticatedLayout from "../layouts/AuthenticatedLayout";
 
 const HomePage = lazy(() => import("../pages/HomePage"));
 const LoginPage = lazy(() => import("../pages/LoginPage"));
-
-function AppLayout() {
-  return (
-    <div className="flex min-h-screen flex-col bg-zinc-50 text-zinc-950 transition-colors dark:bg-zinc-950 dark:text-zinc-50">
-      <Header />
-
-      <main className="flex-1">
-        <Suspense fallback={<InlineSpinner />}>
-          <HomePage />
-        </Suspense>
-      </main>
-
-      <Footer />
-    </div>
-  );
-}
+const ManageTechniciansPage = lazy(
+  () => import("../pages/ManageTechniciansPage"),
+);
+const ManageServicesPage = lazy(() => import("../pages/ManageServicesPage"));
+const ManageUsersPage = lazy(() => import("../pages/ManageUsersPage"));
+const OwnerToolsPage = lazy(() => import("../pages/OwnerToolsPage"));
 
 function App() {
   return (
@@ -44,14 +29,16 @@ function App() {
         path="/"
         element={
           <ProtectedRoute>
-            <AppLayout />
+            <AuthenticatedLayout />
           </ProtectedRoute>
         }
-      />
-      <Route path="/technicians" element={<ManageTechniciansPage />} />
-      <Route path="/services" element={<ManageServicesPage />} />
-      <Route path="/users" element={<ManageUsersPage />} />
-      <Route path="/owner" element={<OwnerToolsPage />} />
+      >
+        <Route index element={<HomePage />} />
+        <Route path="technicians" element={<ManageTechniciansPage />} />
+        <Route path="services" element={<ManageServicesPage />} />
+        <Route path="users" element={<ManageUsersPage />} />
+        <Route path="owner" element={<OwnerToolsPage />} />
+      </Route>
     </Routes>
   );
 }

@@ -1,12 +1,5 @@
-import Header from "../layouts/Header";
-
 function ManageUsersPage() {
-  return (
-    <div>
-      <Header />
-      ManageUsersPage
-    </div>
-  );
+  return <section>ManageUsersPage</section>;
 }
 
 export default ManageUsersPage;

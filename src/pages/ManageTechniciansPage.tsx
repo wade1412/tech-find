@@ -1,12 +1,5 @@
-import Header from "../layouts/Header";
-
 function ManageTechniciansPage() {
-  return (
-    <div>
-      <Header />
-      ManageTechniciansPage
-    </div>
-  );
+  return <section>ManageTechniciansPage</section>;
 }
 
 export default ManageTechniciansPage;
