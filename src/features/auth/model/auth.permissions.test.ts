@@ -62,8 +62,8 @@ describe("auth.permissions", () => {
 
   describe("isAllowedRole", () => {
     it("returns true when role is in allowed roles", () => {
-      expect(isAllowedRole("main_admin", ["main_admin", "owner"]));
-      expect(isAllowedRole("owner", ["main_admin", "owner"]));
+      expect(isAllowedRole("main_admin", ["main_admin", "owner"])).toBe(true);
+      expect(isAllowedRole("owner", ["main_admin", "owner"])).toBe(true);
     });
 
     it("returns false when role is not in allowed roles", () => {
@@ -84,7 +84,7 @@ describe("auth.permissions", () => {
 
         canManageTechnicians: false,
         canManageUsers: false,
-        canManageReferenceData: false,
+        canManageServices: false,
 
         canUseOwnerTools: false,
       });
@@ -103,7 +103,7 @@ describe("auth.permissions", () => {
         canViewAdminPanel: false,
         canManageTechnicians: false,
         canManageUsers: false,
-        canManageReferenceData: false,
+        canManageServices: false,
         canUseOwnerTools: false,
       });
     });
@@ -121,7 +121,7 @@ describe("auth.permissions", () => {
         canViewAdminPanel: false,
         canManageTechnicians: false,
         canManageUsers: false,
-        canManageReferenceData: false,
+        canManageServices: false,
         canUseOwnerTools: false,
       });
     });
@@ -139,7 +139,7 @@ describe("auth.permissions", () => {
         canViewAdminPanel: true,
         canManageTechnicians: true,
         canManageUsers: false,
-        canManageReferenceData: false,
+        canManageServices: false,
         canUseOwnerTools: false,
       });
     });
@@ -157,7 +157,7 @@ describe("auth.permissions", () => {
         canViewAdminPanel: true,
         canManageTechnicians: true,
         canManageUsers: true,
-        canManageReferenceData: true,
+        canManageServices: true,
         canUseOwnerTools: false,
       });
     });
@@ -175,7 +175,7 @@ describe("auth.permissions", () => {
         canViewAdminPanel: true,
         canManageTechnicians: true,
         canManageUsers: true,
-        canManageReferenceData: true,
+        canManageServices: true,
         canUseOwnerTools: true,
       });
     });

@@ -18,7 +18,7 @@ export interface AuthPermissions {
 
   canManageTechnicians: boolean;
   canManageUsers: boolean;
-  canManageReferenceData: boolean;
+  canManageServices: boolean;
 
   canUseOwnerTools: boolean;
 }
@@ -68,7 +68,7 @@ export function getAuthPermissions(
     canManageTechnicians: hasRoleLevelOf(role, "secondary_admin"),
 
     canManageUsers: hasRoleLevelOf(role, "main_admin"),
-    canManageReferenceData: hasRoleLevelOf(role, "main_admin"),
+    canManageServices: hasRoleLevelOf(role, "main_admin"),
 
     canUseOwnerTools: role === "owner",
   };

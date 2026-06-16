@@ -1,23 +1,21 @@
 import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router";
-import { useTheme } from "../features/theme/useTheme";
-import logoLight from "../shared/assets/techfind-logo-light.svg";
-import logoDark from "../shared/assets/techfind-logo-dark.svg";
 import Header from "../layouts/Header";
 import Footer from "../layouts/Footer";
 import ProtectedRoute from "../features/auth/ui/ProtectedRoute";
 import { FullPageSpinner, InlineSpinner } from "../shared/ui/Spinners";
+import ManageTechniciansPage from "../pages/ManageTechniciansPage";
+import ManageServicesPage from "../pages/ManageServicesPage";
+import ManageUsersPage from "../pages/ManageUsersPage";
+import OwnerToolsPage from "../pages/OwnerToolsPage";
 
 const HomePage = lazy(() => import("../pages/HomePage"));
 const LoginPage = lazy(() => import("../pages/LoginPage"));
 
 function AppLayout() {
-  const { theme } = useTheme();
-  const logoSource = theme === "dark" ? logoDark : logoLight;
-
   return (
     <div className="flex min-h-screen flex-col bg-zinc-50 text-zinc-950 transition-colors dark:bg-zinc-950 dark:text-zinc-50">
-      <Header logoSource={logoSource} />
+      <Header />
 
       <main className="flex-1">
         <Suspense fallback={<InlineSpinner />}>
@@ -50,6 +48,10 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route path="/technicians" element={<ManageTechniciansPage />} />
+      <Route path="/services" element={<ManageServicesPage />} />
+      <Route path="/users" element={<ManageUsersPage />} />
+      <Route path="/owner" element={<OwnerToolsPage />} />
     </Routes>
   );
 }
