@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { AdminPermission } from "../model/auth.permissions";
 import { useAuthPermissions } from "../model/useAuthPermissions";
-import { Navigate } from "react-router";
+import AccessDeniedPage from "../../../pages/AccessDeniedPage";
 
 function PermissionRoute({
   permission,
@@ -13,7 +13,7 @@ function PermissionRoute({
   const permissions = useAuthPermissions();
 
   if (!permissions[permission]) {
-    return <Navigate to="/" replace />;
+    return <AccessDeniedPage />;
   }
 
   return children;
