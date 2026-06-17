@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router";
 import ProtectedRoute from "../features/auth/ui/ProtectedRoute";
 import { FullPageSpinner } from "../shared/ui/Spinners";
 import AuthenticatedLayout from "../layouts/AuthenticatedLayout";
+import PermissionRoute from "../features/auth/ui/PermissionRoute";
 
 const HomePage = lazy(() => import("../pages/HomePage"));
 const LoginPage = lazy(() => import("../pages/LoginPage"));
@@ -34,10 +35,38 @@ function App() {
         }
       >
         <Route index element={<HomePage />} />
-        <Route path="technicians" element={<ManageTechniciansPage />} />
-        <Route path="services" element={<ManageServicesPage />} />
-        <Route path="users" element={<ManageUsersPage />} />
-        <Route path="owner" element={<OwnerToolsPage />} />
+        <Route
+          path="technicians"
+          element={
+            <PermissionRoute permission="canManageTechnicians">
+              <ManageTechniciansPage />
+            </PermissionRoute>
+          }
+        />
+        <Route
+          path="services"
+          element={
+            <PermissionRoute permission="canManageServices">
+              <ManageServicesPage />
+            </PermissionRoute>
+          }
+        />
+        <Route
+          path="users"
+          element={
+            <PermissionRoute permission="canManageUsers">
+              <ManageUsersPage />
+            </PermissionRoute>
+          }
+        />
+        <Route
+          path="owner"
+          element={
+            <PermissionRoute permission="canUseOwnerTools">
+              <OwnerToolsPage />
+            </PermissionRoute>
+          }
+        />
       </Route>
     </Routes>
   );

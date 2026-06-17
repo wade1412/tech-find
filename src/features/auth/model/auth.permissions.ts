@@ -23,6 +23,12 @@ export interface AuthPermissions {
   canUseOwnerTools: boolean;
 }
 
+export type AdminPermission =
+  | "canManageTechnicians"
+  | "canManageUsers"
+  | "canManageServices"
+  | "canUseOwnerTools";
+
 type PermissionProfile = Pick<UserProfile, "role" | "active">;
 
 export function isAppRole(role: unknown): role is AppRole {
