@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { AdminPermission } from "../model/auth.permissions";
 import { useAuthPermissions } from "../model/useAuthPermissions";
-import AccessDeniedPage from "../../../pages/AccessDeniedPage";
+import AccessDeniedPage from "../../technician-filter/ui/AccessDeniedPage";
 
 function PermissionRoute({
   permission,

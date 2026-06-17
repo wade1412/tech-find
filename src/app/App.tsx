@@ -4,6 +4,7 @@ import ProtectedRoute from "../features/auth/ui/ProtectedRoute";
 import { FullPageSpinner } from "../shared/ui/Spinners";
 import AuthenticatedLayout from "../layouts/AuthenticatedLayout";
 import PermissionRoute from "../features/auth/ui/PermissionRoute";
+import NotFoundPage from "../pages/NotFoundPage";
 
 const HomePage = lazy(() => import("../pages/HomePage"));
 const LoginPage = lazy(() => import("../pages/LoginPage"));
@@ -68,6 +69,7 @@ function App() {
           }
         />
       </Route>
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }
