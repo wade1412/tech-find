@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import ManageTechnicianCard from "../../features/technician-management/ui/ManageTechnicianCard";
 import { useTechniciansQuery } from "../../entities/technician/useTechniciansQuery";
 import PageHeader from "../../shared/ui/PageHeader";
 import { useZoneNamesByTechnicianId } from "../../entities/technician-service-zone/useTechnicianZoneNames";
+import ManageTechniciansSearch from "../../features/technician-management/ui/ManageTechniciansSearch";
+import { filterTechniciansBySearch } from "../../features/technician-management/model/filterTechniciansBySearch";
 
 function ManageTechniciansPage() {
   const {
@@ -23,6 +25,17 @@ function ManageTechniciansPage() {
   const error = techniciansError ?? zoneNamesErrorObj;
 
   const [openTechnicianId, setOpenTechnicianId] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const visibleTechnicians = useMemo(
+    () =>
+      filterTechniciansBySearch(
+        technicians ?? [],
+        searchTerm,
+        zoneNamesByTechnicianId,
+      ),
+    [technicians, searchTerm, zoneNamesByTechnicianId],
+  );
 
   if (isPending) {
     return (
@@ -58,13 +71,17 @@ function ManageTechniciansPage() {
             title="Manage Technicians"
             subtitle="Select a technician to edit the data"
           />
+
           {/* Search Input */}
-          <div>Search Input</div>
+          <ManageTechniciansSearch
+            value={searchTerm}
+            onValueChange={(value) => setSearchTerm(value)}
+          />
         </div>
 
         {/* List */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
-          {technicians.map((technician) => (
+          {visibleTechnicians.map((technician) => (
             <ManageTechnicianCard
               key={technician.id}
               technician={technician}
