@@ -42,9 +42,9 @@ function ManageTechnicianCard({
             {technician.alias}
           </p>
 
-          <div className="mt-0.5 truncate text-xs text-zinc-400 dark:text-zinc-500">
-            <p>ZIP {technician.home_zip_code}</p>
-            <p>{zones.join(" - ")}</p>
+          <div className="mt-0.5 text-xs text-zinc-400 dark:text-zinc-500">
+            <p className="truncate">ZIP {technician.home_zip_code}</p>
+            <p className="truncate">{zones.join(" - ")}</p>
           </div>
         </div>
 

@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
-import TechnicianSkeleton from "../entities/technician/ui/TechnicianSkeleton";
 import ManageTechnicianCard from "../features/technician-management/ui/ManageTechnicianCard";
 import { useTechniciansQuery } from "../entities/technician/useTechniciansQuery";
 import { useServiceZonesQuery } from "../entities/service-zone/useServiceZonesQuery";
 import { useTechnicianServiceZonesQuery } from "../entities/technician-service-zone/useTechnicianServiceZonesQuery";
 import { createTechnicianZoneNamesMap } from "../entities/technician-service-zone/technician-service-zone.helpers";
+import PageHeader from "../shared/ui/PageHeader";
 
 function ManageTechniciansPage() {
   const {
@@ -39,7 +39,19 @@ function ManageTechniciansPage() {
   const error = techniciansError ?? zonesError ?? technicianZonesError;
 
   if (isPending) {
-    return <TechnicianSkeleton />;
+    return (
+      <section className="flex flex-col gap-4 p-4 md:p-6">
+        <div className="h-7 w-32 animate-pulse rounded-md bg-zinc-200 dark:bg-zinc-800" />
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+          {[...Array(6)].map((_, i) => (
+            <div
+              key={i}
+              className="h-20 animate-pulse rounded-xl bg-zinc-200 dark:bg-zinc-800"
+            />
+          ))}
+        </div>
+      </section>
+    );
   }
 
   if (isError) {
@@ -51,33 +63,35 @@ function ManageTechniciansPage() {
   }
 
   return (
-    <section className="flex flex-col p-4 md:p-6 gap-4">
-      <div>
-        <h1 className="font-heading tracking-wider text-xl font-semibold">
-          Technicians
-        </h1>
-
-        {/* Search Input */}
-        <div>Search Input</div>
-      </div>
-
-      {/* List */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-        {technicians.map((technician) => (
-          <ManageTechnicianCard
-            key={technician.id}
-            technician={technician}
-            zones={technicianZonesNames.get(technician.id) || []}
-            onToggle={() =>
-              setOpenTechnicianId((prev) =>
-                prev === technician.id ? null : technician.id,
-              )
-            }
-            isOpen={openTechnicianId === technician.id}
+    <div className="mx-auto max-w-6xl p-4 md:p-6">
+      <section className="flex flex-col gap-4">
+        <div>
+          <PageHeader
+            title="Manage Technicians"
+            subtitle="Select a technician to edit the data"
           />
-        ))}
-      </div>
-    </section>
+          {/* Search Input */}
+          <div>Search Input</div>
+        </div>
+
+        {/* List */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+          {technicians.map((technician) => (
+            <ManageTechnicianCard
+              key={technician.id}
+              technician={technician}
+              zones={technicianZonesNames.get(technician.id) || []}
+              onToggle={() =>
+                setOpenTechnicianId((prev) =>
+                  prev === technician.id ? null : technician.id,
+                )
+              }
+              isOpen={openTechnicianId === technician.id}
+            />
+          ))}
+        </div>
+      </section>
+    </div>
   );
 }
 
