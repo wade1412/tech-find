@@ -40,9 +40,15 @@ function ManageTechniciansPage() {
   if (isPending) {
     return (
       <div className="mx-auto max-w-6xl p-4 md:p-6">
-        <section className="flex flex-col gap-4 p-4 md:p-6">
-          <div className="h-7 w-32 animate-pulse rounded-md bg-zinc-200 dark:bg-zinc-800" />
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div className="flex flex-col gap-2">
+              <div className="h-6 w-44 animate-pulse rounded-md bg-zinc-200 dark:bg-zinc-800" />
+              <div className="h-4 w-64 animate-pulse rounded-md bg-zinc-200 dark:bg-zinc-800" />
+            </div>
+            <div className="h-10 w-full animate-pulse rounded-xl bg-zinc-200 dark:bg-zinc-800 md:w-72" />
+          </div>
+          <div className="grid grid-cols-1 gap-2.5 md:grid-cols-3">
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
@@ -50,7 +56,7 @@ function ManageTechniciansPage() {
               />
             ))}
           </div>
-        </section>
+        </div>
       </div>
     );
   }
@@ -66,16 +72,15 @@ function ManageTechniciansPage() {
   return (
     <div className="mx-auto max-w-6xl p-4 md:p-6">
       <section className="flex flex-col gap-4">
-        <div>
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <PageHeader
             title="Manage Technicians"
             subtitle="Select a technician to edit the data"
           />
-
-          {/* Search Input */}
           <ManageTechniciansSearch
             value={searchTerm}
-            onValueChange={(value) => setSearchTerm(value)}
+            onValueChange={setSearchTerm}
+            className="w-full md:w-72"
           />
         </div>
 
@@ -94,6 +99,12 @@ function ManageTechniciansPage() {
               isOpen={openTechnicianId === technician.id}
             />
           ))}
+
+          {visibleTechnicians.length === 0 && (
+            <p className="py-8 text-center text-sm text-zinc-400 dark:text-zinc-500 col-span-full">
+              No technicians found
+            </p>
+          )}
         </div>
       </section>
     </div>

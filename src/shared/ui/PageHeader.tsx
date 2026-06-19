@@ -5,7 +5,7 @@ interface PageHeaderProps {
 
 function PageHeader({ title, subtitle }: PageHeaderProps) {
   return (
-    <div className="mb-4">
+    <div>
       <h1 className="font-heading text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
         {title}
       </h1>
