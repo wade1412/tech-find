@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { Route, Routes } from "react-router";
+import { Outlet, Route, Routes } from "react-router";
 import ProtectedRoute from "../features/auth/ui/ProtectedRoute";
 import { FullPageSpinner } from "../shared/ui/Spinners";
 import AuthenticatedLayout from "../layouts/AuthenticatedLayout";
@@ -9,7 +9,10 @@ import NotFoundPage from "../pages/NotFoundPage";
 const HomePage = lazy(() => import("../pages/HomePage"));
 const LoginPage = lazy(() => import("../pages/LoginPage"));
 const ManageTechniciansPage = lazy(
-  () => import("../pages/ManageTechniciansPage"),
+  () => import("../pages/manageTechnicians/ManageTechniciansPage"),
+);
+const EditTechnicianPage = lazy(
+  () => import("../pages/manageTechnicians/EditTechnicianPage"),
 );
 const ManageServicesPage = lazy(() => import("../pages/ManageServicesPage"));
 const ManageUsersPage = lazy(() => import("../pages/ManageUsersPage"));
@@ -40,10 +43,14 @@ function App() {
           path="technicians"
           element={
             <PermissionRoute permission="canManageTechnicians">
-              <ManageTechniciansPage />
+              <Outlet />
             </PermissionRoute>
           }
-        />
+        >
+          <Route index element={<ManageTechniciansPage />} />
+          <Route path=":technicianId/edit" element={<EditTechnicianPage />} />
+        </Route>
+
         <Route
           path="services"
           element={

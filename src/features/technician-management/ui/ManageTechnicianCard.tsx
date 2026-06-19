@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import type { Technician } from "../../../entities/technician/technician.types";
 
 interface TechnicianCardProps {
@@ -16,13 +17,6 @@ function ManageTechnicianCard({
   return (
     <div
       onClick={onToggle}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onToggle();
-        }
-      }}
-      tabIndex={0}
       className={`focus-visible:ring-main-500 cursor-pointer overflow-hidden rounded-xl border transition-[border-color,background-color,box-shadow] duration-200 focus-visible:ring-2 focus-visible:outline-none ${isOpen ? "border-main-500/40 bg-white shadow-md dark:bg-zinc-800/80" : "border-zinc-200 bg-white shadow-sm hover:border-zinc-300 hover:shadow-md dark:border-zinc-700/60 dark:bg-zinc-800/50 dark:hover:border-zinc-600"}`}
     >
       {/* --- Main Info, visible always --- */}
@@ -72,9 +66,12 @@ function ManageTechnicianCard({
         className={`overflow-hidden transition-all duration-200 ${isOpen ? "max-h-96" : "max-h-0"}`}
       >
         <div className="flex items-center justify-center p-2">
-          <button className="bg-main-500 hover:bg-main-400 focus-visible:ring-main-500 cursor-pointer rounded-xl px-4 py-2.5 text-xs font-semibold text-zinc-950 transition-[background-color,transform] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98]">
+          <Link
+            to={`${technician.id}/edit`}
+            className="bg-main-500 hover:bg-main-400 focus-visible:ring-main-500 cursor-pointer rounded-xl px-4 py-2.5 text-xs font-semibold text-zinc-950 transition-[background-color,transform] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98]"
+          >
             Edit Technician
-          </button>
+          </Link>
         </div>
       </div>
     </div>
