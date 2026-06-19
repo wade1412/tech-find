@@ -16,6 +16,10 @@ import {
 import { useBrandGroupsQuery } from "../../../entities/brandGroup/useBrandGroupsQuery";
 import { useServiceZonesQuery } from "../../../entities/service-zone/useServiceZonesQuery";
 import { useTechnicianServiceZonesQuery } from "../../../entities/technician-service-zone/useTechnicianServiceZonesQuery";
+import {
+  createTechnicianZoneNamesMap,
+  createZoneMapByTechId,
+} from "../../../entities/technician-service-zone/technician-service-zone.helpers";
 
 export const useFilteredTechnicians = () => {
   // --- Queries ---
@@ -73,6 +77,11 @@ export const useFilteredTechnicians = () => {
   // --- Filtering Maps and Inputs ---
 
   // 1) General Maps:
+  // Map -  technicianId: zones
+  const zonesByTechId = useMemo(
+    () => createZoneMapByTechId(technicianZones ?? []),
+    [technicianZones],
+  );
   // Map - unitId: unit
   const unitsById = useMemo(
     () => new Map(units?.map((u) => [u.id, u]) ?? []),
@@ -83,25 +92,8 @@ export const useFilteredTechnicians = () => {
     () => new Map(specificIssues?.map((i) => [i.id, i]) ?? []),
     [specificIssues],
   );
-  // Map - zoneId: zoneName
-  const zoneNamesById = useMemo(
-    () => new Map(zones?.map((zone) => [zone.id, zone.name]) ?? []),
-    [zones],
-  );
 
   // 2) Technician Maps:
-  // Map -  technicianId: zones
-  const zonesByTechId = useMemo(() => {
-    if (!technicianZones) return new Map<string, Set<string>>();
-
-    return technicianZones.reduce((map, techZone) => {
-      const currentZones = map.get(techZone.technician_id) ?? new Set();
-      currentZones.add(techZone.zone_id);
-      map.set(techZone.technician_id, currentZones);
-
-      return map;
-    }, new Map<string, Set<string>>());
-  }, [technicianZones]);
   // Map -  technicianId: technicanSkills
   const skillsByTechId = useMemo(
     () => createDataMapByTechnicianId(skills || []),
@@ -252,19 +244,15 @@ export const useFilteredTechnicians = () => {
   // --- Presentation Maps ---
 
   // Map - technicianId: zones that he covers
-  const technicianZonesNames = useMemo(() => {
-    const map = new Map<string, string[]>();
-
-    for (const [techId, zoneIds] of zonesByTechId) {
-      const names = Array.from(zoneIds)
-        .map((zoneId) => zoneNamesById.get(zoneId))
-        .filter(Boolean) as string[];
-
-      map.set(techId, names);
-    }
-
-    return map;
-  }, [zoneNamesById, zonesByTechId]);
+  const technicianZonesNames = useMemo(
+    () =>
+      createTechnicianZoneNamesMap(
+        zones ?? [],
+        technicianZones ?? [],
+        zonesByTechId,
+      ),
+    [zones, technicianZones, zonesByTechId],
+  );
   // Map - technicianId: skill badges
   const technicianBadges = useMemo(() => {
     if (!technicians) return new Map<string, string[]>();
