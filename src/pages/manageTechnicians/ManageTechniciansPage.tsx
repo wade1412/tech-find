@@ -1,10 +1,8 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import ManageTechnicianCard from "../../features/technician-management/ui/ManageTechnicianCard";
 import { useTechniciansQuery } from "../../entities/technician/useTechniciansQuery";
-import { useServiceZonesQuery } from "../../entities/service-zone/useServiceZonesQuery";
-import { useTechnicianServiceZonesQuery } from "../../entities/technician-service-zone/useTechnicianServiceZonesQuery";
-import { createTechnicianZoneNamesMap } from "../../entities/technician-service-zone/technician-service-zone.helpers";
 import PageHeader from "../../shared/ui/PageHeader";
+import { useZoneNamesByTechnicianId } from "../../entities/technician-service-zone/useTechnicianZoneNames";
 
 function ManageTechniciansPage() {
   const {
@@ -14,29 +12,17 @@ function ManageTechniciansPage() {
     error: techniciansError,
   } = useTechniciansQuery();
   const {
-    data: zones,
-    isPending: isZonesPending,
-    isError: isZonesError,
-    error: zonesError,
-  } = useServiceZonesQuery();
-  const {
-    data: technicianZones,
-    isPending: isTechnicianZonesPending,
-    isError: isTechnicianZonesError,
-    error: technicianZonesError,
-  } = useTechnicianServiceZonesQuery();
+    zoneNamesByTechnicianId,
+    isPending: isZoneNamesPending,
+    isError: isZoneNamesError,
+    error: zoneNamesErrorObj,
+  } = useZoneNamesByTechnicianId();
 
-  const technicianZonesNames = useMemo(
-    () => createTechnicianZoneNamesMap(zones ?? [], technicianZones ?? []),
-    [zones, technicianZones],
-  );
+  const isPending = isTechniciansPending || isZoneNamesPending;
+  const isError = isTechniciansError || isZoneNamesError;
+  const error = techniciansError ?? zoneNamesErrorObj;
 
   const [openTechnicianId, setOpenTechnicianId] = useState<string | null>(null);
-
-  const isPending =
-    isTechniciansPending || isZonesPending || isTechnicianZonesPending;
-  const isError = isTechniciansError || isZonesError || isTechnicianZonesError;
-  const error = techniciansError ?? zonesError ?? technicianZonesError;
 
   if (isPending) {
     return (
@@ -82,7 +68,7 @@ function ManageTechniciansPage() {
             <ManageTechnicianCard
               key={technician.id}
               technician={technician}
-              zones={technicianZonesNames.get(technician.id) || []}
+              zones={zoneNamesByTechnicianId.get(technician.id) || []}
               onToggle={() =>
                 setOpenTechnicianId((prev) =>
                   prev === technician.id ? null : technician.id,
