@@ -5,12 +5,13 @@ import { useParams } from "react-router";
 import { useTechniciansQuery } from "../../entities/technician/useTechniciansQuery";
 import NotFoundPage from "../NotFoundPage";
 import { useZoneNamesByTechnicianId } from "../../entities/technician-service-zone/useZoneNamesByTechnicianId";
+import ProfileAndCapacitiesSection from "./ProfileAndCapacitiesSection";
 
 const editSections = [
-  { id: "1", title: "Profile & Capacities" },
-  { id: "2", title: "Service Zones" },
-  { id: "3", title: "Skills" },
-  { id: "4", title: "Ignore List" },
+  { id: "profile", title: "Profile & Capacities" },
+  { id: "service_zones", title: "Service Zones" },
+  { id: "skills", title: "Skills" },
+  { id: "ignore_list", title: "Ignore List" },
 ];
 
 function EditTechnicianPage() {
@@ -98,6 +99,9 @@ function EditTechnicianPage() {
             />
           ))}
         </div>
+
+        {/* Selected Section */}
+        {selectedSectionId === "profile" && <ProfileAndCapacitiesSection />}
       </section>
     </div>
   );
