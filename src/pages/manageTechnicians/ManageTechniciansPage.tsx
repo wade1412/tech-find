@@ -5,6 +5,12 @@ import PageHeader from "../../shared/ui/PageHeader";
 import { useZoneNamesByTechnicianId } from "../../entities/technician-service-zone/useZoneNamesByTechnicianId";
 import ManageTechniciansSearch from "../../features/technician-management/ui/ManageTechniciansSearch";
 import { filterTechniciansBySearch } from "../../features/technician-management/model/filterTechniciansBySearch";
+import { AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
+import {
+  technicianCardVariants,
+  technicianListVariants,
+} from "../../shared/styles/motionVariants";
 
 function ManageTechniciansPage() {
   const {
@@ -90,27 +96,54 @@ function ManageTechniciansPage() {
         </div>
 
         {/* List */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
-          {visibleTechnicians.map((technician) => (
-            <ManageTechnicianCard
-              key={technician.id}
-              technician={technician}
-              zones={zoneNamesByTechnicianId.get(technician.id) || []}
-              onToggle={() =>
-                setOpenTechnicianId((prev) =>
-                  prev === technician.id ? null : technician.id,
-                )
-              }
-              isOpen={openTechnicianId === technician.id}
-            />
-          ))}
 
-          {visibleTechnicians.length === 0 && (
-            <p className="py-8 text-center text-sm text-zinc-400 dark:text-zinc-500 col-span-full">
-              No technicians found
-            </p>
-          )}
-        </div>
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-3 gap-2.5"
+          variants={technicianListVariants}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          layout
+        >
+          <AnimatePresence mode="popLayout">
+            {visibleTechnicians.length > 0 ? (
+              visibleTechnicians.map((technician) => (
+                <motion.div
+                  key={technician.id}
+                  layout
+                  variants={technicianCardVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  whileHover={{ y: -2 }}
+                >
+                  <ManageTechnicianCard
+                    technician={technician}
+                    zones={zoneNamesByTechnicianId.get(technician.id) || []}
+                    onToggle={() =>
+                      setOpenTechnicianId((prev) =>
+                        prev === technician.id ? null : technician.id,
+                      )
+                    }
+                    isOpen={openTechnicianId === technician.id}
+                  />
+                </motion.div>
+              ))
+            ) : (
+              <motion.p
+                key="empty"
+                layout
+                variants={technicianCardVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="col-span-full py-8 text-center text-sm text-zinc-400 dark:text-zinc-500"
+              >
+                No technicians found
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </motion.div>
       </section>
     </div>
   );
