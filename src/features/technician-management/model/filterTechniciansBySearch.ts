@@ -17,7 +17,7 @@ export const filterTechniciansBySearch = (
       technician.alias,
       technician.name,
       technician.home_zip_code,
-      techZones.join(","),
+      ...techZones,
     ];
 
     return normalize(fields.join(" "));

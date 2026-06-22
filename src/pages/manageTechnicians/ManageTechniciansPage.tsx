@@ -27,6 +27,11 @@ function ManageTechniciansPage() {
   const [openTechnicianId, setOpenTechnicianId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    setOpenTechnicianId(null);
+  };
+
   const visibleTechnicians = useMemo(
     () =>
       filterTechniciansBySearch(
@@ -79,7 +84,7 @@ function ManageTechniciansPage() {
           />
           <ManageTechniciansSearch
             value={searchTerm}
-            onValueChange={setSearchTerm}
+            onValueChange={handleSearchChange}
             className="w-full md:w-72"
           />
         </div>
