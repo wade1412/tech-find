@@ -11,7 +11,7 @@ export const filterTechniciansBySearch = (
   if (terms.length === 0) return technicians;
 
   const getTechnicianSearchableString = (technician: Technician) => {
-    const techZones = zoneNamesByTechnicianId.get(technician.id) || [];
+    const techZones = zoneNamesByTechnicianId.get(technician.id) ?? [];
 
     const fields = [
       technician.alias,
@@ -20,7 +20,7 @@ export const filterTechniciansBySearch = (
       techZones.join(","),
     ];
 
-    return normalize(fields.join(""));
+    return normalize(fields.join(" "));
   };
 
   const foundTechnicians = technicians.filter((technician) => {

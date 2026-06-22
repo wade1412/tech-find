@@ -4,7 +4,7 @@ import EditTechnicianSectionCard from "./EditTechnicianSectionCard";
 import { useParams } from "react-router";
 import { useTechniciansQuery } from "../../entities/technician/useTechniciansQuery";
 import NotFoundPage from "../NotFoundPage";
-import { useZoneNamesByTechnicianId } from "../../entities/technician-service-zone/useTechnicianZoneNames";
+import { useZoneNamesByTechnicianId } from "../../entities/technician-service-zone/useZoneNamesByTechnicianId";
 
 const editSections = [
   { id: "1", title: "Profile & Capacities" },

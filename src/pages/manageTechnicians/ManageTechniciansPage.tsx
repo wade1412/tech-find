@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import ManageTechnicianCard from "../../features/technician-management/ui/ManageTechnicianCard";
 import { useTechniciansQuery } from "../../entities/technician/useTechniciansQuery";
 import PageHeader from "../../shared/ui/PageHeader";
-import { useZoneNamesByTechnicianId } from "../../entities/technician-service-zone/useTechnicianZoneNames";
+import { useZoneNamesByTechnicianId } from "../../entities/technician-service-zone/useZoneNamesByTechnicianId";
 import ManageTechniciansSearch from "../../features/technician-management/ui/ManageTechniciansSearch";
 import { filterTechniciansBySearch } from "../../features/technician-management/model/filterTechniciansBySearch";
 
