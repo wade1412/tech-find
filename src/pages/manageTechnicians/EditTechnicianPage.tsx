@@ -101,7 +101,9 @@ function EditTechnicianPage() {
         </div>
 
         {/* Selected Section */}
-        {selectedSectionId === "profile" && <ProfileAndCapacitiesSection />}
+        {selectedSectionId === "profile" && (
+          <ProfileAndCapacitiesSection technician={selectedTechnician} />
+        )}
       </section>
     </div>
   );

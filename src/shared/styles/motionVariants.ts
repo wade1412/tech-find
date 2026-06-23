@@ -5,10 +5,6 @@ export const technicianListVariants: Variants = {
   visible: {
     transition: { staggerChildren: 0.05 },
   },
-  exit: {
-    opacity: 0,
-    transition: { duration: 0.12, ease: "easeIn" },
-  },
 };
 
 export const technicianCardVariants: Variants = {

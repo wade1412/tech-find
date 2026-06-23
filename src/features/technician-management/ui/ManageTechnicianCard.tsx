@@ -63,7 +63,7 @@ function ManageTechnicianCard({
 
       {/* --- Expanded panel --- */}
       <div
-        className={`overflow-hidden transition-all duration-200 ${isOpen ? "max-h-96" : "max-h-0"}`}
+        className={`overflow-hidden transition-[max-height] duration-200 ${isOpen ? "max-h-96" : "max-h-0"}`}
       >
         <div className="flex items-center justify-center p-2">
           <Link

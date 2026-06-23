@@ -103,7 +103,6 @@ function ManageTechniciansPage() {
           initial="hidden"
           animate="visible"
           exit="exit"
-          layout
         >
           <AnimatePresence mode="popLayout">
             {visibleTechnicians.length > 0 ? (

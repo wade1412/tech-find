@@ -18,7 +18,7 @@ function EditTechnicianSectionCard({
       tabIndex={0}
       aria-pressed={isSelected}
       onClick={onToggle}
-      className={`relative flex cursor-pointer items-center justify-center overflow-hidden rounded-xl py-6 px-2 text-center transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-main-500
+      className={`relative flex cursor-pointer items-center justify-center overflow-hidden rounded-xl py-6 px-2 text-center transition-[scale,border,background-color,color] duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-main-500
         ${
           isSelected
             ? "border-2 border-main-500 bg-main-500/10 text-main-500 shadow-inner dark:bg-main-500/10"
