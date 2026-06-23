@@ -5,7 +5,7 @@ import { useParams } from "react-router";
 import { useTechniciansQuery } from "../../entities/technician/useTechniciansQuery";
 import NotFoundPage from "../NotFoundPage";
 import { useZoneNamesByTechnicianId } from "../../entities/technician-service-zone/useZoneNamesByTechnicianId";
-import ProfileAndCapacitiesSection from "./ProfileAndCapacitiesSection";
+import ProfileAndCapacitiesSection from "./profileAndCapacities/ProfileAndCapacitiesSection";
 
 const editSections = [
   { id: "profile", title: "Profile & Capacities" },

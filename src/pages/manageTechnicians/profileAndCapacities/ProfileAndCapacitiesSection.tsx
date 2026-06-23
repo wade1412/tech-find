@@ -1,57 +1,13 @@
-import { useState } from "react";
-import type { Technician } from "../../entities/technician/technician.types";
-import ToggleStatus from "./ToggleStatus";
-import Checkbox from "../../shared/ui/Checkbox";
-
+import { useMemo, useState } from "react";
+import type { Technician } from "../../../entities/technician/technician.types";
+import ToggleStatus from "../ToggleStatus";
+import Checkbox from "../../../shared/ui/Checkbox";
+import { CAPABILITY_FIELDS, PROFILE_FIELDS } from "./profile.constants";
+import { buildTechnicianPatch } from "./buildTechnicianPatch";
+import type { CapabilityFieldKey, ProfileFieldKey } from "./profile.types";
 interface ProfileAndCapacitiesSectionProps {
   technician: Technician;
 }
-
-type ProfileFieldKey =
-  | "alias"
-  | "name"
-  | "home_zip_code"
-  | "jobs_per_day"
-  | "notes";
-
-type ProfileFieldConfig = {
-  key: ProfileFieldKey;
-  label: string;
-};
-
-type CapabilityFieldKey =
-  | "gas"
-  | "commercial"
-  | "can_service_built_in"
-  | "can_service_stacked_washer"
-  | "can_service_stacked_dryer";
-
-type CapabilityFieldConfig = {
-  key: CapabilityFieldKey;
-  label: string;
-};
-
-const PROFILE_FIELDS: ProfileFieldConfig[] = [
-  { key: "alias", label: "Alias" },
-  { key: "name", label: "Technician Name" },
-  { key: "home_zip_code", label: "Home Zip Code" },
-  { key: "jobs_per_day", label: "Jobs Per Day" },
-  { key: "notes", label: "Notes" },
-];
-const CAPABILITY_FIELDS: CapabilityFieldConfig[] = [
-  {
-    key: "can_service_stacked_dryer",
-    label: "Stacked Dryer (Sliders)",
-  },
-  { key: "gas", label: "Gas" },
-  {
-    key: "can_service_stacked_washer",
-    label: "Stacked Washer (Sliders)",
-  },
-  { key: "commercial", label: "Commercial" },
-  { key: "can_service_built_in", label: "Built-In (Lift)" },
-];
-
 const labelStyle = "text-sm font-medium text-zinc-400 dark:text-zinc-500";
 const inputStyle =
   "rounded-xl border border-zinc-200 bg-zinc-50/50 px-3.5 py-2 text-sm text-zinc-900 outline-none transition-[border,background-color,color] focus:border-main-500 focus:bg-white focus:ring-2 focus:ring-main-500/20 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-main-500 dark:focus:bg-zinc-950";
@@ -59,31 +15,35 @@ const inputStyle =
 function ProfileAndCapacitiesSection({
   technician,
 }: ProfileAndCapacitiesSectionProps) {
-  const [isActive, setIsActive] = useState(technician.active);
+  const [formState, setFormState] = useState({ ...technician });
 
-  const initialProfile = Object.fromEntries(
-    PROFILE_FIELDS.map(({ key }) => [key, String(technician[key] ?? "")]),
+  const toggleActive = () =>
+    setFormState((prev) => ({ ...prev, active: prev.active ? false : true }));
+
+  const patch = useMemo(
+    () => buildTechnicianPatch(technician, formState),
+    [technician, formState],
   );
 
-  const initialCapabilities = Object.fromEntries(
-    CAPABILITY_FIELDS.map(({ key }) => [key, Boolean(technician[key])]),
-  );
+  const isDirty = Object.keys(patch).length > 0;
 
-  const [profile, setProfile] = useState(initialProfile);
-  const [capabilities, setCapabilities] = useState(initialCapabilities);
-
-  const onInputChange = (key: string, newValue: string) => {
-    setProfile((prev) => ({ ...prev, [key]: newValue }));
+  const onProfileFieldChange = (key: ProfileFieldKey, newValue: string) => {
+    setFormState((prev) => ({ ...prev, [key]: newValue }));
   };
 
-  const toggleCapability = (key: string) =>
-    setCapabilities((prev) => ({ ...prev, [key]: !prev[key] }));
+  const toggleCapability = (key: CapabilityFieldKey) =>
+    setFormState((prev) => ({ ...prev, [key]: !prev[key] }));
+
+  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!isDirty) return;
+  };
 
   return (
-    <form className="flex flex-col gap-6">
+    <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
       {/* Head - Technician Status */}
       <div
-        className={`flex items-center justify-between rounded-xl border px-4 py-3 transition-colors ${isActive ? "border-zinc-200 bg-white dark:border-zinc-700/60 dark:bg-zinc-800/50" : "border-red-200 bg-red-50/50 dark:border-red-900/40 dark:bg-red-950/20"}`}
+        className={`flex items-center justify-between rounded-xl border px-4 py-3 transition-colors ${formState.active ? "border-zinc-200 bg-white dark:border-zinc-700/60 dark:bg-zinc-800/50" : "border-red-200 bg-red-50/50 dark:border-red-900/40 dark:bg-red-950/20"}`}
       >
         <div>
           <p className={labelStyle}>Technician status</p>
@@ -91,7 +51,7 @@ function ProfileAndCapacitiesSection({
             Inactive technicians are excluded from all matching
           </p>
         </div>
-        <ToggleStatus checked={isActive} onChange={setIsActive} />
+        <ToggleStatus checked={formState.active} onChange={toggleActive} />
       </div>
 
       {/* Profile Fields */}
@@ -109,8 +69,8 @@ function ProfileAndCapacitiesSection({
                     id="notes"
                     name="notes"
                     rows={3}
-                    value={profile[key]}
-                    onChange={(e) => onInputChange(key, e.target.value)}
+                    value={formState[key] ?? ""}
+                    onChange={(e) => onProfileFieldChange(key, e.target.value)}
                     className={`${inputStyle} resize-none`}
                   />
                 </label>
@@ -125,8 +85,8 @@ function ProfileAndCapacitiesSection({
                   <input
                     id={key}
                     name={key}
-                    value={profile[key]}
-                    onChange={(e) => onInputChange(key, e.target.value)}
+                    value={formState[key]}
+                    onChange={(e) => onProfileFieldChange(key, e.target.value)}
                     className={inputStyle}
                   />
                 </label>
@@ -147,7 +107,7 @@ function ProfileAndCapacitiesSection({
               key={key}
               id={key}
               label={label}
-              checked={capabilities[key]}
+              checked={formState[key]}
               onChange={() => toggleCapability(key)}
             />
           ))}
@@ -157,7 +117,8 @@ function ProfileAndCapacitiesSection({
       <div className="flex items-center justify-center p-2">
         <button
           type="submit"
-          className="bg-main-500 hover:bg-main-400 focus-visible:ring-main-500 cursor-pointer rounded-xl px-4 py-2.5 text-xs font-semibold text-zinc-950 transition-[background-color,transform] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98]"
+          disabled={!isDirty}
+          className="bg-main-500 hover:bg-main-400 focus-visible:ring-main-500 cursor-pointer rounded-xl px-4 py-2.5 text-xs font-semibold text-zinc-950 transition-[background-color,transform,opacity] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50"
         >
           Save Changes
         </button>
