@@ -1,63 +1,39 @@
-import { styled } from "@mui/material/styles";
-import { FormControlLabel, Switch } from "@mui/material";
+interface ToggleStatusProps {
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}
 
-const ToggleSwitch = styled((props) => (
-  <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
-))(({ theme }) => ({
-  width: 42,
-  height: 26,
-  padding: 0,
-  "& .MuiSwitch-switchBase": {
-    padding: 0,
-    margin: 2,
-    transitionDuration: "300ms",
-    "&.Mui-checked": {
-      transform: "translateX(16px)",
-      color: "#fff",
-      "& + .MuiSwitch-track": {
-        backgroundColor: "#65C466",
-        opacity: 1,
-        border: 0,
-        ...theme.applyStyles("dark", {
-          backgroundColor: "#2ECA45",
-        }),
-      },
-      "&.Mui-disabled + .MuiSwitch-track": {
-        opacity: 0.5,
-      },
-    },
-    "&.Mui-focusVisible .MuiSwitch-thumb": {
-      color: "#33cf4d",
-      border: "6px solid #fff",
-    },
-    "&.Mui-disabled .MuiSwitch-thumb": {
-      color: theme.palette.grey[100],
-      ...theme.applyStyles("dark", {
-        color: theme.palette.grey[600],
-      }),
-    },
-    "&.Mui-disabled + .MuiSwitch-track": {
-      opacity: 0.7,
-    },
-  },
-  "& .MuiSwitch-thumb": {
-    boxSizing: "border-box",
-    width: 22,
-    height: 22,
-  },
-  "& .MuiSwitch-track": {
-    borderRadius: 26 / 2,
-    backgroundColor: "#E9E9EA",
-    opacity: 1,
-    transition: theme.transitions.create(["background-color"], {
-      duration: 500,
-    }),
-  },
-}));
-
-function ToggleStatus() {
+function ToggleStatus({ checked, onChange }: ToggleStatusProps) {
   return (
-    <FormControlLabel control={<ToggleSwitch sx={{ m: 1 }} />} label="Active" />
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      onClick={() => onChange(!checked)}
+      className="group flex cursor-pointer items-center gap-2.5 select-none focus:outline-none"
+    >
+      <span
+        className={`relative h-6 w-11 shrink-0 rounded-full border transition-colors duration-200 group-focus-visible:ring-2 group-focus-visible:ring-main-500 group-focus-visible:ring-offset-1 ${
+          checked
+            ? "border-main-500 bg-main-500"
+            : "border-zinc-300 bg-zinc-200 dark:border-zinc-600 dark:bg-zinc-700"
+        }`}
+      >
+        <span
+          className={`absolute top-0.5 left-0.5 h-4.5 w-4.5 rounded-full bg-white shadow-sm transition-transform duration-200 ${
+            checked ? "translate-x-5" : "translate-x-0"
+          }`}
+        />
+      </span>
+
+      <span
+        className={`text-sm font-medium min-w-15 transition-colors ${
+          checked ? "text-main-500" : "text-zinc-600 dark:text-zinc-400"
+        }`}
+      >
+        {checked ? "Active" : "Inactive"}
+      </span>
+    </button>
   );
 }
 
