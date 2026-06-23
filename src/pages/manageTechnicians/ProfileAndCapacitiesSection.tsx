@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Technician } from "../../entities/technician/technician.types";
 import ToggleStatus from "./ToggleStatus";
+import Checkbox from "../../shared/ui/Checkbox";
 
 interface ProfileAndCapacitiesSectionProps {
   technician: Technician;
@@ -14,43 +15,55 @@ type ProfileFieldConfig = {
 const PROFILE_FIELDS: ProfileFieldConfig[] = [
   { key: "alias", label: "Alias" },
   { key: "name", label: "Technician Name" },
-  { key: "active", label: "Status" },
   { key: "home_zip_code", label: "Home Zip Code" },
   { key: "jobs_per_day", label: "Jobs Per Day" },
   { key: "notes", label: "Notes" },
 ];
 const CAPABILITY_FIELDS: ProfileFieldConfig[] = [
-  { key: "gas", label: "Gas Capable" },
-  { key: "commercial", label: "Commercial Capable" },
-  { key: "can_service_built_in", label: "Built-In Capable (Lift)" },
   {
     key: "can_service_stacked_dryer",
-    label: "Stacked Dryer Capable (Sliders)",
+    label: "Stacked Dryer (Sliders)",
   },
+  { key: "gas", label: "Gas" },
   {
     key: "can_service_stacked_washer",
-    label: "Stacked Washer Capable (Sliders)",
+    label: "Stacked Washer (Sliders)",
   },
+  { key: "commercial", label: "Commercial" },
+  { key: "can_service_built_in", label: "Built-In (Lift)" },
 ];
 
-const labelStyle = "text-sm font-medium text-zinc-700 dark:text-zinc-300";
+const labelStyle = "text-sm font-medium text-zinc-400 dark:text-zinc-500";
+const inputStyle =
+  "rounded-xl border border-zinc-200 bg-zinc-50/50 px-3.5 py-2 text-sm text-zinc-900 outline-none transition-[border,background-color,color] focus:border-main-500 focus:bg-white focus:ring-2 focus:ring-main-500/20 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-main-500 dark:focus:bg-zinc-950";
 
 function ProfileAndCapacitiesSection({
   technician,
 }: ProfileAndCapacitiesSectionProps) {
   const [isActive, setIsActive] = useState(technician.active);
-  const [capabilities, setCapabilities] = useState(
-    Object.fromEntries(
-      CAPABILITY_FIELDS.map(({ key }) => [key, Boolean(technician[key])]),
-    ),
+
+  const initialProfile = Object.fromEntries(
+    PROFILE_FIELDS.map(({ key }) => [key, String(technician[key])]),
   );
+
+  const initialCapabilities = Object.fromEntries(
+    CAPABILITY_FIELDS.map(({ key }) => [key, Boolean(technician[key])]),
+  );
+
+  const [profile, setProfile] = useState(initialProfile);
+  const [capabilities, setCapabilities] = useState(initialCapabilities);
+
+  const onInputChange = (key: string, newValue: string) => {
+    setProfile((prev) => ({ ...prev, [key]: newValue }));
+    console.log(profile);
+  };
 
   const toggleCapability = (key: string) =>
     setCapabilities((prev) => ({ ...prev, [key]: !prev[key] }));
 
   return (
     <form className="flex flex-col gap-6">
-      {/* Technician Status */}
+      {/* Head - Technician Status */}
       <div
         className={`flex items-center justify-between rounded-xl border px-4 py-3 transition-colors ${
           isActive
@@ -67,40 +80,65 @@ function ProfileAndCapacitiesSection({
         <ToggleStatus checked={isActive} onChange={setIsActive} />
       </div>
 
-      {/* Main Section*/}
-      <div>
-        {/* Edit Profile Info */}
-        <div className="flex flex-col gap-2">
-          {PROFILE_FIELDS.map(({ key, label }) => {
-            if (key === "active") {
-              return <ToggleStatus checked={isActive} onChange={setIsActive} />;
-            }
-
-            return (
-              <div key={key} className="flex flex-col gap-1">
-                <label htmlFor={key}>{label}</label>
-                <input
-                  id={key}
-                  placeholder={
-                    typeof technician[key] === "string"
-                      ? technician[key]
-                      : label
-                  }
-                />
+      {/* Profile Fields */}
+      <section className="flex flex-col gap-3">
+        <h2 className="font-heading text-sm font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+          Profile
+        </h2>
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          {PROFILE_FIELDS.map(({ key, label }) =>
+            key === "notes" ? (
+              <div key={key}>
+                <label className={`flex flex-col gap-1.5 ${labelStyle}`}>
+                  Notes
+                  <textarea
+                    id="notes"
+                    name="notes"
+                    rows={3}
+                    value={profile[key]}
+                    onChange={(e) => onInputChange(key, e.target.value)}
+                    className={`${inputStyle} resize-none`}
+                  />
+                </label>
               </div>
-            );
-          })}
+            ) : (
+              <div key={key}>
+                <label
+                  key={key}
+                  className={`flex flex-col gap-1.5 ${labelStyle}`}
+                >
+                  {label}
+                  <input
+                    id={key}
+                    name={key}
+                    value={profile[key]}
+                    onChange={(e) => onInputChange(key, e.target.value)}
+                    className={inputStyle}
+                  />
+                </label>
+              </div>
+            ),
+          )}
         </div>
+      </section>
 
-        {/* Edit Capabilites */}
-        <div>
+      {/* Capabilites */}
+      <section className="flex flex-col gap-3">
+        <h2 className="font-heading text-sm font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+          Capabilities
+        </h2>
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {CAPABILITY_FIELDS.map(({ key, label }) => (
-            <div key={key} className="flex flex-col gap-1">
-              <label htmlFor={key}>{label}</label>
-            </div>
+            <Checkbox
+              key={key}
+              id={key}
+              label={label}
+              checked={capabilities[key]}
+              onChange={() => toggleCapability(key)}
+            />
           ))}
         </div>
-      </div>
+      </section>
 
       <div className="flex items-center justify-center p-2">
         <button

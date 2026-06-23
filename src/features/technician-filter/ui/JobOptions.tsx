@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useUnitsQuery } from "../../../entities/unit/useUnitsQuery";
 import { filterCheckboxes } from "../model/filter.constants";
 import { useTechnicianFilters } from "../model/useTechnicianFilters";
-import OptionCheckbox from "./OptionCheckbox";
+import Checkbox from "../../../shared/ui/Checkbox";
 import type { JobOptionKey } from "../model/filter.types";
 
 function JobOptions() {
@@ -91,9 +91,10 @@ function JobOptions() {
         {filterCheckboxes
           .filter((optionName: JobOptionKey) => options[optionName].visible)
           .map((optionName: JobOptionKey) => (
-            <OptionCheckbox
+            <Checkbox
               key={optionName}
-              name={optionName}
+              id={optionName}
+              label={optionName.charAt(0).toUpperCase() + optionName.slice(1)}
               checked={options[optionName].checked}
               onChange={options[optionName].onChange}
             />

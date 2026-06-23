@@ -1,21 +1,17 @@
-import type { JobOptionKey } from "../model/filter.types";
-
-interface OptionCheckboxProps {
-  name: JobOptionKey;
+interface CheckboxProps {
+  id: string;
+  label: string;
   checked: boolean;
   onChange: () => void;
 }
 
-function OptionCheckbox({ name, checked, onChange }: OptionCheckboxProps) {
-  const label = name.charAt(0).toUpperCase() + name.slice(1);
-
+function Checkbox({ id, label, checked, onChange }: CheckboxProps) {
   return (
     <label className="group flex cursor-pointer items-center gap-2 select-none">
       {/* Hidden input */}
       <input
         type="checkbox"
-        name={name}
-        id={name}
+        id={id}
         checked={checked}
         onChange={onChange}
         className="peer sr-only"
@@ -50,4 +46,4 @@ function OptionCheckbox({ name, checked, onChange }: OptionCheckboxProps) {
   );
 }
 
-export default OptionCheckbox;
+export default Checkbox;
