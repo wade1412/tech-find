@@ -1,10 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
-import { getTechnicians } from "./technician.api";
+import { getAllTechnicians, getActiveTechnicians } from "./technician.api";
 import { queryKeys } from "../../shared/api/queryKeys";
 
-export const useTechniciansQuery = () => {
+export const useTechniciansQuery = (status: "all" | "active" = "active") => {
   return useQuery({
-    queryKey: queryKeys.technicians,
-    queryFn: getTechnicians,
+    queryKey:
+      status === "active"
+        ? queryKeys.technicians.active
+        : queryKeys.technicians.all,
+    queryFn: status === "active" ? getActiveTechnicians : getAllTechnicians,
   });
 };

@@ -8,6 +8,7 @@ function ToggleStatus({ checked, onChange }: ToggleStatusProps) {
     <button
       type="button"
       role="switch"
+      aria-label="Technician status"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
       className="group flex cursor-pointer items-center gap-2.5 select-none focus:outline-none"

@@ -7,8 +7,27 @@ interface ProfileAndCapacitiesSectionProps {
   technician: Technician;
 }
 
+type ProfileFieldKey =
+  | "alias"
+  | "name"
+  | "home_zip_code"
+  | "jobs_per_day"
+  | "notes";
+
 type ProfileFieldConfig = {
-  key: keyof Technician;
+  key: ProfileFieldKey;
+  label: string;
+};
+
+type CapabilityFieldKey =
+  | "gas"
+  | "commercial"
+  | "can_service_built_in"
+  | "can_service_stacked_washer"
+  | "can_service_stacked_dryer";
+
+type CapabilityFieldConfig = {
+  key: CapabilityFieldKey;
   label: string;
 };
 
@@ -19,7 +38,7 @@ const PROFILE_FIELDS: ProfileFieldConfig[] = [
   { key: "jobs_per_day", label: "Jobs Per Day" },
   { key: "notes", label: "Notes" },
 ];
-const CAPABILITY_FIELDS: ProfileFieldConfig[] = [
+const CAPABILITY_FIELDS: CapabilityFieldConfig[] = [
   {
     key: "can_service_stacked_dryer",
     label: "Stacked Dryer (Sliders)",
@@ -43,7 +62,7 @@ function ProfileAndCapacitiesSection({
   const [isActive, setIsActive] = useState(technician.active);
 
   const initialProfile = Object.fromEntries(
-    PROFILE_FIELDS.map(({ key }) => [key, String(technician[key])]),
+    PROFILE_FIELDS.map(({ key }) => [key, String(technician[key] ?? "")]),
   );
 
   const initialCapabilities = Object.fromEntries(
@@ -55,7 +74,6 @@ function ProfileAndCapacitiesSection({
 
   const onInputChange = (key: string, newValue: string) => {
     setProfile((prev) => ({ ...prev, [key]: newValue }));
-    console.log(profile);
   };
 
   const toggleCapability = (key: string) =>
@@ -65,11 +83,7 @@ function ProfileAndCapacitiesSection({
     <form className="flex flex-col gap-6">
       {/* Head - Technician Status */}
       <div
-        className={`flex items-center justify-between rounded-xl border px-4 py-3 transition-colors ${
-          isActive
-            ? "border-zinc-200 bg-white dark:border-zinc-700/60 dark:bg-zinc-800/50"
-            : "border-red-200 bg-red-50/50 dark:border-red-900/40 dark:bg-red-950/20"
-        }`}
+        className={`flex items-center justify-between rounded-xl border px-4 py-3 transition-colors ${isActive ? "border-zinc-200 bg-white dark:border-zinc-700/60 dark:bg-zinc-800/50" : "border-red-200 bg-red-50/50 dark:border-red-900/40 dark:bg-red-950/20"}`}
       >
         <div>
           <p className={labelStyle}>Technician status</p>
@@ -82,7 +96,7 @@ function ProfileAndCapacitiesSection({
 
       {/* Profile Fields */}
       <section className="flex flex-col gap-3">
-        <h2 className="font-heading text-sm font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+        <h2 className="font-heading text-sm font-semibold tracking-wider text-zinc-400 uppercase dark:text-zinc-500">
           Profile
         </h2>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
@@ -124,7 +138,7 @@ function ProfileAndCapacitiesSection({
 
       {/* Capabilites */}
       <section className="flex flex-col gap-3">
-        <h2 className="font-heading text-sm font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+        <h2 className="font-heading text-sm font-semibold tracking-wider text-zinc-400 uppercase dark:text-zinc-500">
           Capabilities
         </h2>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">

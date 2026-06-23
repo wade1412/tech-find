@@ -17,11 +17,11 @@ const editSections = [
 function EditTechnicianPage() {
   const { technicianId } = useParams();
   const {
-    data: technicians,
+    data: allTechnicians,
     isPending: isTechniciansPending,
     isError: isTechniciansError,
     error: techniciansError,
-  } = useTechniciansQuery();
+  } = useTechniciansQuery("all");
   const {
     zoneNamesByTechnicianId,
     isPending: isZoneNamesPending,
@@ -33,7 +33,7 @@ function EditTechnicianPage() {
   const isError = isTechniciansError || isZoneNamesError;
   const error = techniciansError ?? zoneNamesErrorObj;
 
-  const selectedTechnician = technicians?.find(
+  const selectedTechnician = allTechnicians?.find(
     (tech) => tech.id === technicianId,
   );
 
@@ -102,7 +102,10 @@ function EditTechnicianPage() {
 
         {/* Selected Section */}
         {selectedSectionId === "profile" && (
-          <ProfileAndCapacitiesSection technician={selectedTechnician} />
+          <ProfileAndCapacitiesSection
+            key={selectedTechnician.id}
+            technician={selectedTechnician}
+          />
         )}
       </section>
     </div>

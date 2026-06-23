@@ -1,5 +1,9 @@
 export const queryKeys = {
-  technicians: ["technicians"],
+  technicians: {
+    active: ["technicians", "active"],
+    all: ["technicians", "all"],
+  },
+  allTechnicians: ["technicians-all"],
   units: ["units"],
   specificIssues: ["specific-issues"],
   brands: ["brands"],

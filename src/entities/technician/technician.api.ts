@@ -1,11 +1,7 @@
 import { supabase } from "../../shared/api/supabase/supabaseClient";
 import type { Technician } from "./technician.types";
 
-export const getTechnicians = async (): Promise<Technician[]> => {
-  const { data, error } = await supabase
-    .from("technician")
-    .select(
-      `id,
+const TECHNICIAN_SELECT = `id,
         active,
         name,
         alias,
@@ -17,9 +13,24 @@ export const getTechnicians = async (): Promise<Technician[]> => {
         commercial,
         can_service_built_in,
         can_service_stacked_washer,
-        can_service_stacked_dryer`,
-    )
+        can_service_stacked_dryer`;
+
+export const getActiveTechnicians = async (): Promise<Technician[]> => {
+  const { data, error } = await supabase
+    .from("technician")
+    .select(TECHNICIAN_SELECT)
     .eq("active", true)
+    .order("alias");
+
+  if (error) throw error;
+
+  return data ?? [];
+};
+
+export const getAllTechnicians = async (): Promise<Technician[]> => {
+  const { data, error } = await supabase
+    .from("technician")
+    .select(TECHNICIAN_SELECT)
     .order("alias");
 
   if (error) throw error;

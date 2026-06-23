@@ -14,11 +14,11 @@ import {
 
 function ManageTechniciansPage() {
   const {
-    data: technicians,
+    data: allTechnicians,
     isPending: isTechniciansPending,
     isError: isTechniciansError,
     error: techniciansError,
-  } = useTechniciansQuery();
+  } = useTechniciansQuery("all");
   const {
     zoneNamesByTechnicianId,
     isPending: isZoneNamesPending,
@@ -41,11 +41,11 @@ function ManageTechniciansPage() {
   const visibleTechnicians = useMemo(
     () =>
       filterTechniciansBySearch(
-        technicians ?? [],
+        allTechnicians ?? [],
         searchTerm,
         zoneNamesByTechnicianId,
       ),
-    [technicians, searchTerm, zoneNamesByTechnicianId],
+    [allTechnicians, searchTerm, zoneNamesByTechnicianId],
   );
 
   if (isPending) {
