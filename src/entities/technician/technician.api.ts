@@ -1,5 +1,5 @@
 import { supabase } from "../../shared/api/supabase/supabaseClient";
-import type { Technician } from "./technician.types";
+import type { Technician, TechnicianUpdate } from "./technician.types";
 
 const TECHNICIAN_SELECT = `id,
         active,
@@ -35,4 +35,21 @@ export const getAllTechnicians = async (): Promise<Technician[]> => {
   if (error) throw error;
 
   return data ?? [];
+};
+
+export const updateTechnician = async (
+  id: string,
+  newFieldValues: TechnicianUpdate,
+): Promise<Technician> => {
+  const { data, error } = await supabase
+    .from("technician")
+    .update(newFieldValues)
+    .eq("id", id)
+    .select(TECHNICIAN_SELECT)
+    .single();
+
+  if (error) throw error;
+  if (!data) throw new Error("Technician update returned no row");
+
+  return data;
 };

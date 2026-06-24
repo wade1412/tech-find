@@ -3,7 +3,6 @@ export const queryKeys = {
     active: ["technicians", "active"],
     all: ["technicians", "all"],
   },
-  allTechnicians: ["technicians-all"],
   units: ["units"],
   specificIssues: ["specific-issues"],
   brands: ["brands"],
