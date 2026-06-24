@@ -33,7 +33,11 @@ export const buildTechnicianPatch = (
       typeof baseValue === "string" ? baseValue.trim() : (baseValue ?? "");
 
     if (cleanDraft !== cleanBase) {
-      patch[key] = cleanDraft;
+      if (key === "notes" && cleanDraft === "") {
+        patch[key] = null;
+      } else {
+        patch[key] = cleanDraft;
+      }
     }
   }
 
