@@ -8,6 +8,7 @@ import {
   createTechnicianFormState,
 } from "./profile.helpers";
 import { type CapabilityFieldKey, type ProfileFieldKey } from "./profile.types";
+import { useUpdateTechnicianMutation } from "../../../features/technician-management/model/useUpdateTechnicianMutation";
 interface ProfileAndCapacitiesSectionProps {
   technician: Technician;
 }
@@ -18,8 +19,9 @@ const inputStyle =
 function ProfileAndCapacitiesSection({
   technician,
 }: ProfileAndCapacitiesSectionProps) {
-  const technicianFormState = createTechnicianFormState(technician);
+  const updateTechnicianMutation = useUpdateTechnicianMutation();
 
+  const technicianFormState = createTechnicianFormState(technician);
   const [formState, setFormState] = useState(technicianFormState);
 
   const toggleActive = () =>
@@ -31,6 +33,7 @@ function ProfileAndCapacitiesSection({
   );
 
   const isDirty = Object.keys(patch).length > 0;
+  const isPending = updateTechnicianMutation.isPending;
 
   const onProfileFieldChange = (key: ProfileFieldKey, newValue: string) => {
     setFormState((prev) => ({ ...prev, [key]: newValue }));
@@ -42,6 +45,11 @@ function ProfileAndCapacitiesSection({
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!isDirty) return;
+
+    updateTechnicianMutation.mutate({
+      id: technician.id,
+      patch,
+    });
   };
 
   return (
@@ -56,78 +64,97 @@ function ProfileAndCapacitiesSection({
             Inactive technicians are excluded from all matching
           </p>
         </div>
-        <ToggleStatus checked={formState.active} onChange={toggleActive} />
+        <ToggleStatus
+          checked={formState.active}
+          onChange={toggleActive}
+          disabled={isPending}
+        />
       </div>
 
-      {/* Profile Fields */}
-      <section className="flex flex-col gap-3">
-        <h2 className="font-heading text-sm font-semibold tracking-wider text-zinc-400 uppercase dark:text-zinc-500">
-          Profile
-        </h2>
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          {PROFILE_FIELDS.map(({ key, label }) =>
-            key === "notes" ? (
-              <div key={key}>
-                <label className={`flex flex-col gap-1.5 ${labelStyle}`}>
-                  Notes
-                  <textarea
-                    id="notes"
-                    name="notes"
-                    rows={3}
-                    value={formState[key] ?? ""}
-                    onChange={(e) => onProfileFieldChange(key, e.target.value)}
-                    className={`${inputStyle} resize-none`}
-                  />
-                </label>
-              </div>
-            ) : (
-              <div key={key}>
-                <label
-                  key={key}
-                  className={`flex flex-col gap-1.5 ${labelStyle}`}
-                >
-                  {label}
-                  <input
-                    id={key}
-                    name={key}
-                    value={formState[key]}
-                    onChange={(e) => onProfileFieldChange(key, e.target.value)}
-                    className={inputStyle}
-                  />
-                </label>
-              </div>
-            ),
-          )}
-        </div>
-      </section>
+      <fieldset disabled={isPending} className="flex flex-col gap-6">
+        {/* Profile Fields */}
+        <section className="flex flex-col gap-3">
+          <h2 className="font-heading text-sm font-semibold tracking-wider text-zinc-400 uppercase dark:text-zinc-500">
+            Profile
+          </h2>
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            {PROFILE_FIELDS.map(({ key, label }) =>
+              key === "notes" ? (
+                <div key={key}>
+                  <label className={`flex flex-col gap-1.5 ${labelStyle}`}>
+                    Notes
+                    <textarea
+                      id="notes"
+                      name="notes"
+                      rows={3}
+                      value={formState[key] ?? ""}
+                      onChange={(e) =>
+                        onProfileFieldChange(key, e.target.value)
+                      }
+                      className={`${inputStyle} resize-none`}
+                    />
+                  </label>
+                </div>
+              ) : (
+                <div key={key}>
+                  <label
+                    key={key}
+                    className={`flex flex-col gap-1.5 ${labelStyle}`}
+                  >
+                    {label}
+                    <input
+                      id={key}
+                      name={key}
+                      value={formState[key]}
+                      onChange={(e) =>
+                        onProfileFieldChange(key, e.target.value)
+                      }
+                      className={inputStyle}
+                    />
+                  </label>
+                </div>
+              ),
+            )}
+          </div>
+        </section>
 
-      {/* Capabilites */}
-      <section className="flex flex-col gap-3">
-        <h2 className="font-heading text-sm font-semibold tracking-wider text-zinc-400 uppercase dark:text-zinc-500">
-          Capabilities
-        </h2>
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          {CAPABILITY_FIELDS.map(({ key, label }) => (
-            <Checkbox
-              key={key}
-              id={key}
-              label={label}
-              checked={formState[key]}
-              onChange={() => toggleCapability(key)}
-            />
-          ))}
-        </div>
-      </section>
+        {/* Capabilites */}
+        <section className="flex flex-col gap-3">
+          <h2 className="font-heading text-sm font-semibold tracking-wider text-zinc-400 uppercase dark:text-zinc-500">
+            Capabilities
+          </h2>
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            {CAPABILITY_FIELDS.map(({ key, label }) => (
+              <Checkbox
+                key={key}
+                id={key}
+                label={label}
+                checked={formState[key]}
+                onChange={() => toggleCapability(key)}
+              />
+            ))}
+          </div>
+        </section>
+      </fieldset>
 
       {/* Submit Button */}
-      <div className="flex items-center justify-center p-2">
+      <div className="flex flex-col gap-2 items-center justify-center p-2">
         <button
           type="submit"
-          disabled={!isDirty}
+          disabled={!isDirty || isPending}
           className="bg-main-500 hover:bg-main-400 focus-visible:ring-main-500 cursor-pointer rounded-xl px-4 py-2.5 text-xs font-semibold text-zinc-950 transition-[background-color,transform,opacity] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50"
         >
-          Save Changes
+          {isPending ? "Saving..." : "Save Changes"}
         </button>
+
+        {updateTechnicianMutation.error && (
+          <p
+            role="alert"
+            className="rounded-lg border border-red-200 bg-red-50/50 p-4 text-xs font-medium text-red-600 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-400"
+          >
+            Failed to save changes. Try again
+          </p>
+        )}
       </div>
     </form>
   );

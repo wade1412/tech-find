@@ -13,8 +13,7 @@ export const useUpdateTechnicianMutation = () => {
   return useMutation({
     mutationFn: ({ id, patch }: UpdateTechnicianVariables) =>
       updateTechnician(id, patch),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["technicians"] });
-    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["technicians"] }),
   });
 };
