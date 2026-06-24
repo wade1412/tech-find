@@ -1,11 +1,6 @@
 import type { SortModeValue, SortSelectOption } from "./technicianSort.types";
 
-export const sortModes: SortModeValue[] = [
-  "default",
-  "alias",
-  "home_zip_code",
-  "service_area",
-];
+export const sortModes: SortModeValue[] = ["default", "alias", "home_zip_code"];
 
 export const sortOptions: SortSelectOption[] = sortModes.map((mode) => {
   let label: string = mode;

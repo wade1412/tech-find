@@ -1,6 +1,3 @@
-// Sort functionality:
-// get filteredTechs => return sorted techs
-
 import type { Technician } from "../../../entities/technician/technician.types";
 import type { TechnicianSortOption } from "./technicianSort.types";
 
