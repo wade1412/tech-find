@@ -1,5 +1,6 @@
 import type {
   CapabilityFieldConfig,
+  EditableKey,
   ProfileFieldConfig,
 } from "./profile.types";
 
@@ -22,4 +23,10 @@ export const CAPABILITY_FIELDS: CapabilityFieldConfig[] = [
   },
   { key: "commercial", label: "Commercial" },
   { key: "can_service_built_in", label: "Built-In (Lift)" },
+];
+
+export const EDITABLE_KEYS: EditableKey[] = [
+  "active",
+  ...PROFILE_FIELDS.map((field) => field.key),
+  ...CAPABILITY_FIELDS.map((field) => field.key),
 ];

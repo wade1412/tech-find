@@ -3,8 +3,11 @@ import type { Technician } from "../../../entities/technician/technician.types";
 import ToggleStatus from "../ToggleStatus";
 import Checkbox from "../../../shared/ui/Checkbox";
 import { CAPABILITY_FIELDS, PROFILE_FIELDS } from "./profile.constants";
-import { buildTechnicianPatch } from "./buildTechnicianPatch";
-import type { CapabilityFieldKey, ProfileFieldKey } from "./profile.types";
+import {
+  buildTechnicianPatch,
+  createTechnicianFormState,
+} from "./profile.helpers";
+import { type CapabilityFieldKey, type ProfileFieldKey } from "./profile.types";
 interface ProfileAndCapacitiesSectionProps {
   technician: Technician;
 }
@@ -15,7 +18,9 @@ const inputStyle =
 function ProfileAndCapacitiesSection({
   technician,
 }: ProfileAndCapacitiesSectionProps) {
-  const [formState, setFormState] = useState({ ...technician });
+  const technicianFormState = createTechnicianFormState(technician);
+
+  const [formState, setFormState] = useState(technicianFormState);
 
   const toggleActive = () =>
     setFormState((prev) => ({ ...prev, active: prev.active ? false : true }));
@@ -114,6 +119,7 @@ function ProfileAndCapacitiesSection({
         </div>
       </section>
 
+      {/* Submit Button */}
       <div className="flex items-center justify-center p-2">
         <button
           type="submit"
