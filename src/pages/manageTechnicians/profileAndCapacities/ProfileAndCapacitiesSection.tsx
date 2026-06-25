@@ -4,8 +4,14 @@ import ToggleStatus from "../ToggleStatus";
 import {
   buildTechnicianPatch,
   createTechnicianFormState,
+  formatJobsPerDayRange,
+  parseJobsPerDayRange,
 } from "./profile.helpers";
-import { type CapabilityFieldKey, type ProfileFieldKey } from "./profile.types";
+import {
+  type JobsPerDayDraft,
+  type CapabilityFieldKey,
+  type ProfileFieldKey,
+} from "./profile.types";
 import { useUpdateTechnicianMutation } from "../../../features/technician-management/model/useUpdateTechnicianMutation";
 import ProfileAndCapabilitiesFields from "./ProfileAndCapabilitiesFields";
 import { labelStyle } from "./profile.styles";
@@ -18,11 +24,17 @@ function ProfileAndCapacitiesSection({
 }: ProfileAndCapacitiesSectionProps) {
   const updateTechnicianMutation = useUpdateTechnicianMutation();
 
-  const technicianFormState = createTechnicianFormState(technician);
-  const [formState, setFormState] = useState(technicianFormState);
+  const [formState, setFormState] = useState(() =>
+    createTechnicianFormState(technician),
+  );
+
+  const jobsPerDayRange = useMemo<JobsPerDayDraft>(() => {
+    const [min, max] = parseJobsPerDayRange(formState.jobs_per_day);
+    return { min: min, max: max ?? min };
+  }, [formState.jobs_per_day]);
 
   const toggleActive = () =>
-    setFormState((prev) => ({ ...prev, active: prev.active ? false : true }));
+    setFormState((prev) => ({ ...prev, active: !prev.active }));
 
   const patch = useMemo(
     () => buildTechnicianPatch(technician, formState),
@@ -35,6 +47,9 @@ function ProfileAndCapacitiesSection({
   const onProfileFieldChange = (key: ProfileFieldKey, newValue: string) => {
     setFormState((prev) => ({ ...prev, [key]: newValue }));
   };
+
+  const onJobsPerDayRangeChange = (next: JobsPerDayDraft) =>
+    onProfileFieldChange("jobs_per_day", formatJobsPerDayRange(next));
 
   const toggleCapability = (key: CapabilityFieldKey) =>
     setFormState((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -74,6 +89,8 @@ function ProfileAndCapacitiesSection({
         formState={formState}
         onProfileFieldChange={onProfileFieldChange}
         onCapabilityToggle={toggleCapability}
+        jobsPerDayRange={jobsPerDayRange}
+        onJobsPerDayRangeChange={onJobsPerDayRangeChange}
       />
 
       {/* Submit Button */}

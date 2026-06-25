@@ -1,6 +1,10 @@
 import type { Technician } from "../../../entities/technician/technician.types";
 import { EDITABLE_KEYS } from "./profile.constants";
-import type { EditableKey, TechnicianFormState } from "./profile.types";
+import type {
+  EditableKey,
+  JobsPerDayDraft,
+  TechnicianFormState,
+} from "./profile.types";
 
 type TechnicianPatch = Partial<Pick<Technician, EditableKey>>;
 
@@ -16,6 +20,15 @@ export const createTechnicianFormState = (
 
   return Object.fromEntries(entries) as TechnicianFormState;
 };
+
+export const parseJobsPerDayRange = (value: string): [number, number] => {
+  const [min, max] = value.split("-").map(Number);
+
+  return [min, max ?? min];
+};
+
+export const formatJobsPerDayRange = ({ min, max }: JobsPerDayDraft) =>
+  min === max ? String(min) : `${min}-${max}`;
 
 export const buildTechnicianPatch = (
   technician: Technician,

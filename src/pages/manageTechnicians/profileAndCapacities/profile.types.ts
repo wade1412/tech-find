@@ -29,3 +29,8 @@ export type CapabilityFieldConfig = {
 export type TechnicianFormState = {
   [K in EditableKey]: K extends "notes" ? string : Technician[K];
 };
+
+export type JobsPerDayDraft = {
+  min: number;
+  max: number;
+};
