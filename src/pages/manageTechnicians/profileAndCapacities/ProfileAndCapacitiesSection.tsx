@@ -1,20 +1,17 @@
 import { useMemo, useState } from "react";
 import type { Technician } from "../../../entities/technician/technician.types";
 import ToggleStatus from "../ToggleStatus";
-import Checkbox from "../../../shared/ui/Checkbox";
-import { CAPABILITY_FIELDS, PROFILE_FIELDS } from "./profile.constants";
 import {
   buildTechnicianPatch,
   createTechnicianFormState,
 } from "./profile.helpers";
 import { type CapabilityFieldKey, type ProfileFieldKey } from "./profile.types";
 import { useUpdateTechnicianMutation } from "../../../features/technician-management/model/useUpdateTechnicianMutation";
+import ProfileAndCapabilitiesFields from "./ProfileAndCapabilitiesFields";
+import { labelStyle } from "./profile.styles";
 interface ProfileAndCapacitiesSectionProps {
   technician: Technician;
 }
-const labelStyle = "text-sm font-medium text-zinc-400 dark:text-zinc-500";
-const inputStyle =
-  "rounded-xl border border-zinc-200 bg-zinc-50/50 px-3.5 py-2 text-sm text-zinc-900 outline-none transition-[border,background-color,color] focus:border-main-500 focus:bg-white focus:ring-2 focus:ring-main-500/20 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-main-500 dark:focus:bg-zinc-950";
 
 function ProfileAndCapacitiesSection({
   technician,
@@ -71,71 +68,13 @@ function ProfileAndCapacitiesSection({
         />
       </div>
 
-      <fieldset disabled={isPending} className="flex flex-col gap-6">
-        {/* Profile Fields */}
-        <section className="flex flex-col gap-3">
-          <h2 className="font-heading text-sm font-semibold tracking-wider text-zinc-400 uppercase dark:text-zinc-500">
-            Profile
-          </h2>
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-            {PROFILE_FIELDS.map(({ key, label }) =>
-              key === "notes" ? (
-                <div key={key}>
-                  <label className={`flex flex-col gap-1.5 ${labelStyle}`}>
-                    Notes
-                    <textarea
-                      id="notes"
-                      name="notes"
-                      rows={3}
-                      value={formState[key] ?? ""}
-                      onChange={(e) =>
-                        onProfileFieldChange(key, e.target.value)
-                      }
-                      className={`${inputStyle} resize-none`}
-                    />
-                  </label>
-                </div>
-              ) : (
-                <div key={key}>
-                  <label
-                    key={key}
-                    className={`flex flex-col gap-1.5 ${labelStyle}`}
-                  >
-                    {label}
-                    <input
-                      id={key}
-                      name={key}
-                      value={formState[key]}
-                      onChange={(e) =>
-                        onProfileFieldChange(key, e.target.value)
-                      }
-                      className={inputStyle}
-                    />
-                  </label>
-                </div>
-              ),
-            )}
-          </div>
-        </section>
-
-        {/* Capabilites */}
-        <section className="flex flex-col gap-3">
-          <h2 className="font-heading text-sm font-semibold tracking-wider text-zinc-400 uppercase dark:text-zinc-500">
-            Capabilities
-          </h2>
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-            {CAPABILITY_FIELDS.map(({ key, label }) => (
-              <Checkbox
-                key={key}
-                id={key}
-                label={label}
-                checked={formState[key]}
-                onChange={() => toggleCapability(key)}
-              />
-            ))}
-          </div>
-        </section>
-      </fieldset>
+      {/* Fields */}
+      <ProfileAndCapabilitiesFields
+        disabled={isPending}
+        formState={formState}
+        onProfileFieldChange={onProfileFieldChange}
+        onCapabilityToggle={toggleCapability}
+      />
 
       {/* Submit Button */}
       <div className="flex flex-col gap-2 items-center justify-center p-2">
