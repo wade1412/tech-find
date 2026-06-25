@@ -3,7 +3,10 @@ import { useSpecificIssuesQuery } from "../../../entities/specific-issue/useSpec
 import { useUnitsQuery } from "../../../entities/unit/useUnitsQuery";
 import { useTechnicianFilters } from "../model/useTechnicianFilters";
 import { Autocomplete, Skeleton, TextField } from "@mui/material";
-import { selectStyle } from "../../../shared/styles/muiSelectStyles";
+import {
+  selectSlotPropsStyle,
+  selectStyle,
+} from "../../../shared/styles/muiSelectStyles";
 
 type IssueOption = {
   id: string;
@@ -132,7 +135,11 @@ function SpecificIssueSelect() {
           options={availableOptions}
           getOptionLabel={(option) => option.label}
           slotProps={{
-            chip: { color: "primary", variant: "outlined", size: "small" },
+            chip: {
+              variant: "filled",
+              size: "small",
+              sx: (theme) => selectSlotPropsStyle(theme),
+            },
           }}
           sx={(theme) => selectStyle(theme)}
           renderInput={(params) => (

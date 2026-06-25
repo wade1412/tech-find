@@ -12,7 +12,9 @@ const editSections = [
   { id: "service_zones", title: "Service Zones" },
   { id: "skills", title: "Skills" },
   { id: "ignore_list", title: "Ignore List" },
-];
+] as const;
+
+type EditSectionId = (typeof editSections)[number]["id"];
 
 function EditTechnicianPage() {
   const { technicianId } = useParams();
@@ -37,12 +39,8 @@ function EditTechnicianPage() {
     (tech) => tech.id === technicianId,
   );
 
-  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(
-    null,
-  );
-
-  const onSectionToggle = (id: string) =>
-    setSelectedSectionId((prev) => (prev === id ? null : id));
+  const [selectedSectionId, setSelectedSectionId] =
+    useState<EditSectionId>("profile");
 
   if (isPending) {
     return (
@@ -50,7 +48,7 @@ function EditTechnicianPage() {
         <section className="flex flex-col gap-4 p-4 md:p-6">
           <div className="h-7 w-32 animate-pulse rounded-md bg-zinc-200 dark:bg-zinc-800" />
           <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-            {[...Array(6)].map((_, i) => (
+            {[...Array(4)].map((_, i) => (
               <div
                 key={i}
                 className="h-20 animate-pulse rounded-xl bg-zinc-200 dark:bg-zinc-800"
@@ -63,8 +61,10 @@ function EditTechnicianPage() {
   }
   if (isError) {
     return (
-      <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-400">
-        {error?.message}
+      <div className="mx-auto max-w-6xl p-4 md:p-6">
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-400">
+          {error?.message}
+        </div>
       </div>
     );
   }
@@ -95,7 +95,7 @@ function EditTechnicianPage() {
               id={section.id}
               title={section.title}
               selectedSectionId={selectedSectionId}
-              onToggle={() => onSectionToggle(section.id)}
+              onClick={() => setSelectedSectionId(section.id)}
             />
           ))}
         </div>

@@ -99,3 +99,74 @@ export const selectSlotPropsStyle = (theme: Theme) => {
     },
   };
 };
+
+export const selectMenuProps = (theme: Theme) => {
+  const isDark = theme.palette.mode === "dark";
+
+  return {
+    slotProps: {
+      paper: {
+        sx: {
+          borderRadius: "0.75rem", // rounded-xl
+          border: `1px solid ${isDark ? "rgba(39, 39, 42, 0.6)" : "#e4e4e7"}`,
+          boxShadow: isDark
+            ? "0 4px 20px rgba(0, 0, 0, 0.4)"
+            : "0 4px 20px rgba(0, 0, 0, 0.08)",
+          backgroundColor: isDark ? "#18181b" : "#ffffff",
+          "& .MuiMenuItem-root": {
+            margin: "2px 6px",
+            borderRadius: "0.5rem", // rounded-lg
+            fontSize: "0.875rem", //
+            fontFamily: '"Inter", system-ui, sans-serif',
+            "&:hover": {
+              backgroundColor: isDark
+                ? "rgba(250, 204, 21, 0.08)"
+                : "rgba(234, 179, 8, 0.08)",
+            },
+            "&.Mui-selected": {
+              backgroundColor: isDark
+                ? "rgba(250, 204, 21, 0.15)"
+                : "rgba(234, 179, 8, 0.12)",
+              color: isDark ? "#facc15" : "#eab308",
+              fontWeight: 600,
+              "&:hover": {
+                backgroundColor: isDark
+                  ? "rgba(250, 204, 21, 0.2)"
+                  : "rgba(234, 179, 8, 0.18)",
+              },
+            },
+          },
+        },
+      },
+    },
+  };
+};
+
+export const compactSelectStyle = (theme: Theme) => {
+  const isDark = theme.palette.mode === "dark";
+  const base = selectStyle(theme);
+  const baseInputRoot = base["& .MuiOutlinedInput-root"] as Record<
+    string,
+    unknown
+  >;
+  const baseFocused = baseInputRoot["&.Mui-focused"] as Record<string, unknown>;
+
+  return {
+    ...base,
+    flex: 1,
+    "& .MuiOutlinedInput-root": {
+      ...baseInputRoot,
+      backgroundColor: isDark ? "#18181b" : "rgba(250, 250, 250, 0.5)", // = inputStyle bg
+      "&.Mui-focused": {
+        ...baseFocused,
+        backgroundColor: isDark ? "#09090b" : "#ffffff", // = inputStyle focus:bg
+      },
+    },
+    "& .MuiSelect-select": {
+      fontSize: "0.875rem",
+      lineHeight: "1.25rem", // text-sm leading-5
+      padding: "0.5rem 0.875rem", // py-2 px-3.5
+      boxSizing: "border-box",
+    },
+  };
+};

@@ -1,10 +1,14 @@
+import { useTheme } from "@mui/material/styles";
 import {
   FormControl,
   MenuItem,
   Select,
   type SelectChangeEvent,
 } from "@mui/material";
-import { selectStyle } from "../../../shared/styles/muiSelectStyles";
+import {
+  compactSelectStyle,
+  selectMenuProps,
+} from "../../../shared/styles/muiSelectStyles";
 import type { JobsPerDayDraft } from "./profile.types";
 
 interface JobsPerDayRangeSelectProps {
@@ -13,35 +17,33 @@ interface JobsPerDayRangeSelectProps {
   disabled?: boolean;
 }
 
-const JOB_OPTIONS = Array.from({ length: 9 }, (_, i) => i + 1); // 1..9
+const JOB_OPTIONS = Array.from({ length: 9 }, (_, i) => i + 1);
 
 function JobsPerDayRangeSelect({
   value,
   onChange,
   disabled,
 }: JobsPerDayRangeSelectProps) {
+  const theme = useTheme();
+  const fieldStyle = compactSelectStyle(theme);
+
   const handleMinChange = (e: SelectChangeEvent<number>) => {
     const nextMin = Number(e.target.value);
-    onChange({
-      min: nextMin,
-      max: Math.max(nextMin, value.max),
-    });
+    onChange({ min: nextMin, max: Math.max(nextMin, value.max) });
   };
 
   const handleMaxChange = (e: SelectChangeEvent<number>) => {
     const nextMax = Number(e.target.value);
-    onChange({
-      min: Math.min(value.min, nextMax),
-      max: nextMax,
-    });
+    onChange({ min: Math.min(value.min, nextMax), max: nextMax });
   };
 
   return (
     <div className="flex items-center gap-2">
-      <FormControl sx={(theme) => selectStyle(theme)} disabled={disabled}>
+      <FormControl sx={fieldStyle} disabled={disabled}>
         <Select
           value={value.min}
           onChange={handleMinChange}
+          MenuProps={selectMenuProps(theme)}
           inputProps={{ "aria-label": "Minimum jobs per day" }}
         >
           {JOB_OPTIONS.map((n) => (
@@ -54,10 +56,11 @@ function JobsPerDayRangeSelect({
 
       <span className="text-sm text-zinc-400 dark:text-zinc-500">–</span>
 
-      <FormControl sx={(theme) => selectStyle(theme)} disabled={disabled}>
+      <FormControl sx={fieldStyle} disabled={disabled}>
         <Select
           value={value.max}
           onChange={handleMaxChange}
+          MenuProps={selectMenuProps(theme)}
           inputProps={{ "aria-label": "Maximum jobs per day" }}
         >
           {JOB_OPTIONS.map((n) => (
