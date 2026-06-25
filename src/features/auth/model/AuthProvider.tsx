@@ -17,6 +17,8 @@ import {
   getProfileError,
   isAppAuthError,
 } from "./auth.errors";
+import { shouldLoadProfile } from "./auth.session";
+import { validateUserProfile } from "./auth.profile";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
@@ -64,16 +66,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       setSession(nextSession);
 
-      // Check if it is the same user
+      // Check if the new profile should be loaded
       if (
-        !options.forceProfileReload &&
-        profileRef.current?.id === nextProfileId
+        !shouldLoadProfile({
+          userId: nextProfileId,
+          profileUserId: profileRef.current?.id,
+          resolvingUserId: resolvingUserIdRef.current ?? undefined,
+          force: options.forceProfileReload,
+        })
       ) {
         setAuthError(null);
-        return;
-      }
-
-      if (resolvingUserIdRef.current === nextProfileId) {
         return;
       }
 
@@ -96,49 +98,34 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (requestId !== profileRequestIdRef.current) return;
 
         // Sign out and error message on invalid profile
-        if (!nextProfile) {
-          const error = createAuthError(
-            "missing_profile",
-            "Your user profile was not found. Please contact an administrator.",
-          );
+        const validProfile = validateUserProfile(nextProfile);
 
-          setAuthError(error);
-
-          try {
-            await supabase.auth.signOut();
-          } finally {
-            clearAuthState();
-          }
-
-          throw error;
-        }
-
-        // Sign out and error message on inactive profile
-        if (!nextProfile.active) {
-          const error = createAuthError(
-            "inactive_profile",
-            "Your account is inactive. Please contact an administator.",
-          );
-
-          setAuthError(error);
-
-          try {
-            await supabase.auth.signOut();
-          } finally {
-            clearAuthState();
-          }
-
-          throw error;
-        }
-
-        setProfileState(nextProfile);
+        setProfileState(validProfile);
         setAuthError(null);
       } catch (error) {
+        if (requestId !== profileRequestIdRef.current) return;
+
         if (isAppAuthError(error)) {
+          setAuthError(error);
+
+          if (
+            error.code === "missing_profile" ||
+            error.code === "inactive_profile"
+          ) {
+            try {
+              await supabase.auth.signOut();
+            } catch (signOutError) {
+              console.error(
+                "Failed to sign out invalid profile session:",
+                signOutError,
+              );
+            } finally {
+              clearAuthState();
+            }
+          }
+
           throw error;
         }
-
-        if (requestId !== profileRequestIdRef.current) return;
 
         const profileError = getProfileError(error);
         setAuthError(profileError);

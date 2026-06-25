@@ -1,13 +1,15 @@
 import { Link, useNavigate } from "react-router";
+import { useTheme } from "../features/theme/useTheme";
+import logoLight from "../shared/assets/techfind-logo-light.svg";
+import logoDark from "../shared/assets/techfind-logo-dark.svg";
 import ThemeToggle from "../features/theme/ThemeToggle";
 import { useAuth } from "../features/auth/model/AuthContext";
 import { useState } from "react";
+import { useAuthPermissions } from "../features/auth/model/useAuthPermissions";
+import AdminPanel from "./AdminPanel";
+import type { AppRole } from "../features/auth/model/auth.permissions";
 
-interface HeaderProps {
-  logoSource: string;
-}
-
-const roleLabelMap = {
+const roleLabelMap: Record<AppRole, string> = {
   user: "User",
   secondary_admin: "Secondary Admin",
   main_admin: "Main Admin",
@@ -23,17 +25,21 @@ const roleStyles = {
   owner: "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400",
 };
 
-function Header({ logoSource }: HeaderProps) {
+function Header() {
+  const { theme } = useTheme();
+  const logoSource = theme === "dark" ? logoDark : logoLight;
+
   const [isSigningOut, setIsSigningOut] = useState(false);
 
   const { profile, signOut } = useAuth();
+  const permissions = useAuthPermissions();
   const navigate = useNavigate();
 
   const workName =
     profile?.alias || profile?.full_name || profile?.email || "User";
   const realName =
     profile?.full_name !== profile?.alias ? profile?.full_name : "";
-  const role = profile?.role || "user";
+  const role = permissions.role || "user";
   const roleLabel = roleLabelMap[role];
 
   const handleSignOut = async () => {
@@ -66,6 +72,11 @@ function Header({ logoSource }: HeaderProps) {
             TechFind
           </h2>
         </Link>
+
+        {/* Admin Panel: Rendered only with permissions */}
+        {permissions.canViewAdminPanel && (
+          <AdminPanel permissions={permissions} />
+        )}
 
         {/* Right: Action Panel */}
         <div className="flex items-center gap-4">

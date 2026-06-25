@@ -3,32 +3,14 @@ import TechnicianCard from "./TechnicianCard";
 import TechnicianSkeleton from "./TechnicianSkeleton";
 import { useFilteredTechnicians } from "../../../features/technician-filter/model/useFilteredTechnicians";
 import { useTechnicianFilters } from "../../../features/technician-filter/model/useTechnicianFilters";
-import { AnimatePresence, motion, Reorder, type Variants } from "motion/react";
+import { AnimatePresence, motion, Reorder } from "motion/react";
 import TechnicianSortSelect from "../../../features/technician-sort/ui/TechnicianSortSelect";
 import { useOrderedTechnicians } from "../../../features/technician-sort/model/useOrderedTechnicians";
 import { createTechnicianFilterKey } from "../../../features/technician-filter/model/filterKey";
-
-const listVariants: Variants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.05,
-    },
-  },
-  exit: {
-    opacity: 0,
-    transition: { duration: 0.12, ease: "easeIn" },
-  },
-};
-
-const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 10 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.2, ease: "easeOut" },
-  },
-};
+import {
+  technicianCardVariants,
+  technicianListVariants,
+} from "../../../shared/styles/motionVariants";
 
 function TechnicianList() {
   const { filter, updateSort } = useTechnicianFilters();
@@ -102,7 +84,7 @@ function TechnicianList() {
           onReorder={handleReorder}
           key={orderKey}
           className="flex flex-col gap-2.5"
-          variants={listVariants}
+          variants={technicianListVariants}
           initial="hidden"
           animate="visible"
           exit="exit"
@@ -118,7 +100,7 @@ function TechnicianList() {
                   value={technician.id}
                   onDragStart={handleDragStart}
                   onDragEnd={handleDragEnd}
-                  variants={cardVariants}
+                  variants={technicianCardVariants}
                   whileHover={{ y: -2 }}
                   transition={{ duration: 0.15 }}
                   className="relative"
@@ -143,7 +125,7 @@ function TechnicianList() {
             })
           ) : (
             <motion.p
-              variants={cardVariants}
+              variants={technicianCardVariants}
               className="py-8 text-center text-sm text-zinc-400 dark:text-zinc-500"
             >
               No technicians found

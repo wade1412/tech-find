@@ -1,8 +1,4 @@
-export type SortModeValue =
-  | "default"
-  | "alias"
-  | "home_zip_code"
-  | "service_area";
+export type SortModeValue = "default" | "alias" | "home_zip_code";
 
 export type SortDirection = "asc" | "desc";
 

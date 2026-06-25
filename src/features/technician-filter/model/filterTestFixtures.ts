@@ -14,7 +14,6 @@ export const makeTechnician = (
   active: true,
   jobs_per_day: "test jobs per day",
   home_zip_code: "Test home zip",
-  service_area: "Test service area",
   gas: false,
   commercial: false,
   can_service_built_in: false,
