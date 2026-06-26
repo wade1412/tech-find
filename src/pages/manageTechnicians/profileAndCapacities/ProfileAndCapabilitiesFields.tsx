@@ -28,18 +28,6 @@ function ProfileAndCapabilitiesFields({
 }: ProfileAndCapacitiesFieldsProps) {
   const renderProfileField = (key: ProfileFieldKey) => {
     switch (key) {
-      case "notes":
-        return (
-          <textarea
-            id="notes"
-            name="notes"
-            rows={3}
-            value={formState[key] ?? ""}
-            onChange={(e) => onProfileFieldChange(key, e.target.value)}
-            className={`${inputStyle} resize-none`}
-          />
-        );
-
       case "home_zip_code":
         return (
           <input
@@ -62,9 +50,24 @@ function ProfileAndCapabilitiesFields({
             onChange={onJobsPerDayRangeChange}
           />
         );
+
+      case "notes":
+        return (
+          <textarea
+            id="notes"
+            name="notes"
+            rows={3}
+            value={formState[key] ?? ""}
+            onChange={(e) => onProfileFieldChange(key, e.target.value)}
+            className={`${inputStyle} resize-none`}
+          />
+        );
+
       default:
         return (
+          // Name and Alias
           <input
+            required
             id={key}
             name={key}
             value={formState[key]}

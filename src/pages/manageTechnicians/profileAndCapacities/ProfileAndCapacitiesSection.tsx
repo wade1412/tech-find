@@ -48,11 +48,11 @@ function ProfileAndCapacitiesSection({
     setFormState((prev) => ({ ...prev, [key]: newValue }));
   };
 
-  const onJobsPerDayRangeChange = (next: JobsPerDayDraft) =>
-    onProfileFieldChange("jobs_per_day", formatJobsPerDayRange(next));
-
   const toggleCapability = (key: CapabilityFieldKey) =>
     setFormState((prev) => ({ ...prev, [key]: !prev[key] }));
+
+  const onJobsPerDayRangeChange = (next: JobsPerDayDraft) =>
+    onProfileFieldChange("jobs_per_day", formatJobsPerDayRange(next));
 
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
