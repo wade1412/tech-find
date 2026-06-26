@@ -15,10 +15,7 @@ import {
 import { useUpdateTechnicianMutation } from "../../../features/technician-management/model/useUpdateTechnicianMutation";
 import ProfileAndCapabilitiesFields from "./ProfileAndCapabilitiesFields";
 import { labelStyle } from "./profile.styles";
-import {
-  validateProfileForm,
-  type ProfileValidationErrors,
-} from "./profile.validation";
+import { validateProfileForm } from "./profile.validation";
 interface ProfileAndCapacitiesSectionProps {
   technician: Technician;
 }
@@ -31,9 +28,12 @@ function ProfileAndCapacitiesSection({
   const [formState, setFormState] = useState(() =>
     createTechnicianFormState(technician),
   );
-  const [formError, setFormError] = useState<ProfileValidationErrors | null>(
-    null,
-  );
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+
+  const formErrorObj = validateProfileForm(formState);
+  const hasErrors = Object.values(formErrorObj).some(Boolean);
+
+  const visibleErrors = hasSubmitted ? formErrorObj : null;
 
   const jobsPerDayRange = useMemo<JobsPerDayDraft>(() => {
     const [min, max] = parseJobsPerDayRange(formState.jobs_per_day);
@@ -63,17 +63,9 @@ function ProfileAndCapacitiesSection({
 
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!isDirty) return;
+    setHasSubmitted(true);
 
-    const formErrorObj = validateProfileForm(formState);
-    const hasErrors = Object.values(formErrorObj).some(Boolean);
-
-    // Set result all the time to erase errors before submit
-    setFormError(formErrorObj);
-
-    if (hasErrors) {
-      return;
-    }
+    if (!isDirty || hasErrors) return;
 
     updateTechnicianMutation.mutate({
       id: technician.id,
@@ -82,7 +74,7 @@ function ProfileAndCapacitiesSection({
   };
 
   return (
-    <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+    <form className="flex flex-col gap-6" onSubmit={handleSubmit} noValidate>
       {/* Head - Technician Status */}
       <div
         className={`flex items-center justify-between rounded-xl border px-4 py-3 transition-colors ${formState.active ? "border-zinc-200 bg-white dark:border-zinc-700/60 dark:bg-zinc-800/50" : "border-red-200 bg-red-50/50 dark:border-red-900/40 dark:bg-red-950/20"}`}
@@ -108,7 +100,7 @@ function ProfileAndCapacitiesSection({
         onCapabilityToggle={toggleCapability}
         jobsPerDayRange={jobsPerDayRange}
         onJobsPerDayRangeChange={onJobsPerDayRangeChange}
-        formError={formError}
+        formError={visibleErrors}
       />
 
       {/* Submit Button */}
