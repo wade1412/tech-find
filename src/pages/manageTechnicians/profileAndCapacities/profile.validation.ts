@@ -1,7 +1,7 @@
 import { parseJobsPerDayRange } from "./profile.helpers";
 import type { TechnicianFormState } from "./profile.types";
 
-type ProfileValidationErrors = Partial<
+export type ProfileValidationErrors = Partial<
   Record<keyof TechnicianFormState, string | null>
 >;
 

@@ -8,6 +8,7 @@ import type {
   ProfileFieldKey,
   TechnicianFormState,
 } from "./profile.types";
+import type { ProfileValidationErrors } from "./profile.validation";
 
 interface ProfileAndCapacitiesFieldsProps {
   disabled: boolean;
@@ -16,6 +17,7 @@ interface ProfileAndCapacitiesFieldsProps {
   onCapabilityToggle: (key: CapabilityFieldKey) => void;
   jobsPerDayRange: JobsPerDayDraft;
   onJobsPerDayRangeChange: (next: JobsPerDayDraft) => void;
+  formError: ProfileValidationErrors | null;
 }
 
 function ProfileAndCapabilitiesFields({
@@ -25,6 +27,7 @@ function ProfileAndCapabilitiesFields({
   onCapabilityToggle,
   jobsPerDayRange,
   onJobsPerDayRangeChange,
+  formError,
 }: ProfileAndCapacitiesFieldsProps) {
   const renderProfileField = (key: ProfileFieldKey) => {
     switch (key) {
@@ -46,6 +49,7 @@ function ProfileAndCapabilitiesFields({
       case "jobs_per_day":
         return (
           <JobsPerDayRangeSelect
+            disabled={disabled}
             value={jobsPerDayRange}
             onChange={onJobsPerDayRangeChange}
           />
@@ -67,7 +71,6 @@ function ProfileAndCapabilitiesFields({
         return (
           // Name and Alias
           <input
-            required
             id={key}
             name={key}
             value={formState[key]}
@@ -86,10 +89,21 @@ function ProfileAndCapabilitiesFields({
         </h2>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {PROFILE_FIELDS.map(({ key, label }) => (
-            <label key={key} className={`flex flex-col gap-1.5 ${labelStyle}`}>
-              {label}
-              {renderProfileField(key)}
-            </label>
+            <div key={key}>
+              <label
+                key={key}
+                className={`flex flex-col gap-1.5 ${labelStyle}`}
+              >
+                {label}
+                {renderProfileField(key)}
+              </label>
+
+              {formError && formError[key] && (
+                <span className="text-xs text-red-300/80 mt-1">
+                  {formError[key]}
+                </span>
+              )}
+            </div>
           ))}
         </div>
       </section>

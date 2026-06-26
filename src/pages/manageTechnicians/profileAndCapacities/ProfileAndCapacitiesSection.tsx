@@ -15,6 +15,10 @@ import {
 import { useUpdateTechnicianMutation } from "../../../features/technician-management/model/useUpdateTechnicianMutation";
 import ProfileAndCapabilitiesFields from "./ProfileAndCapabilitiesFields";
 import { labelStyle } from "./profile.styles";
+import {
+  validateProfileForm,
+  type ProfileValidationErrors,
+} from "./profile.validation";
 interface ProfileAndCapacitiesSectionProps {
   technician: Technician;
 }
@@ -26,6 +30,9 @@ function ProfileAndCapacitiesSection({
 
   const [formState, setFormState] = useState(() =>
     createTechnicianFormState(technician),
+  );
+  const [formError, setFormError] = useState<ProfileValidationErrors | null>(
+    null,
   );
 
   const jobsPerDayRange = useMemo<JobsPerDayDraft>(() => {
@@ -57,6 +64,16 @@ function ProfileAndCapacitiesSection({
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!isDirty) return;
+
+    const formErrorObj = validateProfileForm(formState);
+    const hasErrors = Object.values(formErrorObj).some(Boolean);
+
+    // Set result all the time to erase errors before submit
+    setFormError(formErrorObj);
+
+    if (hasErrors) {
+      return;
+    }
 
     updateTechnicianMutation.mutate({
       id: technician.id,
@@ -91,6 +108,7 @@ function ProfileAndCapacitiesSection({
         onCapabilityToggle={toggleCapability}
         jobsPerDayRange={jobsPerDayRange}
         onJobsPerDayRangeChange={onJobsPerDayRangeChange}
+        formError={formError}
       />
 
       {/* Submit Button */}
