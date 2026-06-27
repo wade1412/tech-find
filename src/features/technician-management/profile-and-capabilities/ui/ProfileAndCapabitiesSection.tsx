@@ -14,7 +14,7 @@ import type {
   ProfileFieldKey,
 } from "../model/profile.types";
 import ProfileAndCapabilitiesFields from "./ProfileAndCapabilitiesFields";
-import ToggleStatus from "../../../../pages/manageTechnicians/ToggleStatus";
+import ToggleStatus from "./ToggleStatus";
 import { labelStyle } from "../model/profile.styles";
 
 interface ProfileAndCapabilitiesSectionProps {

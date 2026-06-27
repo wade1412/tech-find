@@ -6,6 +6,7 @@ import { useTechniciansQuery } from "../../entities/technician/useTechniciansQue
 import NotFoundPage from "../NotFoundPage";
 import { useZoneNamesByTechnicianId } from "../../entities/technician-service-zone/useZoneNamesByTechnicianId";
 import ProfileAndCapabilitiesSection from "../../features/technician-management/profile-and-capabilities/ui/ProfileAndCapabitiesSection";
+import ServiceZonesSection from "../../features/technician-management/service-zones/ui/ServiceZonesSection";
 
 const editSections = [
   { id: "profile", title: "Profile & Capabilities" },
@@ -103,6 +104,13 @@ function EditTechnicianPage() {
         {/* Selected Section */}
         {selectedSectionId === "profile" && (
           <ProfileAndCapabilitiesSection
+            key={selectedTechnician.id}
+            technician={selectedTechnician}
+          />
+        )}
+
+        {selectedSectionId === "service_zones" && (
+          <ServiceZonesSection
             key={selectedTechnician.id}
             technician={selectedTechnician}
           />
