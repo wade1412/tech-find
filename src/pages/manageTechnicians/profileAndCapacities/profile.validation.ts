@@ -14,23 +14,23 @@ const FIELD_LABEL: Partial<Record<keyof TechnicianFormState, string>> = {
   alias: "Alias",
   name: "Name",
   home_zip_code: "ZIP code",
-  jobs_per_day: "Jobs Range",
+  jobs_per_day: "Jobs range",
   notes: "Notes",
 };
 
 const validateName: ValidateProfileInputFunction = (value, propertyName) => {
-  const invalidNameCharsRegex = /[^a-zA-Z\s'-]/;
+  const invalidNameCharsRegex = /[^a-zA-Z\s'\-`]/;
 
   const trimmedVal = value.trim();
 
   if (!trimmedVal) {
     return `${FIELD_LABEL[propertyName]} cannot be empty`;
   }
-  if (invalidNameCharsRegex.test(value)) {
+  if (invalidNameCharsRegex.test(trimmedVal)) {
     return `${FIELD_LABEL[propertyName]} cannot contain numbers or special characters`;
   }
-  if (trimmedVal.length > 16) {
-    return `${FIELD_LABEL[propertyName]} cannot be longer than 16 characters`;
+  if (trimmedVal.length > 24) {
+    return `${FIELD_LABEL[propertyName]} cannot be longer than 24 characters`;
   }
 
   return null;
@@ -72,8 +72,8 @@ const validateJobsPerDay: ValidateProfileInputFunction = (
 };
 
 const validateNotes: ValidateProfileInputFunction = (value, propertyName) => {
-  if (value.trim().length > 72) {
-    return `${FIELD_LABEL[propertyName]} cannot be longer than 72 characters`;
+  if (value.trim().length > 300) {
+    return `${FIELD_LABEL[propertyName]} cannot be longer than 300 characters`;
   }
 
   return null;

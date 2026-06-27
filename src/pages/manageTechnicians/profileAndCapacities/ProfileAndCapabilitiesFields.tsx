@@ -98,8 +98,11 @@ function ProfileAndCapabilitiesFields({
                 {renderProfileField(key)}
               </label>
 
-              {formError && formError[key] && (
-                <span className="text-xs text-red-300/80 mt-1">
+              {formError?.[key] && (
+                <span
+                  role="alert"
+                  className="mt-1 text-xs font-medium text-red-600 dark:text-red-400"
+                >
                   {formError[key]}
                 </span>
               )}
