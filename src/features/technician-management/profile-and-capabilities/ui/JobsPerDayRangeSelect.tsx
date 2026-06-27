@@ -5,11 +5,11 @@ import {
   Select,
   type SelectChangeEvent,
 } from "@mui/material";
+import type { JobsPerDayDraft } from "../model/profile.types";
 import {
   compactSelectStyle,
   selectMenuProps,
-} from "../../../shared/styles/muiSelectStyles";
-import type { JobsPerDayDraft } from "./profile.types";
+} from "../../../../shared/styles/muiSelectStyles";
 
 interface JobsPerDayRangeSelectProps {
   value: JobsPerDayDraft;

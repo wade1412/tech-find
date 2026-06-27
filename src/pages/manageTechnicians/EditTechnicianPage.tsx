@@ -5,10 +5,10 @@ import { useParams } from "react-router";
 import { useTechniciansQuery } from "../../entities/technician/useTechniciansQuery";
 import NotFoundPage from "../NotFoundPage";
 import { useZoneNamesByTechnicianId } from "../../entities/technician-service-zone/useZoneNamesByTechnicianId";
-import ProfileAndCapacitiesSection from "./profileAndCapacities/ProfileAndCapacitiesSection";
+import ProfileAndCapabilitiesSection from "../../features/technician-management/profile-and-capabilities/ui/ProfileAndCapabitiesSection";
 
 const editSections = [
-  { id: "profile", title: "Profile & Capacities" },
+  { id: "profile", title: "Profile & Capabilities" },
   { id: "service_zones", title: "Service Zones" },
   { id: "skills", title: "Skills" },
   { id: "ignore_list", title: "Ignore List" },
@@ -102,7 +102,7 @@ function EditTechnicianPage() {
 
         {/* Selected Section */}
         {selectedSectionId === "profile" && (
-          <ProfileAndCapacitiesSection
+          <ProfileAndCapabilitiesSection
             key={selectedTechnician.id}
             technician={selectedTechnician}
           />

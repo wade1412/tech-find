@@ -1,16 +1,16 @@
-import Checkbox from "../../../shared/ui/Checkbox";
-import JobsPerDayRangeSelect from "./JobsPerDayRangeSelect";
-import { CAPABILITY_FIELDS, PROFILE_FIELDS } from "./profile.constants";
-import { inputStyle, labelStyle } from "./profile.styles";
+import Checkbox from "../../../../shared/ui/Checkbox";
+import { CAPABILITY_FIELDS, PROFILE_FIELDS } from "../model/profile.constants";
+import { inputStyle, labelStyle } from "../model/profile.styles";
 import type {
   CapabilityFieldKey,
   JobsPerDayDraft,
   ProfileFieldKey,
   TechnicianFormState,
-} from "./profile.types";
-import type { ProfileValidationErrors } from "./profile.validation";
+} from "../model/profile.types";
+import type { ProfileValidationErrors } from "../model/profile.validation";
+import JobsPerDayRangeSelect from "./JobsPerDayRangeSelect";
 
-interface ProfileAndCapacitiesFieldsProps {
+interface ProfileAndCapabilitiesFieldsProps {
   disabled: boolean;
   formState: TechnicianFormState;
   onProfileFieldChange: (key: ProfileFieldKey, newValue: string) => void;
@@ -28,7 +28,7 @@ function ProfileAndCapabilitiesFields({
   jobsPerDayRange,
   onJobsPerDayRangeChange,
   formError,
-}: ProfileAndCapacitiesFieldsProps) {
+}: ProfileAndCapabilitiesFieldsProps) {
   const renderProfileField = (key: ProfileFieldKey) => {
     switch (key) {
       case "home_zip_code":

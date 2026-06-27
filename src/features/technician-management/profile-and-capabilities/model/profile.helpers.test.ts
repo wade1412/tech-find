@@ -3,7 +3,7 @@ import {
   buildTechnicianPatch,
   createTechnicianFormState,
 } from "./profile.helpers";
-import { makeTechnician } from "../../../features/technician-filter/model/filterTestFixtures";
+import { makeTechnician } from "../../../technician-filter/model/filterTestFixtures";
 import { EDITABLE_KEYS } from "./profile.constants";
 
 describe("createTechnicianFormState", () => {

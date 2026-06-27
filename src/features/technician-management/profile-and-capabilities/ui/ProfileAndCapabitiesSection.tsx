@@ -1,28 +1,29 @@
 import { useMemo, useState } from "react";
-import type { Technician } from "../../../entities/technician/technician.types";
-import ToggleStatus from "../ToggleStatus";
+import type { Technician } from "../../../../entities/technician/technician.types";
+import { useUpdateTechnicianMutation } from "../../model/useUpdateTechnicianMutation";
 import {
   buildTechnicianPatch,
   createTechnicianFormState,
   formatJobsPerDayRange,
   parseJobsPerDayRange,
-} from "./profile.helpers";
-import {
-  type JobsPerDayDraft,
-  type CapabilityFieldKey,
-  type ProfileFieldKey,
-} from "./profile.types";
-import { useUpdateTechnicianMutation } from "../../../features/technician-management/model/useUpdateTechnicianMutation";
+} from "../model/profile.helpers";
+import { validateProfileForm } from "../model/profile.validation";
+import type {
+  CapabilityFieldKey,
+  JobsPerDayDraft,
+  ProfileFieldKey,
+} from "../model/profile.types";
 import ProfileAndCapabilitiesFields from "./ProfileAndCapabilitiesFields";
-import { labelStyle } from "./profile.styles";
-import { validateProfileForm } from "./profile.validation";
-interface ProfileAndCapacitiesSectionProps {
+import ToggleStatus from "../../../../pages/manageTechnicians/ToggleStatus";
+import { labelStyle } from "../model/profile.styles";
+
+interface ProfileAndCapabilitiesSectionProps {
   technician: Technician;
 }
 
-function ProfileAndCapacitiesSection({
+function ProfileAndCapabilitiesSection({
   technician,
-}: ProfileAndCapacitiesSectionProps) {
+}: ProfileAndCapabilitiesSectionProps) {
   const updateTechnicianMutation = useUpdateTechnicianMutation();
 
   const [formState, setFormState] = useState(() =>
@@ -126,4 +127,4 @@ function ProfileAndCapacitiesSection({
   );
 }
 
-export default ProfileAndCapacitiesSection;
+export default ProfileAndCapabilitiesSection;
