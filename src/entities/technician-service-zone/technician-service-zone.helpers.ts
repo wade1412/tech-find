@@ -1,7 +1,7 @@
 import type { ServiceZone } from "../service-zone/service-zone.types";
 import type { TechnicianServiceZone } from "./technician-service-zone.types";
 
-export const createZoneMapByTechId = (
+export const createZoneIdMapByTechId = (
   technicianZones: TechnicianServiceZone[],
 ) => {
   return technicianZones.reduce((map, techZone) => {
@@ -20,7 +20,7 @@ export const createTechnicianZoneNamesMap = (
 ) => {
   const zonesByTechId = existingZoneMapByTechId
     ? existingZoneMapByTechId
-    : createZoneMapByTechId(technicianZones);
+    : createZoneIdMapByTechId(technicianZones);
 
   const resultMap = new Map<string, string[]>();
 
