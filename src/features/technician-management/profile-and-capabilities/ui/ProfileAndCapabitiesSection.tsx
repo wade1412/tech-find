@@ -31,11 +31,6 @@ function ProfileAndCapabilitiesSection({
   );
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
-  const formErrorObj = validateProfileForm(formState);
-  const hasErrors = Object.values(formErrorObj).some(Boolean);
-
-  const visibleErrors = hasSubmitted ? formErrorObj : null;
-
   const jobsPerDayRange = useMemo<JobsPerDayDraft>(() => {
     const [min, max] = parseJobsPerDayRange(formState.jobs_per_day);
     return { min: min, max: max ?? min };
@@ -43,14 +38,6 @@ function ProfileAndCapabilitiesSection({
 
   const toggleActive = () =>
     setFormState((prev) => ({ ...prev, active: !prev.active }));
-
-  const patch = useMemo(
-    () => buildTechnicianPatch(technician, formState),
-    [technician, formState],
-  );
-
-  const isDirty = Object.keys(patch).length > 0;
-  const isPending = updateTechnicianMutation.isPending;
 
   const onProfileFieldChange = (key: ProfileFieldKey, newValue: string) => {
     setFormState((prev) => ({ ...prev, [key]: newValue }));
@@ -61,6 +48,19 @@ function ProfileAndCapabilitiesSection({
 
   const onJobsPerDayRangeChange = (next: JobsPerDayDraft) =>
     onProfileFieldChange("jobs_per_day", formatJobsPerDayRange(next));
+
+  const patch = useMemo(
+    () => buildTechnicianPatch(technician, formState),
+    [technician, formState],
+  );
+
+  const isDirty = Object.keys(patch).length > 0;
+  const isPending = updateTechnicianMutation.isPending;
+
+  const formErrorObj = validateProfileForm(formState);
+  const hasErrors = Object.values(formErrorObj).some(Boolean);
+
+  const visibleErrors = hasSubmitted ? formErrorObj : null;
 
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();

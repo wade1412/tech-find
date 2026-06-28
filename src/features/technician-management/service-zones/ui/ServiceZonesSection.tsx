@@ -32,7 +32,13 @@ function ServiceZonesSection({ technician }: ServiceZonesSectionProps) {
     techZone.technician_id === technician.id ? [techZone.zone_id] : [],
   );
 
-  return <ServiceZonesForm zones={zones} initialZoneIds={initialZoneIds} />;
+  return (
+    <ServiceZonesForm
+      technicianId={technician.id}
+      zones={zones}
+      initialZoneIds={initialZoneIds}
+    />
+  );
 }
 
 export default ServiceZonesSection;
