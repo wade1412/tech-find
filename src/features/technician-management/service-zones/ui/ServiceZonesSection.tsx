@@ -1,6 +1,7 @@
 import { useServiceZonesQuery } from "../../../../entities/service-zone/useServiceZonesQuery";
 import { useTechnicianServiceZonesQuery } from "../../../../entities/technician-service-zone/useTechnicianServiceZonesQuery";
 import type { Technician } from "../../../../entities/technician/technician.types";
+import TechnicianSkeleton from "../../../../entities/technician/ui/TechnicianSkeleton";
 import ErrorMessage from "../../../../shared/ui/ErrorMessage";
 import ServiceZonesForm from "./ServiceZonesForm";
 
@@ -23,7 +24,7 @@ function ServiceZonesSection({ technician }: ServiceZonesSectionProps) {
   } = useServiceZonesQuery();
 
   if (isTechnicianZonesPending || isZonesPending) {
-    return <div>loading</div>;
+    return <TechnicianSkeleton />;
   }
   if (isTechnicianZonesError || isZonesError) {
     return (

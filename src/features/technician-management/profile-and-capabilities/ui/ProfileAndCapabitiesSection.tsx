@@ -16,6 +16,7 @@ import type {
 import ProfileAndCapabilitiesFields from "./ProfileAndCapabilitiesFields";
 import ToggleStatus from "./ToggleStatus";
 import { labelStyle } from "../model/profile.styles";
+import { formStyle } from "../../../../shared/styles/styles";
 
 interface ProfileAndCapabilitiesSectionProps {
   technician: Technician;
@@ -75,7 +76,7 @@ function ProfileAndCapabilitiesSection({
   };
 
   return (
-    <form className="flex flex-col gap-6" onSubmit={handleSubmit} noValidate>
+    <form className={formStyle} onSubmit={handleSubmit} noValidate>
       {/* Head - Technician Status */}
       <div
         className={`flex items-center justify-between rounded-xl border px-4 py-3 transition-colors ${formState.active ? "border-zinc-200 bg-white dark:border-zinc-700/60 dark:bg-zinc-800/50" : "border-red-200 bg-red-50/50 dark:border-red-900/40 dark:bg-red-950/20"}`}

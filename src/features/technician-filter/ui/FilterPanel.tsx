@@ -1,5 +1,5 @@
 import SpecificIssueSelect from "./SpecificIssueSelect";
-import { headingStyle } from "../../../shared/styles/styles";
+import { headingStyleWithBottomMargin } from "../../../shared/styles/styles";
 import BrandSelect from "./BrandSelect";
 import JobOptions from "./JobOptions";
 import UnitSelector from "./UnitSelector";
@@ -36,22 +36,22 @@ function FilterPanel() {
 
       <div className="flex flex-col gap-2.5">
         <section>
-          <h2 className={headingStyle}>Filter by Zone</h2>
+          <h2 className={headingStyleWithBottomMargin}>Filter by Zone</h2>
           <ZoneSelect />
         </section>
 
         <section>
-          <h2 className={headingStyle}>Filter by Brand</h2>
+          <h2 className={headingStyleWithBottomMargin}>Filter by Brand</h2>
           <BrandSelect />
         </section>
 
         <section>
-          <h2 className={headingStyle}>Specific Issues</h2>
+          <h2 className={headingStyleWithBottomMargin}>Specific Issues</h2>
           <SpecificIssueSelect />
         </section>
 
         <section>
-          <h2 className={headingStyle}>Units</h2>
+          <h2 className={headingStyleWithBottomMargin}>Units</h2>
           <JobOptions />
           <UnitSelector />
         </section>

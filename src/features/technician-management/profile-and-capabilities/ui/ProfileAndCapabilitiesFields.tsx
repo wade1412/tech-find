@@ -1,3 +1,4 @@
+import { headingStyleDefault } from "../../../../shared/styles/styles";
 import Checkbox from "../../../../shared/ui/Checkbox";
 import { CAPABILITY_FIELDS, PROFILE_FIELDS } from "../model/profile.constants";
 import { inputStyle, labelStyle } from "../model/profile.styles";
@@ -84,16 +85,11 @@ function ProfileAndCapabilitiesFields({
   return (
     <fieldset disabled={disabled} className="flex flex-col gap-6">
       <section className="flex flex-col gap-3">
-        <h2 className="font-heading text-sm font-semibold tracking-wider text-zinc-400 uppercase dark:text-zinc-500">
-          Profile
-        </h2>
+        <h2 className={headingStyleDefault}>Profile</h2>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {PROFILE_FIELDS.map(({ key, label }) => (
             <div key={key}>
-              <label
-                key={key}
-                className={`flex flex-col gap-1.5 ${labelStyle}`}
-              >
+              <label className={`flex flex-col gap-1.5 ${labelStyle}`}>
                 {label}
                 {renderProfileField(key)}
               </label>
@@ -112,9 +108,7 @@ function ProfileAndCapabilitiesFields({
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="font-heading text-sm font-semibold tracking-wider text-zinc-400 uppercase dark:text-zinc-500">
-          Capabilities
-        </h2>
+        <h2 className={headingStyleDefault}>Capabilities</h2>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {CAPABILITY_FIELDS.map(({ key, label }) => (
             <Checkbox

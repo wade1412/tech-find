@@ -4,6 +4,10 @@ import { Autocomplete, TextField } from "@mui/material";
 import { selectStyle } from "../../../../shared/styles/muiSelectStyles";
 import { useUpdateTechnicianServiceZonesMutation } from "../model/useUpdateTechnicianServiceZonesMutation";
 import { buildTechnicianZonesPatch } from "../model/serviceZones.helpers";
+import {
+  formStyle,
+  headingStyleDefault,
+} from "../../../../shared/styles/styles";
 
 type ZoneOption = {
   label: string;
@@ -28,34 +32,36 @@ function ServiceZonesForm({
   const isPending = updateTechnicianZonesMutation.isPending;
 
   //Zone Ids Sets
-  const inittialZoneIdsSet = new Set(initialZoneIds);
-  const draftZoneIdsSet = new Set(draftZoneIds);
+  const initialZoneIdsSet = useMemo(
+    () => new Set(initialZoneIds),
+    [initialZoneIds],
+  );
+  const draftZoneIdsSet = useMemo(() => new Set(draftZoneIds), [draftZoneIds]);
 
   // Get zones object array for this technician, based on current draft ids
-  const technicianZones = zones.filter((zone) => draftZoneIdsSet.has(zone.id));
+  const technicianZones = useMemo(
+    () => zones.filter((zone) => draftZoneIdsSet.has(zone.id)),
+    [zones, draftZoneIdsSet],
+  );
 
-  const handleAddZone = (zoneId: string) =>
-    setZoneIds((current) =>
-      current.includes(zoneId) ? current : [...current, zoneId],
-    );
-
-  const handleZoneDelete = (zoneId: string) => {
-    if (!zoneId) return;
-    setZoneIds((prev) => prev.filter((p) => p !== zoneId));
-  };
-
+  // Form zone options and available options for Autocomplete
   const zoneOptions: ZoneOption[] = useMemo(
     () =>
       zones.map((zone) => {
         return { label: zone.name, id: zone.id };
-      }) || [],
+      }),
     [zones],
   );
-
-  const availableOptions = zoneOptions.filter(
-    (opt) => !draftZoneIdsSet.has(opt.id),
+  const availableOptions = useMemo(
+    () => zoneOptions.filter((opt) => !draftZoneIdsSet.has(opt.id)),
+    [zoneOptions, draftZoneIdsSet],
   );
 
+  // Handlers for Zone changes
+  const handleAddZone = (zoneId: string) =>
+    setZoneIds((current) =>
+      current.includes(zoneId) ? current : [...current, zoneId],
+    );
   const handleZoneChange = (
     _: SyntheticEvent<Element, Event>,
     option: ZoneOption | null,
@@ -65,8 +71,15 @@ function ServiceZonesForm({
     handleAddZone(option.id);
     setInputValue("");
   };
+  const handleZoneChipDelete = (zoneId: string) => {
+    if (!zoneId) return;
+    setZoneIds((prev) => prev.filter((p) => p !== zoneId));
+  };
 
-  const patch = buildTechnicianZonesPatch(inittialZoneIdsSet, draftZoneIdsSet);
+  const patch = useMemo(
+    () => buildTechnicianZonesPatch(initialZoneIdsSet, draftZoneIdsSet),
+    [initialZoneIdsSet, draftZoneIdsSet],
+  );
   const isDirty = patch.addedIds.length > 0 || patch.removedIds.length > 0;
 
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
@@ -81,28 +94,17 @@ function ServiceZonesForm({
   };
 
   return (
-    <form className="flex flex-col gap-6" onSubmit={handleSubmit} noValidate>
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-          {technicianZones.map((zone) => (
-            <div
-              key={zone.id}
-              className="focus-visible:ring-main-500 cursor-pointer overflow-hidden rounded-xl border transition-[border-color,background-color,box-shadow] duration-200 focus-visible:ring-2 focus-visible:outline-none border-zinc-200 bg-white shadow-sm hover:border-zinc-300 hover:shadow-md dark:border-zinc-700/60 dark:bg-zinc-800/50 dark:hover:border-zinc-600 p-4 flex gap-4 justify-between items-center"
-            >
-              <span>{zone.name}</span>
-              <button
-                type="button"
-                disabled={isPending}
-                className="border border-red-200 p-2 rounded-xl"
-                onClick={() => handleZoneDelete(zone.id)}
-              >
-                Delete
-              </button>
-            </div>
-          ))}
-        </div>
+    <form className={formStyle} onSubmit={handleSubmit} noValidate>
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-[minmax(0,0.9fr)_auto_minmax(0,1.6fr)] md:gap-6">
+        {/* Add Zone */}
+        <div className="flex min-w-0 flex-col gap-3">
+          <div className="space-y-1">
+            <h3 className={headingStyleDefault}>Add Zone</h3>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">
+              Select a service zone to assign it to this technician.
+            </p>
+          </div>
 
-        <div>
           <Autocomplete
             disabled={isPending}
             value={null}
@@ -115,29 +117,135 @@ function ServiceZonesForm({
             sx={(theme) => ({
               ...selectStyle(theme),
             })}
-            renderInput={(params) => <TextField {...params} label="Add Zone" />}
+            renderInput={(params) => (
+              <TextField {...params} label="Select zone" />
+            )}
+            noOptionsText="All zones assigned"
           />
         </div>
-      </section>
 
-      {/* Submit Button */}
-      <div className="flex flex-col gap-2 items-center justify-center p-2">
+        {/* Divider */}
+        <div
+          aria-hidden="true"
+          className="h-px w-full bg-zinc-200 dark:bg-zinc-800 md:h-auto md:w-px md:self-stretch"
+        />
+
+        {/* Assigned Zones */}
+        <div className="flex min-w-0 flex-col gap-3">
+          <div className="flex items-start justify-between gap-3">
+            <div className="space-y-1">
+              <h3 className={headingStyleDefault}>Assigned Zones</h3>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                {technicianZones.length > 0
+                  ? `${technicianZones.length} zone${
+                      technicianZones.length === 1 ? "" : "s"
+                    } currently assigned`
+                  : "No zones assigned yet"}
+              </p>
+            </div>
+
+            {isDirty && (
+              <span className="rounded-xl bg-main-500/10 px-2 py-1 text-[11px] font-semibold text-main-600 dark:text-main-400">
+                Unsaved
+              </span>
+            )}
+          </div>
+
+          {/* Zone Chips */}
+          {technicianZones.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {technicianZones.map((zone) => (
+                <div
+                  key={zone.id}
+                  className="
+                      inline-flex max-w-full items-center gap-2 rounded-2xl border
+                      border-zinc-200 bg-zinc-50 px-3 py-1.5 text-sm shadow-sm
+                      dark:border-zinc-700/70 dark:bg-zinc-800/60
+                    "
+                >
+                  <span className="max-w-40 truncate font-medium text-zinc-800 dark:text-zinc-100">
+                    {zone.name}
+                  </span>
+
+                  <button
+                    type="button"
+                    disabled={isPending}
+                    className="
+                        -mr-1 inline-flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center
+                        rounded-full text-zinc-400 transition-colors
+                        hover:bg-red-50 hover:text-red-600
+                        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500
+                        disabled:cursor-not-allowed disabled:opacity-50
+                        dark:text-zinc-500 dark:hover:bg-red-950/30 dark:hover:text-red-400
+                      "
+                    aria-label={`Remove ${zone.name}`}
+                    onClick={() => handleZoneChipDelete(zone.id)}
+                  >
+                    <svg
+                      className="h-3.5 w-3.5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                      aria-hidden="true"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div
+              className="
+                  rounded-xl border border-dashed border-zinc-200 bg-zinc-50/70 px-4 py-6
+                  text-center text-sm text-zinc-400
+                  dark:border-zinc-800 dark:bg-zinc-950/30 dark:text-zinc-500
+                "
+            >
+              No zones assigned. Use the selector to add one.
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Submit Area */}
+      <div className="flex flex-col gap-3 border-t border-zinc-200 pt-4 dark:border-zinc-800 md:flex-row md:items-center md:justify-between">
+        <div className="min-h-5">
+          {updateTechnicianZonesMutation.error && (
+            <p
+              role="alert"
+              className="
+                rounded-lg border border-red-200 bg-red-50/70 px-3 py-2
+                text-xs font-medium text-red-600
+                dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-400
+              "
+            >
+              Failed to save changes. Try again.
+            </p>
+          )}
+        </div>
+
         <button
           type="submit"
           disabled={!isDirty || isPending}
-          className="bg-main-500 hover:bg-main-400 focus-visible:ring-main-500 cursor-pointer rounded-xl px-4 py-2.5 text-xs font-semibold text-zinc-950 transition-[background-color,transform,opacity] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50"
+          className="
+            bg-main-500 hover:bg-main-400 focus-visible:ring-main-500
+            inline-flex w-full cursor-pointer items-center justify-center rounded-xl px-4 py-2.5
+            text-xs font-semibold text-zinc-950 transition-[background-color,transform,opacity]
+            focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
+            active:scale-[0.98]
+            disabled:pointer-events-none disabled:opacity-50
+            dark:focus-visible:ring-offset-zinc-950
+            md:w-auto
+          "
         >
-          {isPending ? "Saving..." : "Save Changes"}
+          {isPending ? "Saving..." : isDirty ? "Save Changes" : "No Changes"}
         </button>
-
-        {updateTechnicianZonesMutation.error && (
-          <p
-            role="alert"
-            className="rounded-lg border border-red-200 bg-red-50/50 p-4 text-xs font-medium text-red-600 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-400"
-          >
-            Failed to save changes. Try again
-          </p>
-        )}
       </div>
     </form>
   );
