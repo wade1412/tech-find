@@ -7,6 +7,7 @@ import NotFoundPage from "../NotFoundPage";
 import { useZoneNamesByTechnicianId } from "../../entities/technician-service-zone/useZoneNamesByTechnicianId";
 import ProfileAndCapabilitiesSection from "../../features/technician-management/profile-and-capabilities/ui/ProfileAndCapabitiesSection";
 import ServiceZonesSection from "../../features/technician-management/service-zones/ui/ServiceZonesSection";
+import ErrorMessage from "../../shared/ui/ErrorMessage";
 
 const editSections = [
   { id: "profile", title: "Profile & Capabilities" },
@@ -63,9 +64,7 @@ function EditTechnicianPage() {
   if (isError) {
     return (
       <div className="mx-auto max-w-6xl p-4 md:p-6">
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-400">
-          {error?.message}
-        </div>
+        <ErrorMessage message={error?.message} />
       </div>
     );
   }

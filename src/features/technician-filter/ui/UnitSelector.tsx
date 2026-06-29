@@ -2,6 +2,7 @@ import { useUnitsQuery } from "../../../entities/unit/useUnitsQuery";
 import UnitCard from "../../../entities/unit/ui/UnitCard";
 import UnitSkeleton from "../../../entities/unit/ui/UnitSkeleton";
 import { useTechnicianFilters } from "../model/useTechnicianFilters";
+import ErrorMessage from "../../../shared/ui/ErrorMessage";
 
 function UnitSelector() {
   const { data, isPending, isError, error } = useUnitsQuery();
@@ -10,11 +11,7 @@ function UnitSelector() {
   if (isPending) return <UnitSkeleton />;
 
   if (isError) {
-    return (
-      <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-400">
-        {error.message}
-      </div>
-    );
+    return <ErrorMessage message={error?.message} />;
   }
 
   return (

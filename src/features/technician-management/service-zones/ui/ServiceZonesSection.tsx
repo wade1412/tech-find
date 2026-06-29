@@ -1,6 +1,7 @@
 import { useServiceZonesQuery } from "../../../../entities/service-zone/useServiceZonesQuery";
 import { useTechnicianServiceZonesQuery } from "../../../../entities/technician-service-zone/useTechnicianServiceZonesQuery";
 import type { Technician } from "../../../../entities/technician/technician.types";
+import ErrorMessage from "../../../../shared/ui/ErrorMessage";
 import ServiceZonesForm from "./ServiceZonesForm";
 
 interface ServiceZonesSectionProps {
@@ -25,7 +26,11 @@ function ServiceZonesSection({ technician }: ServiceZonesSectionProps) {
     return <div>loading</div>;
   }
   if (isTechnicianZonesError || isZonesError) {
-    return <div>{(technicianZonesErrorObj ?? zonesErrorObject)?.message}</div>;
+    return (
+      <ErrorMessage
+        message={technicianZonesErrorObj?.message ?? zonesErrorObject?.message}
+      />
+    );
   }
 
   const initialZoneIds = technicianZones.flatMap((techZone) =>

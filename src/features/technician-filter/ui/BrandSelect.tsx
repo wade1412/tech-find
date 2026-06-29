@@ -7,6 +7,7 @@ import {
   selectSlotPropsStyle,
   selectStyle,
 } from "../../../shared/styles/muiSelectStyles";
+import ErrorMessage from "../../../shared/ui/ErrorMessage";
 
 type BrandOption = {
   id: string;
@@ -81,9 +82,9 @@ function BrandSelect() {
 
   if (isBrandsError || isBrandGroupsError) {
     return (
-      <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-400">
-        {brandsError?.message ?? brandGroupsError?.message}
-      </div>
+      <ErrorMessage
+        message={brandsError?.message ?? brandGroupsError?.message}
+      />
     );
   }
 

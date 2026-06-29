@@ -4,6 +4,7 @@ import { filterCheckboxes } from "../model/filter.constants";
 import { useTechnicianFilters } from "../model/useTechnicianFilters";
 import Checkbox from "../../../shared/ui/Checkbox";
 import type { JobOptionKey } from "../model/filter.types";
+import ErrorMessage from "../../../shared/ui/ErrorMessage";
 
 function JobOptions() {
   const { data: units, isPending, isError, error } = useUnitsQuery();
@@ -76,11 +77,7 @@ function JobOptions() {
   ]);
 
   if (isError) {
-    return (
-      <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-400">
-        {error.message}
-      </div>
-    );
+    return <ErrorMessage message={error.message} />;
   }
 
   return (

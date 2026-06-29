@@ -11,6 +11,7 @@ import {
   technicianCardVariants,
   technicianListVariants,
 } from "../../../shared/styles/motionVariants";
+import ErrorMessage from "../../../shared/ui/ErrorMessage";
 
 function TechnicianList() {
   const { filter, updateSort } = useTechnicianFilters();
@@ -53,12 +54,7 @@ function TechnicianList() {
 
   if (isPending) return <TechnicianSkeleton />;
 
-  if (isError)
-    return (
-      <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-400">
-        {error?.message}
-      </div>
-    );
+  if (isError) return <ErrorMessage message={error?.message} />;
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-4">

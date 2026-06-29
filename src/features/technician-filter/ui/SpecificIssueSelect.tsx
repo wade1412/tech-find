@@ -7,6 +7,7 @@ import {
   selectSlotPropsStyle,
   selectStyle,
 } from "../../../shared/styles/muiSelectStyles";
+import ErrorMessage from "../../../shared/ui/ErrorMessage";
 
 type IssueOption = {
   id: string;
@@ -111,9 +112,7 @@ function SpecificIssueSelect() {
 
   if (isIssuesError || isUnitsError) {
     return (
-      <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-400">
-        {issuesError?.message ?? unitsError?.message}
-      </div>
+      <ErrorMessage message={issuesError?.message ?? unitsError?.message} />
     );
   }
 
