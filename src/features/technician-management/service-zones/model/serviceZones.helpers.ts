@@ -4,11 +4,13 @@ type TechnicianZonesPatch = {
 };
 
 export const buildTechnicianZonesPatch = (
-  originalIds: ReadonlySet<string>,
+  originalIdsSet: ReadonlySet<string>,
   draftIdsSet: ReadonlySet<string>,
 ): TechnicianZonesPatch => {
-  const addedIds = Array.from(draftIdsSet).filter((id) => !originalIds.has(id));
-  const removedIds = Array.from(originalIds).filter(
+  const addedIds = Array.from(draftIdsSet).filter(
+    (id) => !originalIdsSet.has(id),
+  );
+  const removedIds = Array.from(originalIdsSet).filter(
     (id) => !draftIdsSet.has(id),
   );
 
