@@ -5,8 +5,9 @@ import { selectStyle } from "../../../../shared/styles/muiSelectStyles";
 import { useUpdateTechnicianServiceZonesMutation } from "../model/useUpdateTechnicianServiceZonesMutation";
 import { buildTechnicianZonesPatch } from "../model/serviceZones.helpers";
 import { formStyle } from "../../../../shared/styles/styles";
-import SubmitArea from "../../../../shared/ui/manageTechnicians/SubmitArea";
-import SectionHeader from "../../../../shared/ui/manageTechnicians/SectionHeader";
+import SubmitArea from "../../../../pages/manageTechnicians/ui/SubmitArea";
+import SectionHeader from "../../../../pages/manageTechnicians/ui/SectionHeader";
+import SubmitSnackbar from "../../../../pages/manageTechnicians/ui/SubmitSnackbar";
 
 type ZoneOption = {
   label: string;
@@ -26,6 +27,8 @@ function ServiceZonesForm({
 }: ServiceZonesFormProps) {
   const [draftZoneIds, setZoneIds] = useState<string[]>(initialZoneIds);
   const [inputValue, setInputValue] = useState("");
+  const [isSavedSnackbarOpen, setIsSavedSnackbarOpen] = useState(false);
+
   const updateTechnicianZonesMutation =
     useUpdateTechnicianServiceZonesMutation();
   const isPending = updateTechnicianZonesMutation.isPending;
@@ -89,12 +92,20 @@ function ServiceZonesForm({
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!isDirty) return;
+    if (!isDirty || isPending) return;
 
-    updateTechnicianZonesMutation.mutate({
-      technicianId,
-      ...patch,
-    });
+    updateTechnicianZonesMutation.mutate(
+      {
+        technicianId,
+        ...patch,
+      },
+      {
+        onSuccess: () => {
+          setInputValue("");
+          setIsSavedSnackbarOpen(true);
+        },
+      },
+    );
   };
 
   return (
@@ -143,12 +154,6 @@ function ServiceZonesForm({
                   : "No zones assigned yet"
               }
             />
-
-            {isDirty && (
-              <span className="bg-main-500/10 text-main-600 dark:text-main-400 rounded-xl px-2 py-1 text-[11px] font-semibold">
-                Unsaved
-              </span>
-            )}
           </div>
 
           {/* Zone Chips */}
@@ -157,7 +162,7 @@ function ServiceZonesForm({
               {technicianZones.map((zone) => (
                 <div
                   key={zone.id}
-                  className="inline-flex max-w-full items-center gap-2 rounded-2xl border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-sm shadow-sm dark:border-zinc-700/70 dark:bg-zinc-800/60"
+                  className="inline-flex max-w-full items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-sm shadow-sm dark:border-zinc-700/70 dark:bg-zinc-800/60"
                 >
                   <span className="max-w-40 truncate font-medium text-zinc-800 dark:text-zinc-100">
                     {zone.name}
@@ -202,6 +207,12 @@ function ServiceZonesForm({
         isDirty={isDirty}
         isPending={isPending}
         handleDiscardChanges={handleDiscardChanges}
+      />
+
+      {/* Success Snackbar */}
+      <SubmitSnackbar
+        isOpen={isSavedSnackbarOpen}
+        handleClose={() => setIsSavedSnackbarOpen(false)}
       />
     </form>
   );

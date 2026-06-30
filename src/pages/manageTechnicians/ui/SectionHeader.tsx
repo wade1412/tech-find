@@ -1,15 +1,18 @@
-import { headingStyleDefault } from "../../styles/styles";
+import { headingStyleDefault } from "../../../shared/styles/styles";
 
 interface SectionHeaderProps {
   label: string;
-  subtext: string;
+  subtext?: string;
 }
 
 function SectionHeader({ label, subtext }: SectionHeaderProps) {
   return (
     <div className="space-y-1">
       <h3 className={headingStyleDefault}>{label}</h3>
-      <p className="text-xs text-zinc-500 dark:text-zinc-400">{subtext}</p>
+
+      {subtext && (
+        <p className="text-xs text-zinc-500 dark:text-zinc-400">{subtext}</p>
+      )}
     </div>
   );
 }

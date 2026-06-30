@@ -17,7 +17,8 @@ import ProfileAndCapabilitiesFields from "./ProfileAndCapabilitiesFields";
 import ToggleStatus from "./ToggleStatus";
 import { labelStyle } from "../model/profile.styles";
 import { formStyle } from "../../../../shared/styles/styles";
-import SubmitArea from "../../../../shared/ui/manageTechnicians/SubmitArea";
+import SubmitArea from "../../../../pages/manageTechnicians/ui/SubmitArea";
+import SubmitSnackbar from "../../../../pages/manageTechnicians/ui/SubmitSnackbar";
 
 interface ProfileAndCapabilitiesSectionProps {
   technician: Technician;
@@ -26,12 +27,13 @@ interface ProfileAndCapabilitiesSectionProps {
 function ProfileAndCapabilitiesSection({
   technician,
 }: ProfileAndCapabilitiesSectionProps) {
-  const updateTechnicianMutation = useUpdateTechnicianMutation();
-
   const [formState, setFormState] = useState(() =>
     createTechnicianFormState(technician),
   );
   const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [isSavedSnackbarOpen, setIsSavedSnackbarOpen] = useState(false);
+
+  const updateTechnicianMutation = useUpdateTechnicianMutation();
 
   const jobsPerDayRange = useMemo<JobsPerDayDraft>(() => {
     const [min, max] = parseJobsPerDayRange(formState.jobs_per_day);
@@ -75,10 +77,17 @@ function ProfileAndCapabilitiesSection({
 
     if (!isDirty || hasErrors || isPending) return;
 
-    updateTechnicianMutation.mutate({
-      id: technician.id,
-      patch,
-    });
+    updateTechnicianMutation.mutate(
+      {
+        id: technician.id,
+        patch,
+      },
+      {
+        onSuccess: () => {
+          setIsSavedSnackbarOpen(true);
+        },
+      },
+    );
   };
 
   return (
@@ -100,7 +109,7 @@ function ProfileAndCapabilitiesSection({
 
             <span
               className={`
-                rounded-full px-2 py-0.5 text-[11px] font-semibold
+                rounded-lg px-2 py-0.5 text-[11px] font-semibold
                 ${
                   formState.active
                     ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-500"
@@ -141,6 +150,12 @@ function ProfileAndCapabilitiesSection({
         isDirty={isDirty}
         isPending={isPending}
         handleDiscardChanges={handleDiscardChanges}
+      />
+
+      {/* Success Snackbar */}
+      <SubmitSnackbar
+        isOpen={isSavedSnackbarOpen}
+        handleClose={() => setIsSavedSnackbarOpen(false)}
       />
     </form>
   );
