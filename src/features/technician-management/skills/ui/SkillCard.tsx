@@ -13,24 +13,21 @@ function SkillCard({
   brandGroupName,
   specificIssueName,
 }: SkillCardProps) {
-  const skillInfo = brandGroupName
-    ? `${brandGroupName} brands`
-    : specificIssueName
-      ? `${specificIssueName}`
-      : "Commercial";
+  const skillInfo = {
+    commercial: "Commercial",
+    brandGroup: brandGroupName ?? "Unknown brand group",
+    specificIssue: specificIssueName ?? "Unknown specific issue",
+  };
 
   return (
-    <div
-      key={skill.key}
-      className="flex items-center justify-between gap-4 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-sm shadow-sm dark:border-zinc-700/70 dark:bg-zinc-800/6"
-    >
+    <div className="flex items-center justify-between gap-4 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-sm shadow-sm dark:border-zinc-700/70 dark:bg-zinc-800/6">
       <div className="flex flex-col gap-2">
         <span className="font-medium text-zinc-800 dark:text-zinc-100">
           {unitName || "Unit Name"}
         </span>
 
         <span className="truncate max-w-50 font-light text-zinc-800 dark:text-zinc-100">
-          {skillInfo}
+          {skillInfo[skill.kind]}
         </span>
       </div>
 

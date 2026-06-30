@@ -7,6 +7,7 @@ import SectionHeader from "../../ui/SectionHeader";
 import { formStyle } from "../../../../shared/styles/styles";
 import type { SkillDraft } from "../model/skills.types";
 import SkillCard from "./SkillCard";
+import { createSkillsDraft } from "../model/skills.helpers";
 
 interface SkillsFormProps {
   technicianId: string;
@@ -29,31 +30,7 @@ function SkillsForm({
   specificIssues,
   specificIssuesById,
 }: SkillsFormProps) {
-  const initialSkills: SkillDraft[] = technicianSkills.map((skill) => {
-    const baseFields = {
-      key: skill.id,
-      sourceId: skill.id,
-      unitId: skill.unit_id,
-    };
-
-    if (skill.commercial) {
-      return {
-        ...baseFields,
-        kind: "commercial",
-      };
-    } else if (skill.brand_group_id) {
-      return {
-        ...baseFields,
-        kind: "brandGroup",
-        brandGroupId: skill.brand_group_id,
-      };
-    }
-    return {
-      ...baseFields,
-      kind: "specificIssue",
-      specificIssueId: skill.specific_issue_id ?? "",
-    };
-  });
+  const initialSkills: SkillDraft[] = createSkillsDraft(technicianSkills);
 
   const [skillsDraft, setSkillsDraft] = useState<SkillDraft[]>(initialSkills);
 
@@ -64,19 +41,19 @@ function SkillsForm({
   return (
     <form className={formStyle} onSubmit={handleSubmit} noValidate>
       {/* Header Section - Add Technician and Title */}
-      <section>
+      <section className="flex flex-row justify-between">
         <SectionHeader
           label="Edit Skills"
           subtext="Add or remove technician skills"
         />
 
-        <button>Add Skill</button>
+        <button type="button">Add Skill</button>
       </section>
 
       {/* Divider */}
       <div
         aria-hidden="true"
-        className="h-px w-full bg-zinc-200 md:h-auto md:w-px md:self-stretch dark:bg-zinc-800"
+        className="h-px w-full bg-zinc-200 md:h-auto dark:bg-zinc-800"
       />
 
       <section>
@@ -95,6 +72,7 @@ function SkillsForm({
 
               return (
                 <SkillCard
+                  key={skill.key}
                   skill={skill}
                   unitName={unitsById.get(skill.unitId)?.name}
                   brandGroupName={brandGroupName}

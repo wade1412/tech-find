@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useBrandGroupsQuery } from "../../../../entities/brandGroup/useBrandGroupsQuery";
-import { createDataMapByTechnicianId } from "../../../../entities/shared/helpers";
+import { createDataMapByTechnicianId } from "../../../shared/helpers";
 import { useSpecificIssuesQuery } from "../../../../entities/specific-issue/useSpecificIssuesQuery";
 import { useTechnicianSkillSetQuery } from "../../../../entities/technician-skill-set/technicianSkillSetQuery";
 import { useUnitsQuery } from "../../../../entities/unit/useUnitsQuery";
