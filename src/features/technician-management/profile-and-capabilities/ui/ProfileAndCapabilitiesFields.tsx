@@ -1,5 +1,5 @@
-import { headingStyleDefault } from "../../../../shared/styles/styles";
 import Checkbox from "../../../../shared/ui/Checkbox";
+import SectionHeader from "../../../../shared/ui/manageTechnicians/SectionHeader";
 import { CAPABILITY_FIELDS, PROFILE_FIELDS } from "../model/profile.constants";
 import { inputStyle, labelStyle } from "../model/profile.styles";
 import type {
@@ -31,6 +31,9 @@ function ProfileAndCapabilitiesFields({
   formError,
 }: ProfileAndCapabilitiesFieldsProps) {
   const renderProfileField = (key: ProfileFieldKey) => {
+    const errorMessage = formError?.[key];
+    const errorId = `${key}-error`;
+
     switch (key) {
       case "home_zip_code":
         return (
@@ -43,6 +46,8 @@ function ProfileAndCapabilitiesFields({
             name={key}
             value={formState[key]}
             onChange={(e) => onProfileFieldChange(key, e.target.value)}
+            aria-invalid={Boolean(errorMessage)}
+            aria-describedby={errorMessage ? errorId : undefined}
             className={inputStyle}
           />
         );
@@ -64,18 +69,21 @@ function ProfileAndCapabilitiesFields({
             rows={3}
             value={formState[key] ?? ""}
             onChange={(e) => onProfileFieldChange(key, e.target.value)}
+            aria-invalid={Boolean(errorMessage)}
+            aria-describedby={errorMessage ? errorId : undefined}
             className={`${inputStyle} resize-none`}
           />
         );
 
       default:
         return (
-          // Name and Alias
           <input
             id={key}
             name={key}
             value={formState[key]}
             onChange={(e) => onProfileFieldChange(key, e.target.value)}
+            aria-invalid={Boolean(errorMessage)}
+            aria-describedby={errorMessage ? errorId : undefined}
             className={inputStyle}
           />
         );
@@ -83,44 +91,70 @@ function ProfileAndCapabilitiesFields({
   };
 
   return (
-    <fieldset disabled={disabled} className="flex flex-col gap-6">
-      <section className="flex flex-col gap-3">
-        <h2 className={headingStyleDefault}>Profile</h2>
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          {PROFILE_FIELDS.map(({ key, label }) => (
-            <div key={key}>
-              <label className={`flex flex-col gap-1.5 ${labelStyle}`}>
-                {label}
-                {renderProfileField(key)}
-              </label>
+    <fieldset disabled={disabled} className="flex flex-col gap-5">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-[minmax(0,1.25fr)_auto_minmax(0,0.9fr)] md:gap-6">
+        <section className="flex min-w-0 flex-col gap-3">
+          <SectionHeader
+            label="Profile"
+            subtext="Edit technician identity, capacity, ZIP code, and internal notes"
+          />
 
-              {formError?.[key] && (
-                <span
-                  role="alert"
-                  className="mt-1 text-xs font-medium text-red-600 dark:text-red-400"
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            {PROFILE_FIELDS.map(({ key, label }) => {
+              const errorMessage = formError?.[key];
+              const errorId = `${key}-error`;
+
+              return (
+                <div
+                  key={key}
+                  className={key === "notes" ? "md:col-span-2" : ""}
                 >
-                  {formError[key]}
-                </span>
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
+                  <label className={`flex flex-col gap-1.5 ${labelStyle}`}>
+                    {label}
+                    {renderProfileField(key)}
+                  </label>
 
-      <section className="flex flex-col gap-3">
-        <h2 className={headingStyleDefault}>Capabilities</h2>
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          {CAPABILITY_FIELDS.map(({ key, label }) => (
-            <Checkbox
-              key={key}
-              id={key}
-              label={label}
-              checked={formState[key]}
-              onChange={() => onCapabilityToggle(key)}
-            />
-          ))}
-        </div>
-      </section>
+                  {errorMessage && (
+                    <span
+                      id={errorId}
+                      role="alert"
+                      className="mt-1 text-xs font-medium text-red-600 dark:text-red-400"
+                    >
+                      {errorMessage}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Divider */}
+        <div
+          aria-hidden="true"
+          className="h-px w-full bg-zinc-200 md:h-auto md:w-px md:self-stretch dark:bg-zinc-800"
+        />
+
+        {/* Capabilities */}
+        <section className="flex min-w-0 flex-col gap-3">
+          <SectionHeader
+            label="Capabilities"
+            subtext="Control what job types this technician can be matched with"
+          />
+
+          <div className="grid grid-cols-1 gap-2.5">
+            {CAPABILITY_FIELDS.map(({ key, label }) => (
+              <Checkbox
+                key={key}
+                id={key}
+                label={label}
+                checked={formState[key]}
+                onChange={() => onCapabilityToggle(key)}
+              />
+            ))}
+          </div>
+        </section>
+      </div>
     </fieldset>
   );
 }

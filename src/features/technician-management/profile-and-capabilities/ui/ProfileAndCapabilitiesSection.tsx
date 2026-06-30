@@ -17,7 +17,7 @@ import ProfileAndCapabilitiesFields from "./ProfileAndCapabilitiesFields";
 import ToggleStatus from "./ToggleStatus";
 import { labelStyle } from "../model/profile.styles";
 import { formStyle } from "../../../../shared/styles/styles";
-import SubmitArea from "../../../../pages/manageTechnicians/SubmitArea";
+import SubmitArea from "../../../../shared/ui/manageTechnicians/SubmitArea";
 
 interface ProfileAndCapabilitiesSectionProps {
   technician: Technician;
@@ -66,13 +66,14 @@ function ProfileAndCapabilitiesSection({
 
   const handleDiscardChanges = () => {
     setFormState(createTechnicianFormState(technician));
+    setHasSubmitted(false);
   };
 
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setHasSubmitted(true);
 
-    if (!isDirty || hasErrors) return;
+    if (!isDirty || hasErrors || isPending) return;
 
     updateTechnicianMutation.mutate({
       id: technician.id,
@@ -83,21 +84,45 @@ function ProfileAndCapabilitiesSection({
   return (
     <form className={formStyle} onSubmit={handleSubmit} noValidate>
       {/* Head - Technician Status */}
-      <div
-        className={`flex items-center justify-between rounded-xl border px-4 py-3 transition-colors ${formState.active ? "border-zinc-200 bg-white dark:border-zinc-700/60 dark:bg-zinc-800/50" : "border-red-200 bg-red-50/50 dark:border-red-900/40 dark:bg-red-950/20"}`}
+      <section
+        className={`
+          flex flex-col gap-3 rounded-xl border px-4 py-3 transition-colors sm:flex-row sm:items-center sm:justify-between
+          ${
+            formState.active
+              ? "border-zinc-200 bg-zinc-50/60 dark:border-zinc-800 dark:bg-zinc-900/40"
+              : "border-red-200 bg-red-50/60 dark:border-red-900/40 dark:bg-red-950/20"
+          }
+        `}
       >
-        <div>
-          <p className={labelStyle}>Technician status</p>
-          <p className="text-xs text-zinc-400 dark:text-zinc-500">
-            Inactive technicians are excluded from all matching
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <p className={labelStyle}>Technician status</p>
+
+            <span
+              className={`
+                rounded-full px-2 py-0.5 text-[11px] font-semibold
+                ${
+                  formState.active
+                    ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-500"
+                    : "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400"
+                }
+              `}
+            >
+              {formState.active ? "Active" : "Inactive"}
+            </span>
+          </div>
+
+          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+            Inactive technicians are excluded from all matching results.
           </p>
         </div>
+
         <ToggleStatus
           checked={formState.active}
           onChange={toggleActive}
           disabled={isPending}
         />
-      </div>
+      </section>
 
       {/* Fields */}
       <ProfileAndCapabilitiesFields

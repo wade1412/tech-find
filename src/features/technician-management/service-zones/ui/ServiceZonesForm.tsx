@@ -4,11 +4,9 @@ import { Autocomplete, TextField } from "@mui/material";
 import { selectStyle } from "../../../../shared/styles/muiSelectStyles";
 import { useUpdateTechnicianServiceZonesMutation } from "../model/useUpdateTechnicianServiceZonesMutation";
 import { buildTechnicianZonesPatch } from "../model/serviceZones.helpers";
-import {
-  formStyle,
-  headingStyleDefault,
-} from "../../../../shared/styles/styles";
-import SubmitArea from "../../../../pages/manageTechnicians/SubmitArea";
+import { formStyle } from "../../../../shared/styles/styles";
+import SubmitArea from "../../../../shared/ui/manageTechnicians/SubmitArea";
+import SectionHeader from "../../../../shared/ui/manageTechnicians/SectionHeader";
 
 type ZoneOption = {
   label: string;
@@ -104,12 +102,10 @@ function ServiceZonesForm({
       <div className="grid grid-cols-1 gap-5 md:grid-cols-[minmax(0,0.9fr)_auto_minmax(0,1.6fr)] md:gap-6">
         {/* Add Zone */}
         <div className="flex min-w-0 flex-col gap-3">
-          <div className="space-y-1">
-            <h3 className={headingStyleDefault}>Add Zone</h3>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400">
-              Select a service zone to assign it to this technician.
-            </p>
-          </div>
+          <SectionHeader
+            label="Add zone"
+            subtext="Select a service zone to assign it to this technician"
+          />
 
           <Autocomplete
             disabled={isPending}
@@ -139,14 +135,14 @@ function ServiceZonesForm({
         {/* Assigned Zones */}
         <div className="flex min-w-0 flex-col gap-3">
           <div className="flex items-start justify-between gap-3">
-            <div className="space-y-1">
-              <h3 className={headingStyleDefault}>Assigned Zones</h3>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                {technicianZones.length > 0
+            <SectionHeader
+              label="Assigned zones"
+              subtext={
+                technicianZones.length > 0
                   ? `${technicianZones.length} zone${technicianZones.length === 1 ? "" : "s"} currently assigned`
-                  : "No zones assigned yet"}
-              </p>
-            </div>
+                  : "No zones assigned yet"
+              }
+            />
 
             {isDirty && (
               <span className="bg-main-500/10 text-main-600 dark:text-main-400 rounded-xl px-2 py-1 text-[11px] font-semibold">

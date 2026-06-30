@@ -5,7 +5,7 @@ import { useParams } from "react-router";
 import { useTechniciansQuery } from "../../entities/technician/useTechniciansQuery";
 import NotFoundPage from "../NotFoundPage";
 import { useZoneNamesByTechnicianId } from "../../entities/technician-service-zone/useZoneNamesByTechnicianId";
-import ProfileAndCapabilitiesSection from "../../features/technician-management/profile-and-capabilities/ui/ProfileAndCapabitiesSection";
+import ProfileAndCapabilitiesSection from "../../features/technician-management/profile-and-capabilities/ui/ProfileAndCapabilitiesSection";
 import ServiceZonesSection from "../../features/technician-management/service-zones/ui/ServiceZonesSection";
 import ErrorMessage from "../../shared/ui/ErrorMessage";
 
