@@ -7,7 +7,6 @@ import { useUnitsQuery } from "../../../entities/unit/useUnitsQuery";
 import { useTechnicianFilters } from "./useTechnicianFilters";
 import { useSpecificIssuesQuery } from "../../../entities/specific-issue/useSpecificIssuesQuery";
 import { filterTechnicians } from "./filterTechnicians";
-import { createDataMapByTechnicianId } from "./filterHelpers";
 import {
   ISSUE_BADGE_LABELS,
   SPECIAL_ISSUE_SLUGS,
@@ -20,6 +19,7 @@ import {
   createTechnicianZoneNamesMap,
   createZoneIdMapByTechId,
 } from "../../../entities/technician-service-zone/technician-service-zone.helpers";
+import { createDataMapByTechnicianId } from "../../../entities/shared/helpers";
 
 export const useFilteredTechnicians = () => {
   // --- Queries ---

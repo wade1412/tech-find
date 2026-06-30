@@ -17,8 +17,8 @@ import ProfileAndCapabilitiesFields from "./ProfileAndCapabilitiesFields";
 import ToggleStatus from "./ToggleStatus";
 import { labelStyle } from "../model/profile.styles";
 import { formStyle } from "../../../../shared/styles/styles";
-import SubmitArea from "../../../../pages/manageTechnicians/ui/SubmitArea";
-import SubmitSnackbar from "../../../../pages/manageTechnicians/ui/SubmitSnackbar";
+import SubmitArea from "../../ui/SubmitArea";
+import SubmitSnackbar from "../../ui/SubmitSnackbar";
 
 interface ProfileAndCapabilitiesSectionProps {
   technician: Technician;

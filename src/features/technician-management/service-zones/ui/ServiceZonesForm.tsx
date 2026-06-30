@@ -5,9 +5,9 @@ import { selectStyle } from "../../../../shared/styles/muiSelectStyles";
 import { useUpdateTechnicianServiceZonesMutation } from "../model/useUpdateTechnicianServiceZonesMutation";
 import { buildTechnicianZonesPatch } from "../model/serviceZones.helpers";
 import { formStyle } from "../../../../shared/styles/styles";
-import SubmitArea from "../../../../pages/manageTechnicians/ui/SubmitArea";
-import SectionHeader from "../../../../pages/manageTechnicians/ui/SectionHeader";
-import SubmitSnackbar from "../../../../pages/manageTechnicians/ui/SubmitSnackbar";
+import SubmitArea from "../../ui/SubmitArea";
+import SectionHeader from "../../ui/SectionHeader";
+import SubmitSnackbar from "../../ui/SubmitSnackbar";
 
 type ZoneOption = {
   label: string;

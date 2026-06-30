@@ -8,6 +8,7 @@ import { useZoneNamesByTechnicianId } from "../../entities/technician-service-zo
 import ProfileAndCapabilitiesSection from "../../features/technician-management/profile-and-capabilities/ui/ProfileAndCapabilitiesSection";
 import ServiceZonesSection from "../../features/technician-management/service-zones/ui/ServiceZonesSection";
 import ErrorMessage from "../../shared/ui/ErrorMessage";
+import SkillsSection from "../../features/technician-management/skills/ui/SkillsSection";
 
 const editSections = [
   { id: "profile", title: "Profile & Capabilities" },
@@ -110,6 +111,13 @@ function EditTechnicianPage() {
 
         {selectedSectionId === "service_zones" && (
           <ServiceZonesSection
+            key={selectedTechnician.id}
+            technician={selectedTechnician}
+          />
+        )}
+
+        {selectedSectionId === "skills" && (
+          <SkillsSection
             key={selectedTechnician.id}
             technician={selectedTechnician}
           />
