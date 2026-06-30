@@ -17,6 +17,7 @@ import ProfileAndCapabilitiesFields from "./ProfileAndCapabilitiesFields";
 import ToggleStatus from "./ToggleStatus";
 import { labelStyle } from "../model/profile.styles";
 import { formStyle } from "../../../../shared/styles/styles";
+import SubmitArea from "../../../../pages/manageTechnicians/SubmitArea";
 
 interface ProfileAndCapabilitiesSectionProps {
   technician: Technician;
@@ -63,6 +64,10 @@ function ProfileAndCapabilitiesSection({
 
   const visibleErrors = hasSubmitted ? formErrorObj : null;
 
+  const handleDiscardChanges = () => {
+    setFormState(createTechnicianFormState(technician));
+  };
+
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setHasSubmitted(true);
@@ -105,25 +110,13 @@ function ProfileAndCapabilitiesSection({
         formError={visibleErrors}
       />
 
-      {/* Submit Button */}
-      <div className="flex flex-col gap-2 items-center justify-center p-2">
-        <button
-          type="submit"
-          disabled={!isDirty || isPending}
-          className="bg-main-500 hover:bg-main-400 focus-visible:ring-main-500 cursor-pointer rounded-xl px-4 py-2.5 text-xs font-semibold text-zinc-950 transition-[background-color,transform,opacity] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50"
-        >
-          {isPending ? "Saving..." : "Save Changes"}
-        </button>
-
-        {updateTechnicianMutation.error && (
-          <p
-            role="alert"
-            className="rounded-lg border border-red-200 bg-red-50/50 p-4 text-xs font-medium text-red-600 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-400"
-          >
-            Failed to save changes. Try again
-          </p>
-        )}
-      </div>
+      {/* Submit Area */}
+      <SubmitArea
+        error={updateTechnicianMutation.error}
+        isDirty={isDirty}
+        isPending={isPending}
+        handleDiscardChanges={handleDiscardChanges}
+      />
     </form>
   );
 }
