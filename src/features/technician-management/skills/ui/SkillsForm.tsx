@@ -2,12 +2,12 @@ import type { TechnicianSkill } from "../../../../entities/technician-skill-set/
 import type { Unit } from "../../../../entities/unit/unit.types";
 import type { BrandGroup } from "../../../../entities/brandGroup/brandGroup.types";
 import type { SpecificIssue } from "../../../../entities/specific-issue/specific-issue.types";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import SectionHeader from "../../ui/SectionHeader";
 import { formStyle } from "../../../../shared/styles/styles";
 import type { SkillDraft } from "../model/skills.types";
-import SkillCard from "./SkillCard";
 import { createSkillsDraft } from "../model/skills.helpers";
+import SkillGroup from "./SkillGroup";
 
 interface SkillsFormProps {
   technicianId: string;
@@ -34,7 +34,21 @@ function SkillsForm({
 
   const [skillsDraft, setSkillsDraft] = useState<SkillDraft[]>(initialSkills);
 
+  // Map - unitId: skill draft for this unitId
+  const skillsDraftByUnitId = useMemo(() => {
+    const map = new Map<string, SkillDraft[]>();
+
+    skillsDraft?.map((draft) => {
+      const currentDraftForUnit = map.get(draft.unitId) ?? [];
+      currentDraftForUnit.push(draft);
+      map.set(draft.unitId, currentDraftForUnit);
+    });
+
+    return map;
+  }, [skillsDraft]);
+
   const handleSubmit = () => {
+    //mutation
     return;
   };
 
@@ -58,28 +72,19 @@ function SkillsForm({
 
       <section>
         {skillsDraft.length > 0 ? (
-          <div className="grid grid-cols-3 gap-2">
-            {skillsDraft.map((skill) => {
-              const brandGroupName =
-                skill.kind === "brandGroup"
-                  ? brandGroupById.get(skill.brandGroupId)?.name
-                  : undefined;
-
-              const specificIssueName =
-                skill.kind === "specificIssue"
-                  ? specificIssuesById.get(skill.specificIssueId)?.name
-                  : undefined;
+          <div className="grid grid-cols-2 gap-2">
+            {Array.from(skillsDraftByUnitId.keys()).map((unitId) => {
+              const currentUnitSkillDrafts = skillsDraftByUnitId.get(unitId);
 
               return (
-                <SkillCard
-                  key={skill.key}
-                  skill={skill}
-                  unitName={unitsById.get(skill.unitId)?.name}
-                  brandGroupName={brandGroupName}
-                  specificIssueName={specificIssueName}
+                <SkillGroup
+                  unitName={unitsById.get(unitId)?.name}
+                  skillDraftsForUnit={currentUnitSkillDrafts}
+                  brandGroupById={brandGroupById}
+                  specificIssuesById={specificIssuesById}
                 />
               );
-            })}{" "}
+            })}
           </div>
         ) : (
           <div className="rounded-xl border border-dashed border-zinc-200 bg-zinc-50/70 px-4 py-6 text-center text-sm text-zinc-400 dark:border-zinc-800 dark:bg-zinc-950/30 dark:text-zinc-500">
