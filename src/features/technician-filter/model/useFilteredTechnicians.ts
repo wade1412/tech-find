@@ -19,7 +19,7 @@ import {
   createTechnicianZoneNamesMap,
   createZoneIdMapByTechId,
 } from "../../../entities/technician-service-zone/technician-service-zone.helpers";
-import { createDataMapByTechnicianId } from "../../shared/helpers";
+import { createDataMapByTechnicianId } from "./filter.helpers";
 
 export const useFilteredTechnicians = () => {
   // --- Queries ---

@@ -4,12 +4,14 @@ interface SkillCardProps {
   skill: SkillDraft;
   brandGroupName: string | undefined;
   specificIssueName: string | undefined;
+  onRemove: () => void;
 }
 
 function SkillCard({
   skill,
   brandGroupName,
   specificIssueName,
+  onRemove,
 }: SkillCardProps) {
   const skillInfo = {
     commercial: "Commercial",
@@ -28,7 +30,7 @@ function SkillCard({
         disabled={false}
         className="-mr-1 inline-flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:text-zinc-500 dark:hover:bg-red-950/30 dark:hover:text-red-400"
         aria-label={`Remove ${skillInfo[skill.kind]} skill`}
-        onClick={() => {}}
+        onClick={onRemove}
       >
         <svg
           className="h-3.5 w-3.5"

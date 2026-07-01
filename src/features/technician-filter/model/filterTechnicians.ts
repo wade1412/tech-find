@@ -7,7 +7,7 @@ import {
   isIgnoredByTechnician,
   matchesCommercialMode,
   matchesBaseUnitSkill,
-} from "./filterHelpers";
+} from "./filter.helpers";
 
 type SkillSetCheck = (techSkills: TechnicianSkill[], unitId: string) => boolean;
 type FilterBooleanCondition = {

@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 import { useBrandGroupsQuery } from "../../../../entities/brandGroup/useBrandGroupsQuery";
-import { createDataMapByTechnicianId } from "../../../shared/helpers";
 import { useSpecificIssuesQuery } from "../../../../entities/specific-issue/useSpecificIssuesQuery";
 import { useTechnicianSkillSetQuery } from "../../../../entities/technician-skill-set/technicianSkillSetQuery";
 import { useUnitsQuery } from "../../../../entities/unit/useUnitsQuery";
@@ -31,12 +30,10 @@ export const useTechnicianSkillEditorData = (technicianId: string) => {
     error: specificIssuesErrorObject,
   } = useSpecificIssuesQuery();
 
-  const skillsByTechId = useMemo(
-    () => createDataMapByTechnicianId(skills || []),
-    [skills],
+  const technicianSkills = useMemo(
+    () => skills?.filter((skill) => skill.technician_id === technicianId) ?? [],
+    [technicianId, skills],
   );
-
-  const technicianSkills = skillsByTechId.get(technicianId);
 
   // Map - unitId: unit
   const unitsById = useMemo(

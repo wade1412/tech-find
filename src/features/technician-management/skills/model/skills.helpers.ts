@@ -1,12 +1,6 @@
 import type { TechnicianSkill } from "../../../../entities/technician-skill-set/technicianSkillSet.types";
 import type { SkillDraft, SkillsPatch } from "./skills.types";
 
-type CreateSkillsPatch = (
-  technicianId: string,
-  initialSkills: TechnicianSkill[],
-  draftSkills: SkillDraft[],
-) => SkillsPatch;
-
 const createSkillDraft = (skill: TechnicianSkill): SkillDraft => {
   const baseFields = {
     key: skill.id,
@@ -14,34 +8,49 @@ const createSkillDraft = (skill: TechnicianSkill): SkillDraft => {
     unitId: skill.unit_id,
   };
 
-  if (skill.specific_issue_id) {
+  const hasBrandGroup = skill.brand_group_id !== null;
+  const hasSpecificIssue = skill.specific_issue_id !== null;
+
+  const variantCount =
+    Number(skill.commercial) + Number(hasBrandGroup) + Number(hasSpecificIssue);
+
+  if (variantCount !== 1) throw new Error(`Invalid skill: ${skill.id}`);
+
+  if (skill.commercial === true) {
     return {
       ...baseFields,
-      kind: "specificIssue",
-      specificIssueId: skill.specific_issue_id,
+      kind: "commercial",
     };
-  } else if (skill.brand_group_id) {
+  }
+
+  if (skill.brand_group_id !== null) {
     return {
       ...baseFields,
       kind: "brandGroup",
       brandGroupId: skill.brand_group_id,
     };
   }
-  return {
-    ...baseFields,
-    kind: "commercial",
-  };
+
+  if (skill.specific_issue_id !== null) {
+    return {
+      ...baseFields,
+      kind: "specificIssue",
+      specificIssueId: skill.specific_issue_id,
+    };
+  }
+
+  throw new Error(`Unreachable skill structure: ${skill.id}`);
 };
 
 export const createSkillsDraft = (
   technicianSkills: TechnicianSkill[],
 ): SkillDraft[] => technicianSkills.map((skill) => createSkillDraft(skill));
 
-export const createSkillsPatch: CreateSkillsPatch = (
-  technicianId,
-  initialSkills,
-  draftSkills,
-) => {
+// Edit with unchanged source Id wont be caught in patch, so Edit has to create new skill draft with sourceId: null and remove the old skill record
+export const createSkillsPatch = (
+  initialSkills: TechnicianSkill[],
+  draftSkills: SkillDraft[],
+): SkillsPatch => {
   const initialSkillIdsSet = new Set(initialSkills.map((s) => s.id));
   const draftSkillIdsSet = new Set(
     draftSkills.map((s) => s.sourceId).filter((id) => id !== null),
@@ -51,7 +60,6 @@ export const createSkillsPatch: CreateSkillsPatch = (
     .filter((skill) => skill.sourceId === null)
     .map((skill) => {
       const baseFields = {
-        technician_id: technicianId,
         unit_id: skill.unitId,
         commercial: false,
         brand_group_id: null,

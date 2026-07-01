@@ -8,6 +8,7 @@ interface SkillGroupProps {
   skillDraftsForUnit: SkillDraft[] | undefined;
   brandGroupById: Map<string, BrandGroup>;
   specificIssuesById: Map<string, SpecificIssue>;
+  onRemove: (key: string) => void;
 }
 
 function SkillGroup({
@@ -15,6 +16,7 @@ function SkillGroup({
   skillDraftsForUnit,
   brandGroupById,
   specificIssuesById,
+  onRemove,
 }: SkillGroupProps) {
   return (
     <div className="flex flex-col gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-sm shadow-sm dark:border-zinc-700/70 dark:bg-zinc-800/6">
@@ -34,9 +36,11 @@ function SkillGroup({
 
           return (
             <SkillCard
+              key={skill.key}
               skill={skill}
               brandGroupName={brandGroupName}
               specificIssueName={specificIssueName}
+              onRemove={() => onRemove(skill.key)}
             />
           );
         })}

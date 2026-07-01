@@ -6,8 +6,10 @@ import { useMemo, useState } from "react";
 import SectionHeader from "../../ui/SectionHeader";
 import { formStyle } from "../../../../shared/styles/styles";
 import type { SkillDraft } from "../model/skills.types";
-import { createSkillsDraft } from "../model/skills.helpers";
+import { createSkillsDraft, createSkillsPatch } from "../model/skills.helpers";
 import SkillGroup from "./SkillGroup";
+import SubmitSnackbar from "../../ui/SubmitSnackbar";
+import SubmitArea from "../../ui/SubmitArea";
 
 interface SkillsFormProps {
   technicianId: string;
@@ -30,9 +32,11 @@ function SkillsForm({
   specificIssues,
   specificIssuesById,
 }: SkillsFormProps) {
-  const initialSkills: SkillDraft[] = createSkillsDraft(technicianSkills);
+  const initialSkillsDraft: SkillDraft[] = createSkillsDraft(technicianSkills);
 
-  const [skillsDraft, setSkillsDraft] = useState<SkillDraft[]>(initialSkills);
+  const [skillsDraft, setSkillsDraft] =
+    useState<SkillDraft[]>(initialSkillsDraft);
+  const [isSavedSnackbarOpen, setIsSavedSnackbarOpen] = useState(false);
 
   // Map - unitId: skill draft for this unitId
   const skillsDraftByUnitId = useMemo(() => {
@@ -47,8 +51,26 @@ function SkillsForm({
     return map;
   }, [skillsDraft]);
 
-  const handleSubmit = () => {
+  const handleRemove = (key: string) => {
+    setSkillsDraft((prev) => prev.filter((s) => s.key !== key));
+  };
+
+  const patch = useMemo(
+    () => createSkillsPatch(technicianSkills, skillsDraft),
+    [technicianSkills, skillsDraft],
+  );
+  const isDirty =
+    patch.addedSkills.length > 0 || patch.removedSkillIds.length > 0;
+
+  const handleDiscardChanges = () => setSkillsDraft(initialSkillsDraft);
+
+  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (isDirty) return;
+
     //mutation
+    setIsSavedSnackbarOpen(true);
     return;
   };
 
@@ -67,24 +89,24 @@ function SkillsForm({
       {/* Divider */}
       <div
         aria-hidden="true"
-        className="h-px w-full bg-zinc-200 md:h-auto dark:bg-zinc-800"
+        className="h-px w-full bg-zinc-200 dark:bg-zinc-800"
       />
 
       <section>
         {skillsDraft.length > 0 ? (
-          <div className="grid grid-cols-2 gap-2">
-            {Array.from(skillsDraftByUnitId.keys()).map((unitId) => {
-              const currentUnitSkillDrafts = skillsDraftByUnitId.get(unitId);
-
-              return (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            {Array.from(skillsDraftByUnitId.entries()).map(
+              ([unitId, currentUnitSkillDrafts]) => (
                 <SkillGroup
+                  key={unitId}
                   unitName={unitsById.get(unitId)?.name}
                   skillDraftsForUnit={currentUnitSkillDrafts}
                   brandGroupById={brandGroupById}
                   specificIssuesById={specificIssuesById}
+                  onRemove={handleRemove}
                 />
-              );
-            })}
+              ),
+            )}
           </div>
         ) : (
           <div className="rounded-xl border border-dashed border-zinc-200 bg-zinc-50/70 px-4 py-6 text-center text-sm text-zinc-400 dark:border-zinc-800 dark:bg-zinc-950/30 dark:text-zinc-500">
@@ -93,19 +115,19 @@ function SkillsForm({
         )}
       </section>
 
-      {/* Submit Area
+      {/* Submit Area */}
       <SubmitArea
-        error={updateTechnicianZonesMutation.error}
+        error="error"
         isDirty={isDirty}
-        isPending={isPending}
+        isPending="isPending"
         handleDiscardChanges={handleDiscardChanges}
       />
 
       {/* Success Snackbar */}
-      {/* <SubmitSnackbar
+      <SubmitSnackbar
         isOpen={isSavedSnackbarOpen}
         handleClose={() => setIsSavedSnackbarOpen(false)}
-      /> */}
+      />
     </form>
   );
 }
