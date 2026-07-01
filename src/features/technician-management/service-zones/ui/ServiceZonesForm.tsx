@@ -31,7 +31,6 @@ function ServiceZonesForm({
 
   const updateTechnicianZonesMutation =
     useUpdateTechnicianServiceZonesMutation();
-  const isPending = updateTechnicianZonesMutation.isPending;
 
   //Zone Ids Sets
   const initialZoneIdsSet = useMemo(
@@ -82,7 +81,9 @@ function ServiceZonesForm({
     () => buildTechnicianZonesPatch(initialZoneIdsSet, draftZoneIdsSet),
     [initialZoneIdsSet, draftZoneIdsSet],
   );
+
   const isDirty = patch.addedIds.length > 0 || patch.removedIds.length > 0;
+  const isPending = updateTechnicianZonesMutation.isPending;
 
   const handleDiscardChanges = () => {
     setZoneIds(initialZoneIds);

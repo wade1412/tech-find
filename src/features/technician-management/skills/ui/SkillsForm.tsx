@@ -10,26 +10,21 @@ import { createSkillsDraft, createSkillsPatch } from "../model/skills.helpers";
 import SkillGroup from "./SkillGroup";
 import SubmitSnackbar from "../../ui/SubmitSnackbar";
 import SubmitArea from "../../ui/SubmitArea";
+import { useUpdateTechnicianSkillsMutation } from "../model/useUpdateTechnicianSkillsMutation";
 
 interface SkillsFormProps {
   technicianId: string;
   technicianSkills: TechnicianSkill[];
-  units: Unit[];
   unitsById: Map<string, Unit>;
-  brandGroups: BrandGroup[];
   brandGroupById: Map<string, BrandGroup>;
-  specificIssues: SpecificIssue[];
   specificIssuesById: Map<string, SpecificIssue>;
 }
 
 function SkillsForm({
   technicianId,
   technicianSkills,
-  units,
   unitsById,
-  brandGroups,
   brandGroupById,
-  specificIssues,
   specificIssuesById,
 }: SkillsFormProps) {
   const initialSkillsDraft: SkillDraft[] = createSkillsDraft(technicianSkills);
@@ -37,6 +32,8 @@ function SkillsForm({
   const [skillsDraft, setSkillsDraft] =
     useState<SkillDraft[]>(initialSkillsDraft);
   const [isSavedSnackbarOpen, setIsSavedSnackbarOpen] = useState(false);
+
+  const updateTechnicanSkillsMutation = useUpdateTechnicianSkillsMutation();
 
   // Map - unitId: skill draft for this unitId
   const skillsDraftByUnitId = useMemo(() => {
@@ -59,19 +56,29 @@ function SkillsForm({
     () => createSkillsPatch(technicianSkills, skillsDraft),
     [technicianSkills, skillsDraft],
   );
+
   const isDirty =
     patch.addedSkills.length > 0 || patch.removedSkillIds.length > 0;
+  const isPending = updateTechnicanSkillsMutation.isPending;
 
   const handleDiscardChanges = () => setSkillsDraft(initialSkillsDraft);
 
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (isDirty) return;
+    if (!isDirty || isPending) return;
 
-    //mutation
-    setIsSavedSnackbarOpen(true);
-    return;
+    updateTechnicanSkillsMutation.mutate(
+      {
+        technicianId,
+        ...patch,
+      },
+      {
+        onSuccess: () => {
+          setIsSavedSnackbarOpen(true);
+        },
+      },
+    );
   };
 
   return (
@@ -117,9 +124,9 @@ function SkillsForm({
 
       {/* Submit Area */}
       <SubmitArea
-        error="error"
+        error={updateTechnicanSkillsMutation.error}
         isDirty={isDirty}
-        isPending="isPending"
+        isPending={isPending}
         handleDiscardChanges={handleDiscardChanges}
       />
 

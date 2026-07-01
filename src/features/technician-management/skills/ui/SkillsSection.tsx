@@ -11,11 +11,8 @@ interface SkillSectionProps {
 function SkillsSection({ technician }: SkillSectionProps) {
   const {
     technicianSkills,
-    units,
     unitsById,
-    brandGroups,
     brandGroupById,
-    specificIssues,
     specificIssuesById,
     isPending,
     isError,
@@ -34,11 +31,8 @@ function SkillsSection({ technician }: SkillSectionProps) {
     <SkillsForm
       technicianId={technician.id}
       technicianSkills={technicianSkills || []}
-      units={units || []}
       unitsById={unitsById}
-      brandGroups={brandGroups || []}
       brandGroupById={brandGroupById}
-      specificIssues={specificIssues || []}
       specificIssuesById={specificIssuesById}
     />
   );

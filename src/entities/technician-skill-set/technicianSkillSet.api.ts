@@ -41,7 +41,7 @@ export const addTechnicianSkills = async (
   if (error) throw error;
 };
 
-export const removeTechnicianSkills = async (
+export const deleteTechnicianSkills = async (
   technicianId: string,
   removedSkillIds: string[],
 ): Promise<void> => {

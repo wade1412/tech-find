@@ -56,6 +56,7 @@ export const createSkillsPatch = (
     draftSkills.map((s) => s.sourceId).filter((id) => id !== null),
   );
 
+  // Technician Id is added by api function
   const addedSkills = draftSkills
     .filter((skill) => skill.sourceId === null)
     .map((skill) => {
