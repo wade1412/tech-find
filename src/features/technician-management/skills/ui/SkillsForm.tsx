@@ -11,26 +11,34 @@ import SkillGroup from "./SkillGroup";
 import SubmitSnackbar from "../../ui/SubmitSnackbar";
 import SubmitArea from "../../ui/SubmitArea";
 import { useUpdateTechnicianSkillsMutation } from "../model/useUpdateTechnicianSkillsMutation";
+import EditSkill from "./EditSkill";
 
 interface SkillsFormProps {
   technicianId: string;
   technicianSkills: TechnicianSkill[];
+  units: Unit[];
   unitsById: Map<string, Unit>;
+  brandGroups: BrandGroup[];
   brandGroupById: Map<string, BrandGroup>;
+  specificIssues: SpecificIssue[];
   specificIssuesById: Map<string, SpecificIssue>;
 }
 
 function SkillsForm({
   technicianId,
   technicianSkills,
+  units,
   unitsById,
+  brandGroups,
   brandGroupById,
+  specificIssues,
   specificIssuesById,
 }: SkillsFormProps) {
   const initialSkillsDraft: SkillDraft[] = createSkillsDraft(technicianSkills);
 
   const [skillsDraft, setSkillsDraft] =
     useState<SkillDraft[]>(initialSkillsDraft);
+  const [isEditSkillOpen, setIsEditSkillOpen] = useState(false);
   const [isSavedSnackbarOpen, setIsSavedSnackbarOpen] = useState(false);
 
   const updateTechnicanSkillsMutation = useUpdateTechnicianSkillsMutation();
@@ -47,6 +55,8 @@ function SkillsForm({
 
     return map;
   }, [skillsDraft]);
+
+  const toggleEditSkillOpen = () => setIsEditSkillOpen((prev) => !prev);
 
   const handleRemove = (key: string) => {
     setSkillsDraft((prev) => prev.filter((s) => s.key !== key));
@@ -90,7 +100,23 @@ function SkillsForm({
           subtext="Add or remove technician skills"
         />
 
-        <button type="button">Add Skill</button>
+        {isEditSkillOpen && (
+          <EditSkill
+            units={units}
+            unitsById={unitsById}
+            brandGroups={brandGroups}
+            brandGroupById={brandGroupById}
+            specificIssues={specificIssues}
+            specificIssuesById={specificIssuesById}
+            handleAddSkill={(newSkill: SkillDraft) =>
+              setSkillsDraft((prev) => [...prev, newSkill])
+            }
+          />
+        )}
+
+        <button type="button" onClick={toggleEditSkillOpen}>
+          Add Skill
+        </button>
       </section>
 
       {/* Divider */}
