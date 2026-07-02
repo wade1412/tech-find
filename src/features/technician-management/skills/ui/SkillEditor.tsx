@@ -11,14 +11,14 @@ import { useMemo, useState, type SyntheticEvent } from "react";
 import type { SkillDraft } from "../model/skills.types";
 
 interface EditSkillProps {
+  isDisabled: boolean;
   selectedSkillDraft?: SkillDraft;
   units: Unit[];
   unitsById: Map<string, Unit>;
   brandGroups: BrandGroup[];
-  brandGroupById: Map<string, BrandGroup>;
   specificIssues: SpecificIssue[];
-  specificIssuesById: Map<string, SpecificIssue>;
-  handleAddSkill: (newSkill: SkillDraft) => void;
+  handleSubmitSkill: (newSkill: SkillDraft) => void;
+  handleEditorClose: () => void;
 }
 
 type SelectOption = {
@@ -36,13 +36,15 @@ const skillKindOptions: { value: SkillKind; label: string }[] = [
   { value: "brandGroup", label: "Brand Group" },
   { value: "specificIssue", label: "Specific Issue" },
 ];
-function EditSkill({
+function SkillEditor({
+  isDisabled,
   selectedSkillDraft,
   units,
   unitsById,
   brandGroups,
   specificIssues,
-  handleAddSkill,
+  handleSubmitSkill,
+  handleEditorClose,
 }: EditSkillProps) {
   // Fields from existing skill or null
   const skillUnitId = selectedSkillDraft?.unitId || null;
@@ -160,12 +162,20 @@ function EditSkill({
     setSelectedSpecificIssueId(issueOption?.value ?? null);
   };
 
-  const onAddSkill = () => {
+  const onClose = () => {
+    setSelectedUnitId(null);
+    setSelectedSkillKind(null);
+    setSelectedBrandGroupId(null);
+    setSelectedSpecificIssueId(null);
+    handleEditorClose();
+  };
+
+  const onSubmit = () => {
     if (!selectedUnitId) return;
 
     const baseFields = {
       key: selectedSkillDraft?.key ?? crypto.randomUUID(),
-      sourceId: selectedSkillDraft?.sourceId ?? null,
+      sourceId: null,
       unitId: selectedUnitId,
     };
 
@@ -203,14 +213,21 @@ function EditSkill({
         return;
     }
 
-    handleAddSkill(currentSkill);
+    handleSubmitSkill(currentSkill);
   };
+
+  const isValid =
+    selectedUnitId !== null &&
+    (selectedSkillKind === "commercial" ||
+      (selectedSkillKind === "brandGroup" && selectedBrandGroupId !== null) ||
+      (selectedSkillKind === "specificIssue" &&
+        selectedSpecificIssueId !== null));
 
   return (
     <div className="flex flex-col min-w-0 gap-2 justify-center">
       {/* Unit Select */}
       <Autocomplete
-        disabled={Boolean(skillUnitId)}
+        disabled={Boolean(skillUnitId) || isDisabled}
         value={selectedUnitOption}
         options={unitSelectOptions}
         onChange={handleUnitChange}
@@ -223,7 +240,7 @@ function EditSkill({
       <div>
         <ToggleButtonGroup
           exclusive
-          disabled={!selectedUnitId}
+          disabled={!selectedUnitId || isDisabled}
           value={selectedSkillKind}
           onChange={handleSkillKindChange}
           aria-label="Select skill kind"
@@ -238,7 +255,7 @@ function EditSkill({
 
       {selectedSkillKind === "brandGroup" && (
         <Autocomplete
-          disabled={selectedSkillKind !== "brandGroup"}
+          disabled={isDisabled}
           value={selectedBrandGroupOption}
           options={brandGroupSelectOptions}
           onChange={handleBrandGroupChange}
@@ -254,7 +271,7 @@ function EditSkill({
 
       {selectedSkillKind === "specificIssue" && (
         <Autocomplete
-          disabled={selectedSkillKind !== "specificIssue"}
+          disabled={isDisabled}
           value={selectedSpecificIssueOption}
           options={specificIssuesSelectOptions}
           onChange={handleSpecificIssueChange}
@@ -268,15 +285,27 @@ function EditSkill({
         />
       )}
 
-      <button
-        type="button"
-        onClick={onAddSkill}
-        disabled={!selectedUnitId || !selectedSkillKind}
-      >
-        {skillUnitId ? "Save skill" : "Add skill"}
-      </button>
+      <div className="flex gap-4 justify-between">
+        <button
+          type="button"
+          disabled={isDisabled}
+          className="-mr-1 inline-flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:text-zinc-500 dark:hover:bg-red-950/30 dark:hover:text-red-400"
+          aria-label={`Close skill editor`}
+          onClick={onClose}
+        >
+          Close
+        </button>
+
+        <button
+          type="button"
+          onClick={onSubmit}
+          disabled={!isValid || isDisabled}
+        >
+          {skillUnitId ? "Save skill" : "Add skill"}
+        </button>
+      </div>
     </div>
   );
 }
 
-export default EditSkill;
+export default SkillEditor;

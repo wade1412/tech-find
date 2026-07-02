@@ -11,7 +11,7 @@ import SkillGroup from "./SkillGroup";
 import SubmitSnackbar from "../../ui/SubmitSnackbar";
 import SubmitArea from "../../ui/SubmitArea";
 import { useUpdateTechnicianSkillsMutation } from "../model/useUpdateTechnicianSkillsMutation";
-import EditSkill from "./EditSkill";
+import SkillEditor from "./SkillEditor";
 
 interface SkillsFormProps {
   technicianId: string;
@@ -23,6 +23,11 @@ interface SkillsFormProps {
   specificIssues: SpecificIssue[];
   specificIssuesById: Map<string, SpecificIssue>;
 }
+
+type SkillEditorState =
+  | { mode: "closed" }
+  | { mode: "add" }
+  | { mode: "edit"; skill: SkillDraft };
 
 function SkillsForm({
   technicianId,
@@ -38,7 +43,9 @@ function SkillsForm({
 
   const [skillsDraft, setSkillsDraft] =
     useState<SkillDraft[]>(initialSkillsDraft);
-  const [isEditSkillOpen, setIsEditSkillOpen] = useState(false);
+  const [editor, setEditor] = useState<SkillEditorState>({
+    mode: "closed",
+  });
   const [isSavedSnackbarOpen, setIsSavedSnackbarOpen] = useState(false);
 
   const updateTechnicanSkillsMutation = useUpdateTechnicianSkillsMutation();
@@ -56,9 +63,14 @@ function SkillsForm({
     return map;
   }, [skillsDraft]);
 
-  const toggleEditSkillOpen = () => setIsEditSkillOpen((prev) => !prev);
+  const handleOpenAddSkill = () => setEditor({ mode: "add" });
+  const handleOpenEditSkill = (skill: SkillDraft) =>
+    setEditor({ mode: "edit", skill });
+  const handleCloseEditSkill = () => setEditor({ mode: "closed" });
 
-  const handleRemove = (key: string) => {
+  const selectedSkill = editor.mode === "edit" ? editor.skill : undefined;
+
+  const handleRemoveSkill = (key: string) => {
     setSkillsDraft((prev) => prev.filter((s) => s.key !== key));
   };
 
@@ -72,6 +84,21 @@ function SkillsForm({
   const isPending = updateTechnicanSkillsMutation.isPending;
 
   const handleDiscardChanges = () => setSkillsDraft(initialSkillsDraft);
+
+  // Null source Id on edit skill, add new skill to skillsDraft array on add skill
+  const handleSubmitSkill = (next: SkillDraft) => {
+    setSkillsDraft((prev) =>
+      editor.mode === "edit"
+        ? prev.map((skill) =>
+            skill.key === editor.skill.key
+              ? { ...next, key: skill.key, sourceId: null }
+              : skill,
+          )
+        : [...prev, next],
+    );
+
+    setEditor({ mode: "closed" });
+  };
 
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -100,21 +127,21 @@ function SkillsForm({
           subtext="Add or remove technician skills"
         />
 
-        {isEditSkillOpen && (
-          <EditSkill
+        {editor.mode !== "closed" && (
+          <SkillEditor
+            key={selectedSkill?.key ?? "new"}
+            selectedSkillDraft={selectedSkill}
+            isDisabled={isPending}
             units={units}
             unitsById={unitsById}
             brandGroups={brandGroups}
-            brandGroupById={brandGroupById}
             specificIssues={specificIssues}
-            specificIssuesById={specificIssuesById}
-            handleAddSkill={(newSkill: SkillDraft) =>
-              setSkillsDraft((prev) => [...prev, newSkill])
-            }
+            handleSubmitSkill={handleSubmitSkill}
+            handleEditorClose={handleCloseEditSkill}
           />
         )}
 
-        <button type="button" onClick={toggleEditSkillOpen}>
+        <button type="button" onClick={handleOpenAddSkill}>
           Add Skill
         </button>
       </section>
@@ -132,11 +159,13 @@ function SkillsForm({
               ([unitId, currentUnitSkillDrafts]) => (
                 <SkillGroup
                   key={unitId}
+                  isDisabled={isPending}
                   unitName={unitsById.get(unitId)?.name}
                   skillDraftsForUnit={currentUnitSkillDrafts}
                   brandGroupById={brandGroupById}
                   specificIssuesById={specificIssuesById}
-                  onRemove={handleRemove}
+                  onEditSkill={handleOpenEditSkill}
+                  onRemoveSkill={handleRemoveSkill}
                 />
               ),
             )}

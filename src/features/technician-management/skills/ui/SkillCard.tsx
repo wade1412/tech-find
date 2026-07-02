@@ -1,17 +1,21 @@
 import type { SkillDraft } from "../model/skills.types";
 
 interface SkillCardProps {
+  isDisabled: boolean;
   skill: SkillDraft;
   brandGroupName: string | undefined;
   specificIssueName: string | undefined;
-  onRemove: () => void;
+  onEditSkill: (skill: SkillDraft) => void;
+  onRemoveSkill: (skillId: string) => void;
 }
 
 function SkillCard({
+  isDisabled,
   skill,
   brandGroupName,
   specificIssueName,
-  onRemove,
+  onEditSkill,
+  onRemoveSkill,
 }: SkillCardProps) {
   const skillInfo = {
     commercial: "Commercial",
@@ -27,10 +31,18 @@ function SkillCard({
 
       <button
         type="button"
-        disabled={false}
+        disabled={isDisabled}
+        onClick={() => onEditSkill(skill)}
+      >
+        Edit
+      </button>
+
+      <button
+        type="button"
+        disabled={isDisabled}
         className="-mr-1 inline-flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:text-zinc-500 dark:hover:bg-red-950/30 dark:hover:text-red-400"
         aria-label={`Remove ${skillInfo[skill.kind]} skill`}
-        onClick={onRemove}
+        onClick={() => onRemoveSkill(skill.key)}
       >
         <svg
           className="h-3.5 w-3.5"
