@@ -1,10 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  addTechnicianSkills,
-  deleteTechnicianSkills,
-} from "../../../../entities/technician-skill-set/technicianSkillSet.api";
+
 import type { NewSkillInput } from "../../../../entities/technician-skill-set/technicianSkillSet.types";
 import { queryKeys } from "../../../../shared/api/queryKeys";
+import { updateTechnicianSkills as updateTechnicianSkillsApi } from "../../../../entities/technician-skill-set/technicianSkillSet.api";
 
 type UpdateSkillsVariables = {
   technicianId: string;
@@ -17,8 +15,11 @@ const updateTechnicianSkills = async ({
   addedSkills,
   removedSkillIds,
 }: UpdateSkillsVariables) => {
-  await deleteTechnicianSkills(technicianId, removedSkillIds);
-  await addTechnicianSkills(technicianId, addedSkills);
+  await updateTechnicianSkillsApi({
+    technicianId,
+    addedSkills,
+    removedSkillIds,
+  });
 };
 
 export const useUpdateTechnicianSkillsMutation = () => {

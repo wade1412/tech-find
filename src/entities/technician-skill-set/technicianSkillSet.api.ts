@@ -23,35 +23,22 @@ export const getTechnicianSkillSet = async (): Promise<TechnicianSkill[]> => {
   return data ?? [];
 };
 
-export const addTechnicianSkills = async (
-  technicianId: string,
-  addedSkills: NewSkillInput[],
-): Promise<void> => {
-  if (addedSkills.length === 0) return;
-
-  const { error } = await supabase.from("technician_skill_set").insert(
-    addedSkills.map((skill) => ({
-      brand_group_id: skill.brand_group_id,
-      commercial: skill.commercial,
-      specific_issue_id: skill.specific_issue_id,
-      technician_id: technicianId,
-      unit_id: skill.unit_id,
-    })),
-  );
-  if (error) throw error;
+type updateTechnicianSkillsArg = {
+  technicianId: string;
+  addedSkills: NewSkillInput[];
+  removedSkillIds: string[];
 };
 
-export const deleteTechnicianSkills = async (
-  technicianId: string,
-  removedSkillIds: string[],
-): Promise<void> => {
-  if (removedSkillIds.length === 0) return;
-
-  const { error } = await supabase
-    .from("technician_skill_set")
-    .delete()
-    .eq("technician_id", technicianId)
-    .in("id", removedSkillIds);
+export const updateTechnicianSkills = async ({
+  technicianId,
+  addedSkills,
+  removedSkillIds,
+}: updateTechnicianSkillsArg): Promise<void> => {
+  const { error } = await supabase.rpc("update_technician_skills", {
+    p_technician_id: technicianId,
+    p_added_skills: addedSkills,
+    p_removed_skill_ids: removedSkillIds,
+  });
 
   if (error) throw error;
 };

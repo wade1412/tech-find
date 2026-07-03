@@ -68,9 +68,14 @@ function SkillsForm({
     return map;
   }, [skillsDraft]);
 
-  const handleOpenAddSkill = () => setEditor({ mode: "add" });
-  const handleOpenEditSkill = (skill: SkillDraft) =>
+  const handleOpenAddSkill = () => {
+    setDuplicateError(null);
+    setEditor({ mode: "add" });
+  };
+  const handleOpenEditSkill = (skill: SkillDraft) => {
+    setDuplicateError(null);
     setEditor({ mode: "edit", skill });
+  };
   const handleCloseEditSkill = () => setEditor({ mode: "closed" });
 
   const selectedSkill = editor.mode === "edit" ? editor.skill : undefined;
@@ -96,7 +101,10 @@ function SkillsForm({
     patch.addedSkills.length > 0 || patch.removedSkillIds.length > 0;
   const isPending = updateTechnicanSkillsMutation.isPending;
 
-  const handleDiscardChanges = () => setSkillsDraft(initialSkillsDraft);
+  const handleDiscardChanges = () => {
+    setDuplicateError(null);
+    setSkillsDraft(initialSkillsDraft);
+  };
 
   // Null source Id on edit skill, add new skill to skillsDraft array on add skill
   const handleSubmitSkill = (next: SkillDraft) => {
