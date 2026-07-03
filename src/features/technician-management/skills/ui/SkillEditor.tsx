@@ -19,6 +19,8 @@ interface EditSkillProps {
   specificIssues: SpecificIssue[];
   handleSubmitSkill: (newSkill: SkillDraft) => void;
   handleEditorClose: () => void;
+  duplicateError: string | null;
+  resetDuplicateError: () => void;
 }
 
 type SelectOption = {
@@ -45,6 +47,8 @@ function SkillEditor({
   specificIssues,
   handleSubmitSkill,
   handleEditorClose,
+  duplicateError,
+  resetDuplicateError,
 }: EditSkillProps) {
   // Fields from existing skill or null
   const skillUnitId = selectedSkillDraft?.unitId || null;
@@ -134,6 +138,7 @@ function SkillEditor({
   ) => {
     const nextUnitId = unitOption?.value ?? null;
 
+    resetDuplicateError();
     setSelectedUnitId(nextUnitId);
     setSelectedSkillKind(null);
     setSelectedBrandGroupId(null);
@@ -144,6 +149,7 @@ function SkillEditor({
     _: SyntheticEvent<Element, Event>,
     newKind: SkillKind | null,
   ) => {
+    resetDuplicateError();
     setSelectedSkillKind(newKind);
     setSelectedBrandGroupId(null);
     setSelectedSpecificIssueId(null);
@@ -152,6 +158,7 @@ function SkillEditor({
     _: SyntheticEvent<Element, Event>,
     brandGroupOption: SelectOption | null,
   ) => {
+    resetDuplicateError();
     setSelectedBrandGroupId(brandGroupOption?.value ?? null);
   };
 
@@ -159,10 +166,12 @@ function SkillEditor({
     _: SyntheticEvent<Element, Event>,
     issueOption: SelectOption | null,
   ) => {
+    resetDuplicateError();
     setSelectedSpecificIssueId(issueOption?.value ?? null);
   };
 
   const onClose = () => {
+    resetDuplicateError();
     setSelectedUnitId(null);
     setSelectedSkillKind(null);
     setSelectedBrandGroupId(null);
@@ -304,6 +313,15 @@ function SkillEditor({
           {skillUnitId ? "Save skill" : "Add skill"}
         </button>
       </div>
+
+      {duplicateError && (
+        <p
+          role="alert"
+          className="rounded-lg border border-red-200 bg-red-50/70 px-3 py-2 text-xs font-medium text-red-600 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-400"
+        >
+          {duplicateError}
+        </p>
+      )}
     </div>
   );
 }

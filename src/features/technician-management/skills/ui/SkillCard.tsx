@@ -33,6 +33,7 @@ function SkillCard({
         type="button"
         disabled={isDisabled}
         onClick={() => onEditSkill(skill)}
+        className="hover:bg-main-400 focus-visible:ring-main-500 mt-2 cursor-pointer rounded-lg px-2 text-sm font-semibold text-zinc-400 hover:text-zinc-950 transition-[background-color,color,opacity,transform] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50"
       >
         Edit
       </button>

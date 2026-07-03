@@ -6,7 +6,11 @@ import { useMemo, useState } from "react";
 import SectionHeader from "../../ui/SectionHeader";
 import { formStyle } from "../../../../shared/styles/styles";
 import type { SkillDraft } from "../model/skills.types";
-import { createSkillsDraft, createSkillsPatch } from "../model/skills.helpers";
+import {
+  createSkillsDraft,
+  createSkillsPatch,
+  getSkillIdentity,
+} from "../model/skills.helpers";
 import SkillGroup from "./SkillGroup";
 import SubmitSnackbar from "../../ui/SubmitSnackbar";
 import SubmitArea from "../../ui/SubmitArea";
@@ -46,6 +50,7 @@ function SkillsForm({
   const [editor, setEditor] = useState<SkillEditorState>({
     mode: "closed",
   });
+  const [duplicateError, setDuplicateError] = useState<string | null>(null);
   const [isSavedSnackbarOpen, setIsSavedSnackbarOpen] = useState(false);
 
   const updateTechnicanSkillsMutation = useUpdateTechnicianSkillsMutation();
@@ -74,6 +79,14 @@ function SkillsForm({
     setSkillsDraft((prev) => prev.filter((s) => s.key !== key));
   };
 
+  //Check for duplicates
+  const isDuplicateSkill = (next: SkillDraft) =>
+    skillsDraft.some(
+      (skill) =>
+        skill.key !== next.key &&
+        getSkillIdentity(skill) === getSkillIdentity(next),
+    );
+
   const patch = useMemo(
     () => createSkillsPatch(technicianSkills, skillsDraft),
     [technicianSkills, skillsDraft],
@@ -87,6 +100,23 @@ function SkillsForm({
 
   // Null source Id on edit skill, add new skill to skillsDraft array on add skill
   const handleSubmitSkill = (next: SkillDraft) => {
+    // return early on unchanged skill
+    const isSkillUnchanged =
+      editor.mode === "edit" &&
+      getSkillIdentity(editor.skill) === getSkillIdentity(next);
+
+    if (isSkillUnchanged) {
+      setEditor({ mode: "closed" });
+      return;
+    }
+
+    if (isDuplicateSkill(next)) {
+      setDuplicateError(
+        "Technician already has a skill of this type, please add a unique skill",
+      );
+      return;
+    }
+
     setSkillsDraft((prev) =>
       editor.mode === "edit"
         ? prev.map((skill) =>
@@ -138,6 +168,8 @@ function SkillsForm({
             specificIssues={specificIssues}
             handleSubmitSkill={handleSubmitSkill}
             handleEditorClose={handleCloseEditSkill}
+            duplicateError={duplicateError}
+            resetDuplicateError={() => setDuplicateError(null)}
           />
         )}
 

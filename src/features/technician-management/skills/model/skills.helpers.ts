@@ -87,3 +87,15 @@ export const createSkillsPatch = (
     removedSkillIds,
   };
 };
+
+export const getSkillIdentity = (skill: SkillDraft) => {
+  if (skill.kind === "commercial") {
+    return `commercial:${skill.unitId}`;
+  }
+
+  if (skill.kind === "brandGroup") {
+    return `brandGroup:${skill.unitId}:${skill.brandGroupId}`;
+  }
+
+  return `specificIssue:${skill.unitId}:${skill.specificIssueId}`;
+};
