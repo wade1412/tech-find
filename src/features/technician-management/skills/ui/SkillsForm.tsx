@@ -16,6 +16,7 @@ import SubmitSnackbar from "../../ui/SubmitSnackbar";
 import SubmitArea from "../../ui/SubmitArea";
 import { useUpdateTechnicianSkillsMutation } from "../model/useUpdateTechnicianSkillsMutation";
 import SkillEditor from "./SkillEditor";
+import { AnimatePresence, motion } from "motion/react";
 
 interface SkillsFormProps {
   technicianId: string;
@@ -68,16 +69,19 @@ function SkillsForm({
     return map;
   }, [skillsDraft]);
 
-  const handleOpenAddSkill = () => {
+  //Editor handlers
+  const toggleOpenEditSkill = () => {
     setDuplicateError(null);
-    setEditor({ mode: "add" });
+
+    setEditor((prev) =>
+      prev.mode === "closed" ? { mode: "add" } : { mode: "closed" },
+    );
   };
   const handleOpenEditSkill = (skill: SkillDraft) => {
     setDuplicateError(null);
     setEditor({ mode: "edit", skill });
   };
-  const handleCloseEditSkill = () => setEditor({ mode: "closed" });
-
+  const isEditorOpen = editor.mode !== "closed";
   const selectedSkill = editor.mode === "edit" ? editor.skill : undefined;
 
   const handleRemoveSkill = (key: string) => {
@@ -92,6 +96,7 @@ function SkillsForm({
         getSkillIdentity(skill) === getSkillIdentity(next),
     );
 
+  // patch and submit logic
   const patch = useMemo(
     () => createSkillsPatch(technicianSkills, skillsDraft),
     [technicianSkills, skillsDraft],
@@ -161,32 +166,78 @@ function SkillsForm({
   return (
     <form className={formStyle} onSubmit={handleSubmit} noValidate>
       {/* Header Section - Add Technician and Title */}
-      <section className="flex flex-row justify-between">
-        <SectionHeader
-          label="Edit Skills"
-          subtext="Add or remove technician skills"
-        />
-
-        {editor.mode !== "closed" && (
-          <SkillEditor
-            key={selectedSkill?.key ?? "new"}
-            selectedSkillDraft={selectedSkill}
-            isDisabled={isPending}
-            units={units}
-            unitsById={unitsById}
-            brandGroups={brandGroups}
-            specificIssues={specificIssues}
-            handleSubmitSkill={handleSubmitSkill}
-            handleEditorClose={handleCloseEditSkill}
-            duplicateError={duplicateError}
-            resetDuplicateError={() => setDuplicateError(null)}
+      <div className="flex flex-col">
+        <div className="flex items-start justify-between gap-3">
+          <SectionHeader
+            label="Edit Skills"
+            subtext="Add or remove technician skills"
           />
-        )}
 
-        <button type="button" onClick={handleOpenAddSkill}>
-          Add Skill
-        </button>
-      </section>
+          <button
+            type="button"
+            disabled={isPending}
+            onClick={toggleOpenEditSkill}
+            className={[
+              "inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-xl border px-4 py-2.5 text-xs font-semibold transition-[background-color,border-color,color,opacity,transform]",
+              "focus:outline-none focus-visible:ring-2 focus-visible:ring-main-500 focus-visible:ring-offset-2 active:scale-[0.98]",
+              "disabled:cursor-not-allowed disabled:opacity-50 dark:focus-visible:ring-offset-zinc-950",
+              isEditorOpen
+                ? "border-main-500/50 bg-main-500/10 text-main-500 hover:border-main-500/70 hover:bg-main-500/15 dark:border-main-400/40 dark:bg-main-400/10 dark:text-main-400 dark:hover:border-main-400/60 dark:hover:bg-main-400/15"
+                : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50 hover:text-main-500 dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-zinc-400 dark:hover:border-zinc-700 dark:hover:bg-zinc-900 dark:hover:text-main-400",
+            ].join(" ")}
+          >
+            <svg
+              className={[
+                "h-3.5 w-3.5 transition-transform",
+                isEditorOpen ? "rotate-45" : "",
+              ].join(" ")}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2.5}
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 4.5v15m7.5-7.5h-15"
+              />
+            </svg>
+
+            <span className="min-w-[7ch] text-center">
+              {isEditorOpen ? "Close" : "Add Skill"}
+            </span>
+          </button>
+        </div>
+
+        <AnimatePresence>
+          {editor.mode !== "closed" && (
+            <motion.div
+              key="skill-editor"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2, ease: "easeInOut" }}
+              style={{ overflow: "hidden" }}
+            >
+              <div className="pt-4">
+                <SkillEditor
+                  key={selectedSkill?.key ?? "new"}
+                  selectedSkillDraft={selectedSkill}
+                  isDisabled={isPending}
+                  units={units}
+                  unitsById={unitsById}
+                  brandGroups={brandGroups}
+                  specificIssues={specificIssues}
+                  handleSubmitSkill={handleSubmitSkill}
+                  duplicateError={duplicateError}
+                  resetDuplicateError={() => setDuplicateError(null)}
+                />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       {/* Divider */}
       <div
@@ -194,9 +245,10 @@ function SkillsForm({
         className="h-px w-full bg-zinc-200 dark:bg-zinc-800"
       />
 
+      {/* Skills Grid */}
       <section>
         {skillsDraft.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 gap-2.5 md:grid-cols-2">
             {Array.from(skillsDraftByUnitId.entries()).map(
               ([unitId, currentUnitSkillDrafts]) => (
                 <SkillGroup
@@ -214,7 +266,7 @@ function SkillsForm({
           </div>
         ) : (
           <div className="rounded-xl border border-dashed border-zinc-200 bg-zinc-50/70 px-4 py-6 text-center text-sm text-zinc-400 dark:border-zinc-800 dark:bg-zinc-950/30 dark:text-zinc-500">
-            No skills for this technician. Use "Add skill" button to add one
+            No skills for this technician. Use "Add Skill" to add one.
           </div>
         )}
       </section>

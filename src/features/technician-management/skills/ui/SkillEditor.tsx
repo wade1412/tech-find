@@ -1,14 +1,11 @@
-import {
-  Autocomplete,
-  TextField,
-  ToggleButton,
-  ToggleButtonGroup,
-} from "@mui/material";
+import { Autocomplete, TextField } from "@mui/material";
 import type { BrandGroup } from "../../../../entities/brandGroup/brandGroup.types";
 import type { SpecificIssue } from "../../../../entities/specific-issue/specific-issue.types";
 import type { Unit } from "../../../../entities/unit/unit.types";
 import { useMemo, useState, type SyntheticEvent } from "react";
 import type { SkillDraft } from "../model/skills.types";
+import { selectStyle } from "../../../../shared/styles/muiSelectStyles";
+import { headingStyleDefault } from "../../../../shared/styles/styles";
 
 interface EditSkillProps {
   isDisabled: boolean;
@@ -18,7 +15,6 @@ interface EditSkillProps {
   brandGroups: BrandGroup[];
   specificIssues: SpecificIssue[];
   handleSubmitSkill: (newSkill: SkillDraft) => void;
-  handleEditorClose: () => void;
   duplicateError: string | null;
   resetDuplicateError: () => void;
 }
@@ -46,7 +42,6 @@ function SkillEditor({
   brandGroups,
   specificIssues,
   handleSubmitSkill,
-  handleEditorClose,
   duplicateError,
   resetDuplicateError,
 }: EditSkillProps) {
@@ -145,15 +140,13 @@ function SkillEditor({
     setSelectedSpecificIssueId(null);
   };
 
-  const handleSkillKindChange = (
-    _: SyntheticEvent<Element, Event>,
-    newKind: SkillKind | null,
-  ) => {
+  const handleSkillKindSelect = (newKind: SkillKind) => {
     resetDuplicateError();
-    setSelectedSkillKind(newKind);
+    setSelectedSkillKind((prev) => (prev === newKind ? null : newKind));
     setSelectedBrandGroupId(null);
     setSelectedSpecificIssueId(null);
   };
+
   const handleBrandGroupChange = (
     _: SyntheticEvent<Element, Event>,
     brandGroupOption: SelectOption | null,
@@ -170,13 +163,12 @@ function SkillEditor({
     setSelectedSpecificIssueId(issueOption?.value ?? null);
   };
 
-  const onClose = () => {
+  const onClear = () => {
     resetDuplicateError();
-    setSelectedUnitId(null);
+    setSelectedUnitId(skillUnitId ? skillUnitId : null);
     setSelectedSkillKind(null);
     setSelectedBrandGroupId(null);
     setSelectedSpecificIssueId(null);
-    handleEditorClose();
   };
 
   const onSubmit = () => {
@@ -233,95 +225,121 @@ function SkillEditor({
         selectedSpecificIssueId !== null));
 
   return (
-    <div className="flex flex-col min-w-0 gap-2 justify-center">
-      {/* Unit Select */}
-      <Autocomplete
-        disabled={Boolean(skillUnitId) || isDisabled}
-        value={selectedUnitOption}
-        options={unitSelectOptions}
-        onChange={handleUnitChange}
-        isOptionEqualToValue={(option, value) => option?.value === value?.value}
-        getOptionLabel={(option) => option.label}
-        renderInput={(params) => <TextField {...params} label="Unit" />}
-      />
+    <div className="rounded-xl border border-zinc-200 bg-zinc-50/50 p-4 dark:border-zinc-800 dark:bg-zinc-900/40">
+      <div className="flex flex-col gap-4">
+        {/* Header */}
+        <div className="flex items-center justify-between gap-3">
+          <h3 className={headingStyleDefault}>
+            {selectedSkillDraft ? "Edit Skill" : "New Skill"}
+          </h3>{" "}
+        </div>
 
-      {/* Skill Kind Toggle */}
-      <div>
-        <ToggleButtonGroup
-          exclusive
-          disabled={!selectedUnitId || isDisabled}
-          value={selectedSkillKind}
-          onChange={handleSkillKindChange}
+        {/* Unit Select */}
+        <Autocomplete
+          disabled={Boolean(skillUnitId) || isDisabled}
+          value={selectedUnitOption}
+          options={unitSelectOptions}
+          onChange={handleUnitChange}
+          isOptionEqualToValue={(option, value) =>
+            option?.value === value?.value
+          }
+          getOptionLabel={(option) => option.label}
+          sx={(theme) => ({ ...selectStyle(theme) })}
+          renderInput={(params) => <TextField {...params} label="Unit" />}
+        />
+
+        {/* Skill Kind Toggle */}
+        <div
+          role="group"
           aria-label="Select skill kind"
+          className="flex overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900/60"
         >
-          {allowedSkillKindOptions.map((kind) => (
-            <ToggleButton key={kind.label} value={kind.value}>
+          {allowedSkillKindOptions.map((kind, index) => (
+            <button
+              key={kind.value}
+              type="button"
+              disabled={!selectedUnitId || isDisabled}
+              onClick={() => handleSkillKindSelect(kind.value)}
+              className={[
+                "flex-1 px-3 text-xs py-2.5 font-semibold transition-[background-color,color] focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
+                index > 0 &&
+                  "border-l border-zinc-200 dark:border-zinc-800",
+                selectedSkillKind === kind.value
+                  ? "bg-main-500 text-zinc-950 dark:bg-main-400"
+                  : "text-zinc-500 hover:bg-zinc-50 hover:text-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-800/70 dark:hover:text-zinc-100",
+              ]
+                .filter(Boolean)
+                .join(" ")}
+            >
               {kind.label}
-            </ToggleButton>
+            </button>
           ))}
-        </ToggleButtonGroup>
+        </div>
+
+        {selectedSkillKind === "brandGroup" && (
+          <Autocomplete
+            disabled={isDisabled}
+            value={selectedBrandGroupOption}
+            options={brandGroupSelectOptions}
+            onChange={handleBrandGroupChange}
+            isOptionEqualToValue={(option, value) =>
+              option?.value === value?.value
+            }
+            getOptionLabel={(option) => option.label}
+            sx={(theme) => ({ ...selectStyle(theme) })}
+            renderInput={(params) => (
+              <TextField {...params} label="Brand Group" />
+            )}
+          />
+        )}
+
+        {selectedSkillKind === "specificIssue" && (
+          <Autocomplete
+            disabled={isDisabled}
+            value={selectedSpecificIssueOption}
+            options={specificIssuesSelectOptions}
+            onChange={handleSpecificIssueChange}
+            isOptionEqualToValue={(option, value) =>
+              option?.value === value?.value
+            }
+            getOptionLabel={(option) => option.label}
+            sx={(theme) => ({ ...selectStyle(theme) })}
+            renderInput={(params) => (
+              <TextField {...params} label="Specific Issue" />
+            )}
+          />
+        )}
+
+        {duplicateError && (
+          <p
+            role="alert"
+            className="rounded-lg border border-red-200 bg-red-50/70 px-3 py-2 text-xs font-medium text-red-600 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-400"
+          >
+            {duplicateError}
+          </p>
+        )}
+
+        <div className="flex items-center justify-end gap-2">
+          <button
+            type="button"
+            disabled={isDisabled}
+            className="cursor-pointer items-center justify-center rounded-lg px-3 py-2 text-xs font-semibold text-zinc-500 transition-[background-color,color,opacity] hover:bg-zinc-100 hover:text-zinc-800 focus-visible:ring-2 focus-visible:ring-main-500 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:text-zinc-400 dark:hover:bg-zinc-800/70 dark:hover:text-zinc-100"
+            aria-label={`Close skill editor`}
+            onClick={onClear}
+          >
+            Clear
+          </button>
+
+          <button
+            type="button"
+            onClick={onSubmit}
+            disabled={!isValid || isDisabled}
+            className="bg-main-500 enabled:hover:bg-main-400 focus-visible:ring-main-500 inline-flex cursor-pointer items-center justify-center rounded-xl px-4 py-2.5 text-xs font-semibold text-zinc-950 transition-[background-color,transform,opacity] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus-visible:ring-offset-zinc-950"
+          >
+            {selectedSkillDraft ? "Save Skill" : "Add Skill"}
+          </button>
+        </div>
       </div>
-
-      {selectedSkillKind === "brandGroup" && (
-        <Autocomplete
-          disabled={isDisabled}
-          value={selectedBrandGroupOption}
-          options={brandGroupSelectOptions}
-          onChange={handleBrandGroupChange}
-          isOptionEqualToValue={(option, value) =>
-            option?.value === value?.value
-          }
-          getOptionLabel={(option) => option.label}
-          renderInput={(params) => (
-            <TextField {...params} label="Brand Group" />
-          )}
-        />
-      )}
-
-      {selectedSkillKind === "specificIssue" && (
-        <Autocomplete
-          disabled={isDisabled}
-          value={selectedSpecificIssueOption}
-          options={specificIssuesSelectOptions}
-          onChange={handleSpecificIssueChange}
-          isOptionEqualToValue={(option, value) =>
-            option?.value === value?.value
-          }
-          getOptionLabel={(option) => option.label}
-          renderInput={(params) => (
-            <TextField {...params} label="Specific Issue" />
-          )}
-        />
-      )}
-
-      <div className="flex gap-4 justify-between">
-        <button
-          type="button"
-          disabled={isDisabled}
-          className="-mr-1 inline-flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:text-zinc-500 dark:hover:bg-red-950/30 dark:hover:text-red-400"
-          aria-label={`Close skill editor`}
-          onClick={onClose}
-        >
-          Close
-        </button>
-
-        <button
-          type="button"
-          onClick={onSubmit}
-          disabled={!isValid || isDisabled}
-        >
-          {skillUnitId ? "Save skill" : "Add skill"}
-        </button>
-      </div>
-
-      {duplicateError && (
-        <p
-          role="alert"
-          className="rounded-lg border border-red-200 bg-red-50/70 px-3 py-2 text-xs font-medium text-red-600 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-400"
-        >
-          {duplicateError}
-        </p>
-      )}
     </div>
   );
 }
