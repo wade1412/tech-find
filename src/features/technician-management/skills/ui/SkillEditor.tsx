@@ -5,7 +5,11 @@ import type { Unit } from "../../../../entities/unit/unit.types";
 import { useMemo, useState, type SyntheticEvent } from "react";
 import type { SkillDraft } from "../model/skills.types";
 import { selectStyle } from "../../../../shared/styles/muiSelectStyles";
-import { headingStyleDefault } from "../../../../shared/styles/styles";
+import {
+  headingStyleDefault,
+  primaryButton,
+  secondaryButton,
+} from "../../../../shared/styles/styles";
 
 interface EditSkillProps {
   isDisabled: boolean;
@@ -225,7 +229,7 @@ function SkillEditor({
         selectedSpecificIssueId !== null));
 
   return (
-    <div className="rounded-xl border border-zinc-200 bg-zinc-50/50 p-4 dark:border-zinc-800 dark:bg-zinc-900/40">
+    <div className="rounded-xl border border-zinc-200 bg-zinc-50/50 p-4 dark:border-zinc-800 dark:bg-zinc-900/40 max-w-2xl mx-auto">
       <div className="flex flex-col gap-4">
         {/* Header */}
         <div className="flex items-center justify-between gap-3">
@@ -262,8 +266,7 @@ function SkillEditor({
               onClick={() => handleSkillKindSelect(kind.value)}
               className={[
                 "flex-1 px-3 text-xs py-2.5 font-semibold transition-[background-color,color] focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
-                index > 0 &&
-                  "border-l border-zinc-200 dark:border-zinc-800",
+                index > 0 && "border-l border-zinc-200 dark:border-zinc-800",
                 selectedSkillKind === kind.value
                   ? "bg-main-500 text-zinc-950 dark:bg-main-400"
                   : "text-zinc-500 hover:bg-zinc-50 hover:text-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-800/70 dark:hover:text-zinc-100",
@@ -286,7 +289,15 @@ function SkillEditor({
               option?.value === value?.value
             }
             getOptionLabel={(option) => option.label}
-            sx={(theme) => ({ ...selectStyle(theme) })}
+            sx={(theme) => ({
+              ...selectStyle(theme),
+              ...(selectedBrandGroupId && {
+                "& .MuiAutocomplete-input": {
+                  color: theme.palette.mode === "dark" ? "#facc15" : "#eab308",
+                  fontWeight: 500,
+                },
+              }),
+            })}
             renderInput={(params) => (
               <TextField {...params} label="Brand Group" />
             )}
@@ -303,7 +314,15 @@ function SkillEditor({
               option?.value === value?.value
             }
             getOptionLabel={(option) => option.label}
-            sx={(theme) => ({ ...selectStyle(theme) })}
+            sx={(theme) => ({
+              ...selectStyle(theme),
+              ...(selectedSpecificIssueId && {
+                "& .MuiAutocomplete-input": {
+                  color: theme.palette.mode === "dark" ? "#facc15" : "#eab308",
+                  fontWeight: 500,
+                },
+              }),
+            })}
             renderInput={(params) => (
               <TextField {...params} label="Specific Issue" />
             )}
@@ -323,8 +342,8 @@ function SkillEditor({
           <button
             type="button"
             disabled={isDisabled}
-            className="cursor-pointer items-center justify-center rounded-lg px-3 py-2 text-xs font-semibold text-zinc-500 transition-[background-color,color,opacity] hover:bg-zinc-100 hover:text-zinc-800 focus-visible:ring-2 focus-visible:ring-main-500 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:text-zinc-400 dark:hover:bg-zinc-800/70 dark:hover:text-zinc-100"
-            aria-label={`Close skill editor`}
+            className={secondaryButton}
+            aria-label={`Clear skill editor inputs`}
             onClick={onClear}
           >
             Clear
@@ -334,7 +353,7 @@ function SkillEditor({
             type="button"
             onClick={onSubmit}
             disabled={!isValid || isDisabled}
-            className="bg-main-500 enabled:hover:bg-main-400 focus-visible:ring-main-500 inline-flex cursor-pointer items-center justify-center rounded-xl px-4 py-2.5 text-xs font-semibold text-zinc-950 transition-[background-color,transform,opacity] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus-visible:ring-offset-zinc-950"
+            className={primaryButton}
           >
             {selectedSkillDraft ? "Save Skill" : "Add Skill"}
           </button>

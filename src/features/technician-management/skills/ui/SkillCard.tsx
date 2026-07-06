@@ -1,3 +1,5 @@
+import { secondaryButton } from "../../../../shared/styles/styles";
+import DeleteButton from "../../../../shared/ui/DeleteButton";
 import type { SkillDraft } from "../model/skills.types";
 
 interface SkillCardProps {
@@ -24,8 +26,8 @@ function SkillCard({
   };
 
   return (
-    <div className="flex items-center justify-between gap-4">
-      <span className="truncate max-w-50 font-light text-zinc-800 dark:text-zinc-100">
+    <div className="group flex items-center gap-2 rounded-lg px-2 py-1 transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
+      <span className="min-w-0 flex-1 px-1 truncate font-medium text-zinc-800 dark:text-zinc-100">
         {skillInfo[skill.kind]}
       </span>
 
@@ -33,33 +35,16 @@ function SkillCard({
         type="button"
         disabled={isDisabled}
         onClick={() => onEditSkill(skill)}
-        className="hover:bg-main-400 focus-visible:ring-main-500 mt-2 cursor-pointer rounded-lg px-2 text-sm font-semibold text-zinc-400 hover:text-zinc-950 transition-[background-color,color,opacity,transform] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50"
+        className={`${secondaryButton} p-2! py-1! `}
       >
         Edit
       </button>
 
-      <button
-        type="button"
-        disabled={isDisabled}
-        className="-mr-1 inline-flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:text-zinc-500 dark:hover:bg-red-950/30 dark:hover:text-red-400"
-        aria-label={`Remove ${skillInfo[skill.kind]} skill`}
-        onClick={() => onRemoveSkill(skill.key)}
-      >
-        <svg
-          className="h-3.5 w-3.5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-          aria-hidden="true"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
-      </button>
+      <DeleteButton
+        label={skillInfo[skill.kind]}
+        isDisabled={isDisabled}
+        onDelete={() => onRemoveSkill(skill.key)}
+      />
     </div>
   );
 }

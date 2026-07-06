@@ -1,5 +1,6 @@
 import type { BrandGroup } from "../../../../entities/brandGroup/brandGroup.types";
 import type { SpecificIssue } from "../../../../entities/specific-issue/specific-issue.types";
+import { headingStyleDefault } from "../../../../shared/styles/styles";
 import type { SkillDraft } from "../model/skills.types";
 import SkillCard from "./SkillCard";
 
@@ -23,10 +24,10 @@ function SkillGroup({
   onRemoveSkill,
 }: SkillGroupProps) {
   return (
-    <div className="flex flex-col gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-sm shadow-sm dark:border-zinc-700/70 dark:bg-zinc-800/6">
-      <h2>{unitName || "Unknown Unit"}</h2>
+    <div className="flex flex-col gap-2 rounded-xl border border-zinc-200 bg-white px-3 py-3 text-sm dark:border-zinc-800 dark:bg-zinc-900/60">
+      <h2 className={headingStyleDefault}>{unitName ?? "Unknown Unit"}</h2>
 
-      <div>
+      <div className="flex flex-col gap-1.5">
         {skillDraftsForUnit?.map((skill) => {
           const brandGroupName =
             skill.kind === "brandGroup"
