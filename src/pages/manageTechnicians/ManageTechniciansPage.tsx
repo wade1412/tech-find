@@ -31,12 +31,10 @@ function ManageTechniciansPage() {
   const isError = isTechniciansError || isZoneNamesError;
   const error = techniciansError ?? zoneNamesErrorObj;
 
-  const [openTechnicianId, setOpenTechnicianId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);
-    setOpenTechnicianId(null);
   };
 
   const visibleTechnicians = useMemo(
@@ -112,16 +110,11 @@ function ManageTechniciansPage() {
                   animate="visible"
                   exit="exit"
                   whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.95 }}
                 >
                   <ManageTechnicianCard
                     technician={technician}
                     zones={zoneNamesByTechnicianId.get(technician.id) || []}
-                    onToggle={() =>
-                      setOpenTechnicianId((prev) =>
-                        prev === technician.id ? null : technician.id,
-                      )
-                    }
-                    isOpen={openTechnicianId === technician.id}
                   />
                 </motion.div>
               ))
