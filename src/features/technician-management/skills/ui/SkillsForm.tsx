@@ -149,7 +149,9 @@ function SkillsForm({
         ...patch,
       },
       {
-        onSuccess: () => {
+        onSuccess: (savedSkills) => {
+          setSkillsDraft(createSkillsDraft(savedSkills));
+          setDuplicateError(null);
           setIsSavedSnackbarOpen(true);
         },
       },

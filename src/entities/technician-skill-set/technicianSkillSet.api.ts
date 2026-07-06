@@ -29,16 +29,18 @@ type updateTechnicianSkillsArg = {
   removedSkillIds: string[];
 };
 
-export const updateTechnicianSkills = async ({
+export const updateTechnicianSkillsApi = async ({
   technicianId,
   addedSkills,
   removedSkillIds,
-}: updateTechnicianSkillsArg): Promise<void> => {
-  const { error } = await supabase.rpc("update_technician_skills", {
+}: updateTechnicianSkillsArg): Promise<TechnicianSkill[]> => {
+  const { data, error } = await supabase.rpc("update_technician_skills", {
     p_technician_id: technicianId,
     p_added_skills: addedSkills,
     p_removed_skill_ids: removedSkillIds,
   });
 
   if (error) throw error;
+
+  return data ?? [];
 };
