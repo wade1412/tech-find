@@ -112,7 +112,7 @@ function ServiceZonesForm({
 
   return (
     <form className={formStyle} onSubmit={handleSubmit} noValidate>
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-[minmax(0,0.9fr)_auto_minmax(0,1.6fr)] md:gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-[minmax(0,0.9fr)_auto_minmax(0,1.6fr)] gap-6">
         {/* Add Zone */}
         <div className="flex min-w-0 flex-col gap-3">
           <SectionHeader

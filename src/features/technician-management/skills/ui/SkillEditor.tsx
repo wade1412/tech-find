@@ -229,7 +229,7 @@ function SkillEditor({
         selectedSpecificIssueId !== null));
 
   return (
-    <div className="rounded-xl border border-zinc-200 bg-zinc-50/50 p-4 dark:border-zinc-800 dark:bg-zinc-900/40 max-w-2xl mx-auto">
+    <div className="mx-auto max-w-2xl rounded-xl border border-zinc-200 bg-zinc-50/50 py-3 px-4 dark:border-zinc-800 dark:bg-zinc-900/40">
       <div className="flex flex-col gap-4">
         {/* Header */}
         <div className="flex items-center justify-between gap-3">
@@ -265,10 +265,10 @@ function SkillEditor({
               disabled={!selectedUnitId || isDisabled}
               onClick={() => handleSkillKindSelect(kind.value)}
               className={[
-                "flex-1 px-3 text-xs py-2.5 font-semibold transition-[background-color,color] focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
+                "flex-1 px-2 py-2.5 text-xs font-semibold transition-colors cursor-pointer focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-main-500 disabled:cursor-not-allowed disabled:opacity-50",
                 index > 0 && "border-l border-zinc-200 dark:border-zinc-800",
                 selectedSkillKind === kind.value
-                  ? "bg-main-500 text-zinc-950 dark:bg-main-400"
+                  ? "bg-main-500 dark:bg-main-400 text-zinc-950"
                   : "text-zinc-500 hover:bg-zinc-50 hover:text-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-800/70 dark:hover:text-zinc-100",
               ]
                 .filter(Boolean)
@@ -289,15 +289,7 @@ function SkillEditor({
               option?.value === value?.value
             }
             getOptionLabel={(option) => option.label}
-            sx={(theme) => ({
-              ...selectStyle(theme),
-              ...(selectedBrandGroupId && {
-                "& .MuiAutocomplete-input": {
-                  color: theme.palette.mode === "dark" ? "#facc15" : "#eab308",
-                  fontWeight: 500,
-                },
-              }),
-            })}
+            sx={(theme) => selectStyle(theme)}
             renderInput={(params) => (
               <TextField {...params} label="Brand Group" />
             )}
@@ -314,15 +306,7 @@ function SkillEditor({
               option?.value === value?.value
             }
             getOptionLabel={(option) => option.label}
-            sx={(theme) => ({
-              ...selectStyle(theme),
-              ...(selectedSpecificIssueId && {
-                "& .MuiAutocomplete-input": {
-                  color: theme.palette.mode === "dark" ? "#facc15" : "#eab308",
-                  fontWeight: 500,
-                },
-              }),
-            })}
+            sx={(theme) => selectStyle(theme)}
             renderInput={(params) => (
               <TextField {...params} label="Specific Issue" />
             )}

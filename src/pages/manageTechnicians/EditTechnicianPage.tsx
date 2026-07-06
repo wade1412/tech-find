@@ -9,6 +9,7 @@ import ProfileAndCapabilitiesSection from "../../features/technician-management/
 import ServiceZonesSection from "../../features/technician-management/service-zones/ui/ServiceZonesSection";
 import ErrorMessage from "../../shared/ui/ErrorMessage";
 import SkillsSection from "../../features/technician-management/skills/ui/SkillsSection";
+import IgnoreListSection from "../../features/technician-management/ignore-list/ui/IgnoreListSection";
 
 const editSections = [
   { id: "profile", title: "Profile & Capabilities" },
@@ -121,6 +122,10 @@ function EditTechnicianPage() {
             key={selectedTechnician.id}
             technician={selectedTechnician}
           />
+        )}
+
+        {selectedSectionId === "ignore_list" && (
+          <IgnoreListSection key={selectedTechnician.id} />
         )}
       </section>
     </div>

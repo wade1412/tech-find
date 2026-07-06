@@ -60,7 +60,7 @@ function SkillsForm({
   const skillsDraftByUnitId = useMemo(() => {
     const map = new Map<string, SkillDraft[]>();
 
-    skillsDraft?.map((draft) => {
+    skillsDraft?.forEach((draft) => {
       const currentDraftForUnit = map.get(draft.unitId) ?? [];
       currentDraftForUnit.push(draft);
       map.set(draft.unitId, currentDraftForUnit);
@@ -179,11 +179,11 @@ function SkillsForm({
             onClick={toggleOpenEditSkill}
             className={[
               "inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-xl border px-4 py-2.5 text-xs font-semibold transition-[background-color,border-color,color,opacity,transform]",
-              "focus:outline-none focus-visible:ring-2 focus-visible:ring-main-500 focus-visible:ring-offset-2 active:scale-[0.98]",
+              "focus-visible:ring-main-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98]",
               "disabled:cursor-not-allowed disabled:opacity-50 dark:focus-visible:ring-offset-zinc-950",
               isEditorOpen
                 ? "border-main-500/50 bg-main-500/10 text-main-500 hover:border-main-500/70 hover:bg-main-500/15 dark:border-main-400/40 dark:bg-main-400/10 dark:text-main-400 dark:hover:border-main-400/60 dark:hover:bg-main-400/15"
-                : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50 hover:text-main-500 dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-zinc-400 dark:hover:border-zinc-700 dark:hover:bg-zinc-900 dark:hover:text-main-400",
+                : "hover:text-main-500 dark:hover:text-main-400 border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-zinc-400 dark:hover:border-zinc-700 dark:hover:bg-zinc-900",
             ].join(" ")}
           >
             <svg
@@ -248,7 +248,7 @@ function SkillsForm({
       {/* Skills Grid */}
       <section>
         {skillsDraft.length > 0 ? (
-          <div className="grid grid-cols-1 gap-2.5 md:grid-cols-2">
+          <div className="columns-1 gap-3 md:columns-2">
             {Array.from(skillsDraftByUnitId.entries()).map(
               ([unitId, currentUnitSkillDrafts]) => (
                 <SkillGroup
@@ -265,7 +265,7 @@ function SkillsForm({
             )}
           </div>
         ) : (
-          <div className="rounded-xl border border-dashed border-zinc-200 bg-zinc-50/70 px-4 py-6 text-center text-sm text-zinc-400 dark:border-zinc-800 dark:bg-zinc-950/30 dark:text-zinc-500">
+          <div className="rounded-xl border border-dashed border-zinc-200 bg-zinc-50/70 px-4 py-6 text-center text-sm text-zinc-600 dark:border-zinc-800 dark:bg-zinc-950/30 dark:text-zinc-400">
             No skills for this technician. Use "Add Skill" to add one.
           </div>
         )}
