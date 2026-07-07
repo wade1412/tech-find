@@ -1,4 +1,4 @@
-import type { Technician } from "../../../entities/technician/technician.types";
+import type { Technician } from "../../../../entities/technician/technician.types";
 
 export type ProfileFieldKey =
   | "alias"

@@ -3,6 +3,7 @@ import { useTechnicianFilters } from "../model/useTechnicianFilters";
 import { Autocomplete, Skeleton, TextField } from "@mui/material";
 import { useServiceZonesQuery } from "../../../entities/service-zone/useServiceZonesQuery";
 import { selectStyle } from "../../../shared/styles/muiSelectStyles";
+import ErrorMessage from "../../../shared/ui/ErrorMessage";
 
 type ZoneOption = {
   label: string;
@@ -33,11 +34,7 @@ function ZoneSelect() {
   };
 
   if (isError) {
-    return (
-      <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-400">
-        {error?.message}
-      </div>
-    );
+    return <ErrorMessage message={error?.message} />;
   }
 
   if (isPending) {

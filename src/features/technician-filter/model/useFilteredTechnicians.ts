@@ -7,7 +7,6 @@ import { useUnitsQuery } from "../../../entities/unit/useUnitsQuery";
 import { useTechnicianFilters } from "./useTechnicianFilters";
 import { useSpecificIssuesQuery } from "../../../entities/specific-issue/useSpecificIssuesQuery";
 import { filterTechnicians } from "./filterTechnicians";
-import { createDataMapByTechnicianId } from "./filterHelpers";
 import {
   ISSUE_BADGE_LABELS,
   SPECIAL_ISSUE_SLUGS,
@@ -18,8 +17,9 @@ import { useServiceZonesQuery } from "../../../entities/service-zone/useServiceZ
 import { useTechnicianServiceZonesQuery } from "../../../entities/technician-service-zone/useTechnicianServiceZonesQuery";
 import {
   createTechnicianZoneNamesMap,
-  createZoneMapByTechId,
+  createZoneIdMapByTechId,
 } from "../../../entities/technician-service-zone/technician-service-zone.helpers";
+import { createDataMapByTechnicianId } from "./filter.helpers";
 
 export const useFilteredTechnicians = () => {
   // --- Queries ---
@@ -79,7 +79,7 @@ export const useFilteredTechnicians = () => {
   // 1) General Maps:
   // Map -  technicianId: zones
   const zonesByTechId = useMemo(
-    () => createZoneMapByTechId(technicianZones ?? []),
+    () => createZoneIdMapByTechId(technicianZones ?? []),
     [technicianZones],
   );
   // Map - unitId: unit

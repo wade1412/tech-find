@@ -11,6 +11,7 @@ import {
   technicianCardVariants,
   technicianListVariants,
 } from "../../shared/styles/motionVariants";
+import ErrorMessage from "../../shared/ui/ErrorMessage";
 
 function ManageTechniciansPage() {
   const {
@@ -30,12 +31,10 @@ function ManageTechniciansPage() {
   const isError = isTechniciansError || isZoneNamesError;
   const error = techniciansError ?? zoneNamesErrorObj;
 
-  const [openTechnicianId, setOpenTechnicianId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);
-    setOpenTechnicianId(null);
   };
 
   const visibleTechnicians = useMemo(
@@ -73,11 +72,7 @@ function ManageTechniciansPage() {
   }
 
   if (isError) {
-    return (
-      <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-400">
-        {error?.message}
-      </div>
-    );
+    return <ErrorMessage message={error?.message} />;
   }
 
   return (
@@ -115,16 +110,11 @@ function ManageTechniciansPage() {
                   animate="visible"
                   exit="exit"
                   whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.95 }}
                 >
                   <ManageTechnicianCard
                     technician={technician}
                     zones={zoneNamesByTechnicianId.get(technician.id) || []}
-                    onToggle={() =>
-                      setOpenTechnicianId((prev) =>
-                        prev === technician.id ? null : technician.id,
-                      )
-                    }
-                    isOpen={openTechnicianId === technician.id}
                   />
                 </motion.div>
               ))

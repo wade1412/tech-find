@@ -1,7 +1,10 @@
 import { useMemo } from "react";
 import { useServiceZonesQuery } from "../service-zone/useServiceZonesQuery";
 import { useTechnicianServiceZonesQuery } from "./useTechnicianServiceZonesQuery";
-import { createTechnicianZoneNamesMap } from "./technician-service-zone.helpers";
+import {
+  createTechnicianZoneNamesMap,
+  createZoneIdMapByTechId,
+} from "./technician-service-zone.helpers";
 
 export const useZoneNamesByTechnicianId = () => {
   const {
@@ -17,6 +20,11 @@ export const useZoneNamesByTechnicianId = () => {
     error: technicianZonesError,
   } = useTechnicianServiceZonesQuery();
 
+  const zoneIdsByTechId = useMemo(
+    () => createZoneIdMapByTechId(technicianZones ?? []),
+    [technicianZones],
+  );
+
   const zoneNamesByTechnicianId = useMemo(
     () => createTechnicianZoneNamesMap(zones ?? [], technicianZones ?? []),
     [zones, technicianZones],
@@ -28,6 +36,7 @@ export const useZoneNamesByTechnicianId = () => {
 
   return {
     zoneNamesByTechnicianId,
+    zoneIdsByTechId,
     isPending,
     isError,
     error,

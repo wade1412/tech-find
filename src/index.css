@@ -18,3 +18,32 @@ body {
   min-height: 100vh;
   font-family: "Inter", system-ui, sans-serif;
 }
+
+.technician-scroll {
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: #d4d4d8 transparent;
+}
+
+.dark .technician-scroll {
+  scrollbar-color: #3f3f46 transparent;
+}
+
+.technician-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.technician-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.technician-scroll::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background-color: #d4d4d8;
+  background-clip: content-box;
+}
+
+.dark .technician-scroll::-webkit-scrollbar-thumb {
+  background-color: #3f3f46;
+}

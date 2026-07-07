@@ -1,22 +1,39 @@
 import type { Variants } from "motion/react";
 
+export const softLayoutTransition = {
+  layout: { duration: 0.18, ease: "easeOut" },
+} as const;
+
+export const fadePresenceMotionProps = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
+  transition: { duration: 0.16, ease: "easeOut" },
+} as const;
+
+export const heightRevealMotionProps = {
+  initial: { height: 0, opacity: 0 },
+  animate: { height: "auto", opacity: 1 },
+  exit: { height: 0, opacity: 0 },
+  transition: { duration: 0.18, ease: "easeOut" },
+  style: { overflow: "hidden" },
+} as const;
+
 export const technicianListVariants: Variants = {
   hidden: {},
   visible: {
-    transition: { staggerChildren: 0.05 },
+    transition: { staggerChildren: 0.02 },
   },
 };
 
 export const technicianCardVariants: Variants = {
-  hidden: { opacity: 0, y: 10 },
+  hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    y: 0,
-    transition: { duration: 0.2, ease: "easeOut" },
+    transition: { duration: 0.22, ease: "easeOut" },
   },
   exit: {
     opacity: 0,
-    scale: 0.96,
-    transition: { duration: 0.15, ease: "easeIn" },
+    transition: { duration: 0.18, ease: "easeIn" },
   },
 };

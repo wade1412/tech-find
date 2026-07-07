@@ -1,4 +1,4 @@
-import type { Technician } from "../../../entities/technician/technician.types";
+import type { Technician } from "../../../../entities/technician/technician.types";
 import { EDITABLE_KEYS } from "./profile.constants";
 import type {
   EditableKey,

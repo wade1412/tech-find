@@ -7,6 +7,13 @@ import {
   selectSlotPropsStyle,
   selectStyle,
 } from "../../../shared/styles/muiSelectStyles";
+import ErrorMessage from "../../../shared/ui/ErrorMessage";
+import { autocompleteMutedStyle } from "../../../shared/styles/styles";
+import { AnimatePresence, motion } from "motion/react";
+import {
+  fadePresenceMotionProps,
+  softLayoutTransition,
+} from "../../../shared/styles/motionVariants";
 
 type IssueOption = {
   id: string;
@@ -109,11 +116,11 @@ function SpecificIssueSelect() {
     updateSpecificIssueSlugs,
   ]);
 
+  const hasIssueOptions = availableOptions.length > 0;
+
   if (isIssuesError || isUnitsError) {
     return (
-      <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-400">
-        {issuesError?.message ?? unitsError?.message}
-      </div>
+      <ErrorMessage message={issuesError?.message ?? unitsError?.message} />
     );
   }
 
@@ -122,42 +129,41 @@ function SpecificIssueSelect() {
   }
 
   return (
-    <div className="flex flex-col gap-1.5">
-      <div
-        className={availableOptions.length === 0 ? "cursor-not-allowed" : ""}
-      >
-        <Autocomplete
-          disabled={availableOptions.length === 0}
-          multiple
-          value={selectedIssues}
-          onChange={handleOptionChange}
-          isOptionEqualToValue={(option, value) => option.id === value.id}
-          options={availableOptions}
-          getOptionLabel={(option) => option.label}
-          slotProps={{
-            chip: {
-              variant: "filled",
-              size: "small",
-              sx: (theme) => selectSlotPropsStyle(theme),
-            },
-          }}
-          sx={(theme) => selectStyle(theme)}
-          renderInput={(params) => (
-            <TextField {...params} label="Specific issue" />
-          )}
-        />
-      </div>
-
-      <div
-        className={`overflow-hidden transition-all duration-200 ${
-          availableOptions.length === 0 ? "max-h-6" : "max-h-0"
-        }`}
-      >
-        <p className="text-xs text-zinc-400 dark:text-zinc-500">
-          Select a unit to see specific issues
-        </p>
-      </div>
-    </div>
+    <motion.div layout transition={softLayoutTransition}>
+      <AnimatePresence initial={false} mode="wait">
+        {!hasIssueOptions ? (
+          <motion.p
+            key="issue-muted"
+            className={autocompleteMutedStyle}
+            {...fadePresenceMotionProps}
+          >
+            Select a unit to see specific issues
+          </motion.p>
+        ) : (
+          <motion.div key="issue-select" {...fadePresenceMotionProps}>
+            <Autocomplete
+              multiple
+              value={selectedIssues}
+              onChange={handleOptionChange}
+              isOptionEqualToValue={(option, value) => option.id === value.id}
+              options={availableOptions}
+              getOptionLabel={(option) => option.label}
+              slotProps={{
+                chip: {
+                  variant: "filled",
+                  size: "small",
+                  sx: (theme) => selectSlotPropsStyle(theme),
+                },
+              }}
+              sx={(theme) => selectStyle(theme)}
+              renderInput={(params) => (
+                <TextField {...params} label="Specific issue" />
+              )}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }
 

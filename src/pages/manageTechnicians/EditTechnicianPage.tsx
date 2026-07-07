@@ -5,10 +5,14 @@ import { useParams } from "react-router";
 import { useTechniciansQuery } from "../../entities/technician/useTechniciansQuery";
 import NotFoundPage from "../NotFoundPage";
 import { useZoneNamesByTechnicianId } from "../../entities/technician-service-zone/useZoneNamesByTechnicianId";
-import ProfileAndCapacitiesSection from "./profileAndCapacities/ProfileAndCapacitiesSection";
+import ProfileAndCapabilitiesSection from "../../features/technician-management/profile-and-capabilities/ui/ProfileAndCapabilitiesSection";
+import ServiceZonesSection from "../../features/technician-management/service-zones/ui/ServiceZonesSection";
+import ErrorMessage from "../../shared/ui/ErrorMessage";
+import SkillsSection from "../../features/technician-management/skills/ui/SkillsSection";
+import IgnoreListSection from "../../features/technician-management/ignore-list/ui/IgnoreListSection";
 
 const editSections = [
-  { id: "profile", title: "Profile & Capacities" },
+  { id: "profile", title: "Profile & Capabilities" },
   { id: "service_zones", title: "Service Zones" },
   { id: "skills", title: "Skills" },
   { id: "ignore_list", title: "Ignore List" },
@@ -62,9 +66,7 @@ function EditTechnicianPage() {
   if (isError) {
     return (
       <div className="mx-auto max-w-6xl p-4 md:p-6">
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-400">
-          {error?.message}
-        </div>
+        <ErrorMessage message={error?.message} />
       </div>
     );
   }
@@ -102,10 +104,28 @@ function EditTechnicianPage() {
 
         {/* Selected Section */}
         {selectedSectionId === "profile" && (
-          <ProfileAndCapacitiesSection
+          <ProfileAndCapabilitiesSection
             key={selectedTechnician.id}
             technician={selectedTechnician}
           />
+        )}
+
+        {selectedSectionId === "service_zones" && (
+          <ServiceZonesSection
+            key={selectedTechnician.id}
+            technician={selectedTechnician}
+          />
+        )}
+
+        {selectedSectionId === "skills" && (
+          <SkillsSection
+            key={selectedTechnician.id}
+            technician={selectedTechnician}
+          />
+        )}
+
+        {selectedSectionId === "ignore_list" && (
+          <IgnoreListSection key={selectedTechnician.id} />
         )}
       </section>
     </div>

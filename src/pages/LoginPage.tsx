@@ -4,6 +4,11 @@ import AuthHeader from "../layouts/AuthHeader";
 import { useState } from "react";
 import { FullPageSpinner } from "../shared/ui/Spinners";
 import { isAppAuthError } from "../features/auth/model/auth.errors";
+import { primaryButton } from "../shared/styles/styles";
+import { AnimatePresence, motion } from "motion/react";
+
+const labelStyle =
+  "flex flex-col text-sm font-medium text-zinc-700 dark:text-zinc-300 gap-1.5";
 
 function LoginPage() {
   const {
@@ -70,10 +75,10 @@ function LoginPage() {
       <main className="flex flex-1 items-center justify-center px-4 py-12">
         <form
           onSubmit={handleSubmit}
-          className="w-full max-w-sm rounded-2xl border border-zinc-200/80 bg-white p-6 shadow-lg shadow-zinc-200/30 dark:border-zinc-800 dark:bg-zinc-900/50 dark:shadow-none"
+          className="w-full max-w-sm rounded-2xl border border-zinc-200/80 bg-white p-6 shadow-lg shadow-zinc-200/30 dark:border-zinc-800 dark:bg-zinc-900/50 dark:shadow-none flex flex-col gap-6"
         >
           {/* Header */}
-          <div className="mb-6 space-y-1">
+          <div className="space-y-1">
             <h1 className="font-heading text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
               Sign In
             </h1>
@@ -83,64 +88,82 @@ function LoginPage() {
           </div>
 
           {/* Inputs */}
-          <div className="flex flex-col gap-4">
-            <label className="flex flex-col gap-1.5 text-sm font-medium text-zinc-700 dark:text-zinc-300">
-              Email
-              <input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={isSubmitDisabled}
-                placeholder="mail@example.com"
-                type="email"
-                autoComplete="email"
-                required
-                className="focus:border-main-500 focus:ring-main-500/20 dark:focus:border-main-500 rounded-xl border border-zinc-200 bg-zinc-50/50 px-3.5 py-2 text-zinc-900 transition-[border-color,background-color,box-shadow] outline-none focus:bg-white focus:ring-2 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:bg-zinc-950"
-              />
-            </label>
+          <label className={labelStyle}>
+            Email
+            <input
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={isSubmitDisabled}
+              placeholder="mail@example.com"
+              type="email"
+              autoComplete="email"
+              required
+              className="focus:border-main-500 focus:ring-main-500/20 dark:focus:border-main-500 rounded-xl border border-zinc-200 bg-zinc-50/50 px-3.5 py-2 text-zinc-900 transition-[border-color,background-color,box-shadow] outline-none focus:bg-white focus:ring-2 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:bg-zinc-950"
+            />
+          </label>
 
-            <label className="flex flex-col text-sm font-medium text-zinc-700 dark:text-zinc-300">
-              Password
-              <div
-                className={`overflow-hidden transition-[max-height] duration-200 ${password.length > 0 && password.length < 6 ? "max-h-5" : "max-h-0"}`}
+          <label className={labelStyle}>
+            Password
+            <AnimatePresence initial={false}>
+              {password.length > 0 && password.length < 6 && (
+                <motion.div
+                  key="password-warning"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.18, ease: "easeOut" }}
+                  style={{ overflow: "hidden" }}
+                >
+                  <p
+                    id="password-help"
+                    aria-live="polite"
+                    className="text-xs font-normal text-zinc-400 dark:text-zinc-500"
+                  >
+                    Must have at least 6 characters
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            <input
+              value={password}
+              minLength={6}
+              disabled={isSubmitDisabled}
+              onChange={(e) => setPassword(e.target.value)}
+              type="password"
+              aria-describedby="password-help"
+              autoComplete="current-password"
+              required
+              className="focus:border-main-500 focus:ring-main-500/20 dark:focus:border-main-500 mt-1.5 rounded-xl border border-zinc-200 bg-zinc-50/50 px-3.5 py-2 text-zinc-900 transition-[border-color,background-color,box-shadow] outline-none focus:bg-white focus:ring-2 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:bg-zinc-950"
+            />
+          </label>
+
+          <AnimatePresence initial={false}>
+            {formError && (
+              <motion.div
+                key="password-warning"
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.18, ease: "easeOut" }}
+                style={{ overflow: "hidden" }}
               >
                 <p
-                  id="password-help"
-                  aria-live="polite"
-                  className="text-xs font-normal text-zinc-400 dark:text-zinc-500"
+                  role="alert"
+                  className="rounded-xl border border-red-200 bg-red-50/50 px-3.5 py-2 text-xs font-medium text-red-600 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-400"
                 >
-                  Must have at least 6 characters
+                  {formError}
                 </p>
-              </div>
-              <input
-                value={password}
-                minLength={6}
-                disabled={isSubmitDisabled}
-                onChange={(e) => setPassword(e.target.value)}
-                type="password"
-                aria-describedby="password-help"
-                autoComplete="current-password"
-                required
-                className="focus:border-main-500 focus:ring-main-500/20 dark:focus:border-main-500 mt-1.5 rounded-xl border border-zinc-200 bg-zinc-50/50 px-3.5 py-2 text-zinc-900 transition-[border-color,background-color,box-shadow] outline-none focus:bg-white focus:ring-2 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:bg-zinc-950"
-              />
-            </label>
-
-            {formError && (
-              <p
-                role="alert"
-                className="rounded-xl border border-red-200 bg-red-50/50 px-3.5 py-2 text-xs font-medium text-red-600 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-400"
-              >
-                {formError}
-              </p>
+              </motion.div>
             )}
+          </AnimatePresence>
 
-            <button
-              type="submit"
-              disabled={isSubmitDisabled}
-              className="bg-main-500 hover:bg-main-400 focus-visible:ring-main-500 mt-2 cursor-pointer rounded-xl px-4 py-2.5 text-sm font-semibold text-zinc-950 transition-[background-color,opacity,transform] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98] disabled:pointer-events-none  disabled:opacity-50"
-            >
-              {isAuthPending ? "Signing in..." : "Sign in"}
-            </button>
-          </div>
+          <button
+            type="submit"
+            disabled={isSubmitDisabled}
+            className={primaryButton}
+          >
+            {isAuthPending ? "Signing in..." : "Sign in"}
+          </button>
         </form>
       </main>
     </div>
