@@ -8,6 +8,7 @@ import {
   selectStyle,
 } from "../../../shared/styles/muiSelectStyles";
 import ErrorMessage from "../../../shared/ui/ErrorMessage";
+import { autocompleteMutedStyle } from "../../../shared/styles/styles";
 
 type IssueOption = {
   id: string;
@@ -110,6 +111,8 @@ function SpecificIssueSelect() {
     updateSpecificIssueSlugs,
   ]);
 
+  const hasIssueOptions = availableOptions.length > 0;
+
   if (isIssuesError || isUnitsError) {
     return (
       <ErrorMessage message={issuesError?.message ?? unitsError?.message} />
@@ -120,13 +123,20 @@ function SpecificIssueSelect() {
     return <Skeleton variant="rounded" height={56} />;
   }
 
+  if (!hasIssueOptions) {
+    return (
+      <p className={autocompleteMutedStyle}>
+        Select a unit to see specific issues
+      </p>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-1.5">
       <div
         className={availableOptions.length === 0 ? "cursor-not-allowed" : ""}
       >
         <Autocomplete
-          disabled={availableOptions.length === 0}
           multiple
           value={selectedIssues}
           onChange={handleOptionChange}

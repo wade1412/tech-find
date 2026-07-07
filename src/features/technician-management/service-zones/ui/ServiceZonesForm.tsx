@@ -4,7 +4,7 @@ import { Autocomplete, TextField } from "@mui/material";
 import { selectStyle } from "../../../../shared/styles/muiSelectStyles";
 import { useUpdateTechnicianServiceZonesMutation } from "../model/useUpdateTechnicianServiceZonesMutation";
 import { buildTechnicianZonesPatch } from "../model/serviceZones.helpers";
-import { formStyle } from "../../../../shared/styles/styles";
+import { formStyle, noZonesStyle } from "../../../../shared/styles/styles";
 import SubmitArea from "../../ui/SubmitArea";
 import SectionHeader from "../../ui/SectionHeader";
 import SubmitSnackbar from "../../ui/SubmitSnackbar";
@@ -111,8 +111,8 @@ function ServiceZonesForm({
   };
 
   return (
-    <form className={formStyle} onSubmit={handleSubmit} noValidate>
-      <div className="grid grid-cols-1 md:grid-cols-[minmax(0,0.9fr)_auto_minmax(0,1.6fr)] gap-6">
+    <form className={`${formStyle} p-2`} onSubmit={handleSubmit} noValidate>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-[minmax(0,0.9fr)_auto_minmax(0,1.6fr)]">
         {/* Add Zone */}
         <div className="flex min-w-0 flex-col gap-3">
           <SectionHeader
@@ -179,7 +179,7 @@ function ServiceZonesForm({
               ))}
             </div>
           ) : (
-            <div className="rounded-xl border border-dashed border-zinc-200 bg-zinc-50/70 px-4 py-6 text-center text-sm text-zinc-400 dark:border-zinc-800 dark:bg-zinc-950/30 dark:text-zinc-500">
+            <div className={noZonesStyle}>
               No zones assigned. Use the selector to add one.
             </div>
           )}

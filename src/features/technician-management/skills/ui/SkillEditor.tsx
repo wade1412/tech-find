@@ -6,9 +6,9 @@ import { useMemo, useState, type SyntheticEvent } from "react";
 import type { SkillDraft } from "../model/skills.types";
 import { selectStyle } from "../../../../shared/styles/muiSelectStyles";
 import {
+  ghostButton,
   headingStyleDefault,
   primaryButton,
-  secondaryButton,
 } from "../../../../shared/styles/styles";
 
 interface EditSkillProps {
@@ -221,6 +221,12 @@ function SkillEditor({
     handleSubmitSkill(currentSkill);
   };
 
+  const isInputEmpty =
+    (Boolean(skillUnitId) || !selectedUnitId) &&
+    !selectedSkillKind &&
+    !selectedBrandGroupId &&
+    !selectedSpecificIssueId;
+
   const isValid =
     selectedUnitId !== null &&
     (selectedSkillKind === "commercial" ||
@@ -325,8 +331,8 @@ function SkillEditor({
         <div className="flex items-center justify-end gap-2">
           <button
             type="button"
-            disabled={isDisabled}
-            className={secondaryButton}
+            disabled={isDisabled || isInputEmpty}
+            className={ghostButton}
             aria-label={`Clear skill editor inputs`}
             onClick={onClear}
           >

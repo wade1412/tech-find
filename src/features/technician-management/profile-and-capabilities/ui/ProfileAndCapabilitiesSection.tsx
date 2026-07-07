@@ -94,28 +94,14 @@ function ProfileAndCapabilitiesSection({
     <form className={formStyle} onSubmit={handleSubmit} noValidate>
       {/* Head - Technician Status */}
       <section
-        className={`
-          flex flex-col gap-3 rounded-xl border px-4 py-3 transition-colors sm:flex-row sm:items-center sm:justify-between
-          ${
-            formState.active
-              ? "border-zinc-200 bg-zinc-50/60 dark:border-zinc-800 dark:bg-zinc-900/40"
-              : "border-red-200 bg-red-50/60 dark:border-red-900/40 dark:bg-red-950/20"
-          }
-        `}
+        className={`flex flex-col gap-3 rounded-xl border px-4 py-3 transition-colors sm:flex-row sm:items-center sm:justify-between ${formState.active ? "border-zinc-200 bg-zinc-50/60 dark:border-zinc-800 dark:bg-zinc-900/40" : "border-red-200 bg-red-50/60 dark:border-red-900/40 dark:bg-red-950/20"} `}
       >
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <p className={labelStyle}>Technician status</p>
 
             <span
-              className={`
-                rounded-lg px-2 py-0.5 text-[11px] font-semibold
-                ${
-                  formState.active
-                    ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-500"
-                    : "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400"
-                }
-              `}
+              className={`rounded-lg px-2 py-0.5 text-[11px] font-semibold ${formState.active ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-500" : "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400"} `}
             >
               {formState.active ? "Active" : "Inactive"}
             </span>
@@ -134,29 +120,31 @@ function ProfileAndCapabilitiesSection({
       </section>
 
       {/* Fields */}
-      <ProfileAndCapabilitiesFields
-        disabled={isPending}
-        formState={formState}
-        onProfileFieldChange={onProfileFieldChange}
-        onCapabilityToggle={toggleCapability}
-        jobsPerDayRange={jobsPerDayRange}
-        onJobsPerDayRangeChange={onJobsPerDayRangeChange}
-        formError={visibleErrors}
-      />
+      <div className="flex flex-col gap-6 p-2">
+        <ProfileAndCapabilitiesFields
+          disabled={isPending}
+          formState={formState}
+          onProfileFieldChange={onProfileFieldChange}
+          onCapabilityToggle={toggleCapability}
+          jobsPerDayRange={jobsPerDayRange}
+          onJobsPerDayRangeChange={onJobsPerDayRangeChange}
+          formError={visibleErrors}
+        />
 
-      {/* Submit Area */}
-      <SubmitArea
-        error={updateTechnicianMutation.error}
-        isDirty={isDirty}
-        isPending={isPending}
-        handleDiscardChanges={handleDiscardChanges}
-      />
+        {/* Submit Area */}
+        <SubmitArea
+          error={updateTechnicianMutation.error}
+          isDirty={isDirty}
+          isPending={isPending}
+          handleDiscardChanges={handleDiscardChanges}
+        />
 
-      {/* Success Snackbar */}
-      <SubmitSnackbar
-        isOpen={isSavedSnackbarOpen}
-        handleClose={() => setIsSavedSnackbarOpen(false)}
-      />
+        {/* Success Snackbar */}
+        <SubmitSnackbar
+          isOpen={isSavedSnackbarOpen}
+          handleClose={() => setIsSavedSnackbarOpen(false)}
+        />
+      </div>
     </form>
   );
 }

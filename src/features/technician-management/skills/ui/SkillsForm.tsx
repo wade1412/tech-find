@@ -164,7 +164,7 @@ function SkillsForm({
   };
 
   return (
-    <form className={formStyle} onSubmit={handleSubmit} noValidate>
+    <form className={`${formStyle} p-2`} onSubmit={handleSubmit} noValidate>
       {/* Header Section - Add Technician and Title */}
       <div className="flex flex-col">
         <div className="flex items-start justify-between gap-3">

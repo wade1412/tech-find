@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useAuthPermissions } from "../features/auth/model/useAuthPermissions";
 import AdminPanel from "./AdminPanel";
 import type { AppRole } from "../features/auth/model/auth.permissions";
+import { destructiveGhostButton } from "../shared/styles/styles";
 
 const roleLabelMap: Record<AppRole, string> = {
   user: "User",
@@ -111,7 +112,7 @@ function Header() {
             type="button"
             disabled={isSigningOut}
             onClick={handleSignOut}
-            className="cursor-pointer rounded-lg px-3 py-1.5 text-xs font-medium text-zinc-500 transition-[color,opacity] duration-200 enabled:hover:text-red-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2  dark:text-zinc-400 enabled:dark:hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-50"
+            className={destructiveGhostButton}
           >
             {isSigningOut ? "Signing out..." : "Sign out"}
           </button>
