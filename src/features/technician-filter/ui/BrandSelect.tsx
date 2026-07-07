@@ -8,6 +8,12 @@ import {
   selectStyle,
 } from "../../../shared/styles/muiSelectStyles";
 import ErrorMessage from "../../../shared/ui/ErrorMessage";
+import { autocompleteMutedStyle } from "../../../shared/styles/styles";
+import { AnimatePresence, motion } from "motion/react";
+import {
+  fadePresenceMotionProps,
+  softLayoutTransition,
+} from "../../../shared/styles/motionVariants";
 
 type BrandOption = {
   id: string;
@@ -80,6 +86,8 @@ function BrandSelect() {
     updateBrandSlugs(slugs);
   };
 
+  const canSelectBrand = filter.unitSlugs.length > 0 && !filter.isCommercial;
+
   if (isBrandsError || isBrandGroupsError) {
     return (
       <ErrorMessage
@@ -92,48 +100,45 @@ function BrandSelect() {
     return <Skeleton variant="rounded" height={56} />;
   }
 
+  const mutedMessage = filter.isCommercial
+    ? "Brand filter is unavailable for commercial jobs"
+    : "Select a unit to filter by brand";
+
   return (
-    <div className="flex flex-col gap-1.5">
-      <div className={filter.isCommercial ? "cursor-not-allowed" : ""}>
-        <Autocomplete
-          disabled={filter.isCommercial}
-          multiple
-          value={filter.isCommercial ? [] : selectedBrands}
-          onChange={handleOptionChange}
-          isOptionEqualToValue={(option, value) => option.id === value.id}
-          options={brandOptions}
-          groupBy={(option) => option.groupLabel}
-          getOptionLabel={(option) => option.label}
-          slotProps={{
-            chip: {
-              variant: "filled",
-              size: "small",
-              sx: (theme) => selectSlotPropsStyle(theme),
-            },
-          }}
-          sx={(theme) => selectStyle(theme)}
-          renderInput={(params) => <TextField {...params} label="Brand" />}
-        />{" "}
-      </div>
-
-      <div
-        className={`overflow-hidden transition-all duration-200 ${
-          filter.unitSlugs.length === 0 ? "max-h-6" : "max-h-0"
-        }`}
-      >
-        <p className="text-xs text-zinc-400 dark:text-zinc-500">
-          Select a unit to filter by brands
-        </p>
-      </div>
-
-      <div
-        className={`overflow-hidden transition-all duration-200 ${filter.isCommercial ? "max-h-6" : "max-h-0"}`}
-      >
-        <p className="text-xs text-zinc-400 dark:text-zinc-500">
-          Brand filter is unavailable for commercial jobs
-        </p>
-      </div>
-    </div>
+    <motion.div layout transition={softLayoutTransition}>
+      <AnimatePresence initial={false} mode="wait">
+        {!canSelectBrand ? (
+          <motion.p
+            key="brand-muted"
+            className={autocompleteMutedStyle}
+            {...fadePresenceMotionProps}
+          >
+            {mutedMessage}
+          </motion.p>
+        ) : (
+          <motion.div key="brand-select" {...fadePresenceMotionProps}>
+            <Autocomplete
+              multiple
+              value={selectedBrands}
+              onChange={handleOptionChange}
+              isOptionEqualToValue={(option, value) => option.id === value.id}
+              options={brandOptions}
+              groupBy={(option) => option.groupLabel}
+              getOptionLabel={(option) => option.label}
+              slotProps={{
+                chip: {
+                  variant: "filled",
+                  size: "small",
+                  sx: (theme) => selectSlotPropsStyle(theme),
+                },
+              }}
+              sx={(theme) => selectStyle(theme)}
+              renderInput={(params) => <TextField {...params} label="Brand" />}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }
 

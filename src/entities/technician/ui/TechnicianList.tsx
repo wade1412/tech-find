@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import TechnicianCard from "./TechnicianCard";
 import TechnicianSkeleton from "./TechnicianSkeleton";
 import { useFilteredTechnicians } from "../../../features/technician-filter/model/useFilteredTechnicians";
@@ -28,8 +28,23 @@ function TechnicianList() {
     filterKey: string;
     id: string;
   } | null>(null);
+  const listRef = useRef<HTMLUListElement | null>(null);
+  const previousFilterKeyRef = useRef<string | null>(null);
   const filterKey = createTechnicianFilterKey(filter);
   const orderKey = `${filterKey}|${filter.sort}`;
+
+  // Scroll to top on filter change only
+  useEffect(() => {
+    if (previousFilterKeyRef.current === null) {
+      previousFilterKeyRef.current = filterKey;
+      return;
+    }
+
+    if (previousFilterKeyRef.current === filterKey) return;
+
+    previousFilterKeyRef.current = filterKey;
+    listRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+  }, [filterKey]);
 
   const {
     currentSortTuple,
@@ -57,7 +72,7 @@ function TechnicianList() {
   if (isError) return <ErrorMessage message={error?.message} />;
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-4">
+    <div className="flex min-h-0 flex-col gap-4 md:max-h-[calc(100dvh-14rem)]">
       <div className="flex items-center justify-between">
         <h2 className="font-heading text-sm font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
           Technicians
@@ -74,17 +89,18 @@ function TechnicianList() {
         updateSort={handleSortChange}
       />
 
-      <AnimatePresence mode="wait">
-        <Reorder.Group
-          values={orderedIds}
-          onReorder={handleReorder}
-          key={orderKey}
-          className="flex flex-col gap-2.5"
-          variants={technicianListVariants}
-          initial="hidden"
-          animate="visible"
-          exit="exit"
-        >
+      <Reorder.Group
+        ref={listRef}
+        layout
+        values={orderedIds}
+        onReorder={handleReorder}
+        className="technician-scroll flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto overscroll-contain pr-1"
+        variants={technicianListVariants}
+        initial="hidden"
+        animate="visible"
+        transition={{ layout: { duration: 0.24, ease: "easeOut" } }}
+      >
+        <AnimatePresence initial={false}>
           {orderedIds.length > 0 ? (
             orderedIds.map((id) => {
               const technician = techniciansById.get(id);
@@ -93,13 +109,17 @@ function TechnicianList() {
               return (
                 <Reorder.Item
                   key={technician.id}
+                  layout="position"
                   value={technician.id}
                   onDragStart={handleDragStart}
                   onDragEnd={handleDragEnd}
                   variants={technicianCardVariants}
                   whileHover={{ y: -2 }}
-                  transition={{ duration: 0.15 }}
-                  className="relative"
+                  transition={{
+                    opacity: { duration: 0.2, ease: "easeOut" },
+                    layout: { duration: 0.24, ease: "easeOut" },
+                  }}
+                  className="relative shrink-0"
                 >
                   <TechnicianCard
                     technician={technician}
@@ -127,8 +147,8 @@ function TechnicianList() {
               No technicians found
             </motion.p>
           )}
-        </Reorder.Group>
-      </AnimatePresence>
+        </AnimatePresence>
+      </Reorder.Group>
     </div>
   );
 }

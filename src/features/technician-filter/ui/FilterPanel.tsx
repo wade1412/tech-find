@@ -41,6 +41,12 @@ function FilterPanel() {
         </section>
 
         <section>
+          <h2 className={headingStyleWithBottomMargin}>Units</h2>
+          <JobOptions />
+          <UnitSelector />
+        </section>
+
+        <section>
           <h2 className={headingStyleWithBottomMargin}>Filter by Brand</h2>
           <BrandSelect />
         </section>
@@ -48,12 +54,6 @@ function FilterPanel() {
         <section>
           <h2 className={headingStyleWithBottomMargin}>Specific Issues</h2>
           <SpecificIssueSelect />
-        </section>
-
-        <section>
-          <h2 className={headingStyleWithBottomMargin}>Units</h2>
-          <JobOptions />
-          <UnitSelector />
         </section>
       </div>
     </div>

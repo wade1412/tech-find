@@ -6,6 +6,7 @@ import Checkbox from "../../../shared/ui/Checkbox";
 import type { JobOptionKey } from "../model/filter.types";
 import ErrorMessage from "../../../shared/ui/ErrorMessage";
 import { AnimatePresence, motion } from "motion/react";
+import { heightRevealMotionProps } from "../../../shared/styles/motionVariants";
 
 function JobOptions() {
   const { data: units, isPending, isError, error } = useUnitsQuery();
@@ -84,14 +85,7 @@ function JobOptions() {
   return (
     <AnimatePresence initial={false}>
       {isOptionsActive && (
-        <motion.div
-          key="job-options"
-          initial={{ height: 0, opacity: 0 }}
-          animate={{ height: "auto", opacity: 1 }}
-          exit={{ height: 0, opacity: 0 }}
-          transition={{ duration: 0.18, ease: "easeOut" }}
-          style={{ overflow: "hidden" }}
-        >
+        <motion.div key="job-options" {...heightRevealMotionProps}>
           <div className="mb-3 flex flex-row gap-4">
             {filterCheckboxes
               .filter(
