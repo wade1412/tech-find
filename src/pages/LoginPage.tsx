@@ -5,9 +5,10 @@ import { useState } from "react";
 import { FullPageSpinner } from "../shared/ui/Spinners";
 import { isAppAuthError } from "../features/auth/model/auth.errors";
 import { primaryButton } from "../shared/styles/styles";
+import { AnimatePresence, motion } from "motion/react";
 
 const labelStyle =
-  "flex flex-col text-sm font-medium text-zinc-700 dark:text-zinc-300";
+  "flex flex-col text-sm font-medium text-zinc-700 dark:text-zinc-300 gap-1.5";
 
 function LoginPage() {
   const {
@@ -87,7 +88,7 @@ function LoginPage() {
           </div>
 
           {/* Inputs */}
-          <label className={`${labelStyle} gap-1.5`}>
+          <label className={labelStyle}>
             Email
             <input
               value={email}
@@ -101,19 +102,28 @@ function LoginPage() {
             />
           </label>
 
-          <label className="flex flex-col text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          <label className={labelStyle}>
             Password
-            <div
-              className={`overflow-hidden transition-[max-height] duration-200 ${password.length > 0 && password.length < 6 ? "max-h-5" : "max-h-0"}`}
-            >
-              <p
-                id="password-help"
-                aria-live="polite"
-                className="text-xs font-normal text-zinc-400 dark:text-zinc-500"
-              >
-                Must have at least 6 characters
-              </p>
-            </div>
+            <AnimatePresence initial={false}>
+              {password.length > 0 && password.length < 6 && (
+                <motion.div
+                  key="password-warning"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.18, ease: "easeOut" }}
+                  style={{ overflow: "hidden" }}
+                >
+                  <p
+                    id="password-help"
+                    aria-live="polite"
+                    className="text-xs font-normal text-zinc-400 dark:text-zinc-500"
+                  >
+                    Must have at least 6 characters
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
             <input
               value={password}
               minLength={6}
@@ -127,14 +137,25 @@ function LoginPage() {
             />
           </label>
 
-          {formError && (
-            <p
-              role="alert"
-              className="rounded-xl border border-red-200 bg-red-50/50 px-3.5 py-2 text-xs font-medium text-red-600 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-400"
-            >
-              {formError}
-            </p>
-          )}
+          <AnimatePresence initial={false}>
+            {formError && (
+              <motion.div
+                key="password-warning"
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.18, ease: "easeOut" }}
+                style={{ overflow: "hidden" }}
+              >
+                <p
+                  role="alert"
+                  className="rounded-xl border border-red-200 bg-red-50/50 px-3.5 py-2 text-xs font-medium text-red-600 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-400"
+                >
+                  {formError}
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <button
             type="submit"

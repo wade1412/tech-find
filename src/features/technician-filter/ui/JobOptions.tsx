@@ -5,6 +5,7 @@ import { useTechnicianFilters } from "../model/useTechnicianFilters";
 import Checkbox from "../../../shared/ui/Checkbox";
 import type { JobOptionKey } from "../model/filter.types";
 import ErrorMessage from "../../../shared/ui/ErrorMessage";
+import { AnimatePresence, motion } from "motion/react";
 
 function JobOptions() {
   const { data: units, isPending, isError, error } = useUnitsQuery();
@@ -81,23 +82,36 @@ function JobOptions() {
   }
 
   return (
-    <div
-      className={`overflow-hidden transition-all duration-200 ${isOptionsActive ? "mb-3 max-h-24 md:max-h-16" : "max-h-0"}`}
-    >
-      <div className="flex flex-row gap-4">
-        {filterCheckboxes
-          .filter((optionName: JobOptionKey) => options[optionName].visible)
-          .map((optionName: JobOptionKey) => (
-            <Checkbox
-              key={optionName}
-              id={optionName}
-              label={optionName.charAt(0).toUpperCase() + optionName.slice(1)}
-              checked={options[optionName].checked}
-              onChange={options[optionName].onChange}
-            />
-          ))}
-      </div>
-    </div>
+    <AnimatePresence initial={false}>
+      {isOptionsActive && (
+        <motion.div
+          key="job-options"
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: "auto", opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          transition={{ duration: 0.18, ease: "easeOut" }}
+          style={{ overflow: "hidden" }}
+        >
+          <div className="mb-3 flex flex-row gap-4">
+            {filterCheckboxes
+              .filter(
+                (optionName: JobOptionKey) => options[optionName].visible,
+              )
+              .map((optionName: JobOptionKey) => (
+                <Checkbox
+                  key={optionName}
+                  id={optionName}
+                  label={
+                    optionName.charAt(0).toUpperCase() + optionName.slice(1)
+                  }
+                  checked={options[optionName].checked}
+                  onChange={options[optionName].onChange}
+                />
+              ))}
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 
