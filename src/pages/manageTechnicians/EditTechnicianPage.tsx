@@ -125,7 +125,10 @@ function EditTechnicianPage() {
         )}
 
         {selectedSectionId === "ignore_list" && (
-          <IgnoreListSection key={selectedTechnician.id} />
+          <IgnoreListSection
+            key={selectedTechnician.id}
+            technician={selectedTechnician}
+          />
         )}
       </section>
     </div>
