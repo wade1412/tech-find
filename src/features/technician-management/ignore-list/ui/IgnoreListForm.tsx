@@ -20,6 +20,11 @@ interface IgnoreListFormProps {
   specificIssuesById: Map<string, SpecificIssue>;
 }
 
+type SkillEditorState =
+  | { mode: "closed" }
+  | { mode: "add" }
+  | { mode: "edit"; ignoreItem: TechnicianIgnoreList };
+
 function IgnoreListForm({
   technicianId,
   technicianIgnoreList,
@@ -31,7 +36,26 @@ function IgnoreListForm({
   specificIssuesById,
 }: IgnoreListFormProps) {
   const [ignoreListDraft, setIgnoreListDraft] = useState(technicianIgnoreList);
+  const [editor, setEditor] = useState<SkillEditorState>({
+    mode: "closed",
+  });
+  const [duplicateError, setDuplicateError] = useState<string | null>(null);
   const [isSavedSnackbarOpen, setIsSavedSnackbarOpen] = useState(false);
+
+  //Editor handlers
+  const toggleOpenEditIgnoreItem = () => {
+    setDuplicateError(null);
+
+    setEditor((prev) =>
+      prev.mode === "closed" ? { mode: "add" } : { mode: "closed" },
+    );
+  };
+  const handleOpenEditIgnoreItem = (ignoreItem: TechnicianIgnoreList) => {
+    setDuplicateError(null);
+    setEditor({ mode: "edit", ignoreItem });
+  };
+  const isEditorOpen = editor.mode !== "closed";
+  const selectedSkill = editor.mode === "edit" ? editor.ignoreItem : undefined;
 
   const handleRemoveIgnoreItem = (id: string) => {
     setIgnoreListDraft((prev) => prev.filter((i) => i.id !== id));
