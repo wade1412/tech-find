@@ -7,7 +7,7 @@ import { formStyle } from "../../../../shared/styles/styles";
 import SectionHeader from "../../ui/SectionHeader";
 import SubmitArea from "../../ui/SubmitArea";
 import SubmitSnackbar from "../../ui/SubmitSnackbar";
-import IgnoreListCard from "./IgnoreListCard";
+import IgnoreListItemCard from "./IgnoreListItemCard";
 
 interface IgnoreListFormProps {
   technicianId: string;
@@ -30,7 +30,12 @@ function IgnoreListForm({
   specificIssue,
   specificIssuesById,
 }: IgnoreListFormProps) {
+  const [ignoreListDraft, setIgnoreListDraft] = useState(technicianIgnoreList);
   const [isSavedSnackbarOpen, setIsSavedSnackbarOpen] = useState(false);
+
+  const handleRemoveIgnoreItem = (id: string) => {
+    setIgnoreListDraft((prev) => prev.filter((i) => i.id !== id));
+  };
 
   return (
     <form className={`${formStyle} p-2`}>
@@ -46,8 +51,8 @@ function IgnoreListForm({
       />
 
       <div>
-        {technicianIgnoreList.length > 0 ? (
-          technicianIgnoreList.map((ignoreItem) => {
+        {ignoreListDraft.length > 0 ? (
+          ignoreListDraft.map((ignoreItem) => {
             const unitName = ignoreItem.unit_id
               ? (unitsById.get(ignoreItem.unit_id)?.name ?? null)
               : null;
@@ -57,15 +62,17 @@ function IgnoreListForm({
               : null;
 
             const issueName = ignoreItem.specific_issue_id
-              ? (brandsById.get(ignoreItem.specific_issue_id)?.name ?? null)
+              ? (specificIssuesById.get(ignoreItem.specific_issue_id)?.name ??
+                null)
               : null;
 
             return (
-              <IgnoreListCard
+              <IgnoreListItemCard
                 key={ignoreItem.id}
                 unitName={unitName}
                 brandName={brandName}
                 issueName={issueName}
+                onRemove={() => handleRemoveIgnoreItem(ignoreItem.id)}
               />
             );
           })
