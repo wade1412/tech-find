@@ -4,7 +4,7 @@ import type { BrandGroup } from "../../../../entities/brandGroup/brandGroup.type
 import type { SpecificIssue } from "../../../../entities/specific-issue/specific-issue.types";
 import { useMemo, useState } from "react";
 import SectionHeader from "../../ui/SectionHeader";
-import { formStyle } from "../../../../shared/styles/styles";
+import { formStyle, noEditValuesStyle } from "../../../../shared/styles/styles";
 import type { SkillDraft } from "../model/skills.types";
 import {
   createSkillsDraft,
@@ -17,6 +17,7 @@ import SubmitArea from "../../ui/SubmitArea";
 import { useUpdateTechnicianSkillsMutation } from "../model/useUpdateTechnicianSkillsMutation";
 import SkillEditor from "./SkillEditor";
 import { AnimatePresence, motion } from "motion/react";
+import { fadePresenceMotionProps } from "../../../../shared/styles/motionVariants";
 
 interface SkillsFormProps {
   technicianId: string;
@@ -165,7 +166,7 @@ function SkillsForm({
 
   return (
     <form className={`${formStyle} p-2`} onSubmit={handleSubmit} noValidate>
-      {/* Header Section - Add Technician and Title */}
+      {/* Header Section - Add Technician Skill and Title */}
       <div className="flex flex-col">
         <div className="flex items-start justify-between gap-3">
           <SectionHeader
@@ -246,9 +247,13 @@ function SkillsForm({
       />
 
       {/* Skills Grid */}
-      <section>
+      <AnimatePresence initial={false} mode="wait">
         {skillsDraft.length > 0 ? (
-          <div className="columns-1 gap-3 md:columns-2">
+          <motion.div
+            key="skills-cointainer"
+            className="columns-1 gap-3 md:columns-2"
+            {...fadePresenceMotionProps}
+          >
             {Array.from(skillsDraftByUnitId.entries()).map(
               ([unitId, currentUnitSkillDrafts]) => (
                 <SkillGroup
@@ -263,13 +268,17 @@ function SkillsForm({
                 />
               ),
             )}
-          </div>
+          </motion.div>
         ) : (
-          <div className="rounded-xl border border-dashed border-zinc-200 bg-zinc-50/70 px-4 py-6 text-center text-sm text-zinc-600 dark:border-zinc-800 dark:bg-zinc-950/30 dark:text-zinc-400">
+          <motion.div
+            key="skills-empty"
+            className={noEditValuesStyle}
+            {...fadePresenceMotionProps}
+          >
             No skills for this technician. Use "Add Skill" to add one.
-          </div>
+          </motion.div>
         )}
-      </section>
+      </AnimatePresence>
 
       {/* Submit Area */}
       <SubmitArea
