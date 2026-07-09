@@ -114,7 +114,6 @@ function TechnicianList() {
                   onDragStart={handleDragStart}
                   onDragEnd={handleDragEnd}
                   variants={technicianCardVariants}
-                  whileHover={{ y: -2 }}
                   transition={{
                     opacity: { duration: 0.2, ease: "easeOut" },
                     layout: { duration: 0.24, ease: "easeOut" },

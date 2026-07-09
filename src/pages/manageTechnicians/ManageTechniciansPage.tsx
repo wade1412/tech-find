@@ -109,7 +109,6 @@ function ManageTechniciansPage() {
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  whileHover={{ y: -2 }}
                   whileTap={{ scale: 0.95 }}
                 >
                   <ManageTechnicianCard
