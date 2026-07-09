@@ -1,9 +1,11 @@
 import DeleteButton from "../../../../shared/ui/DeleteButton";
 
 interface IgnoreListCardProps {
+  isDisabled: boolean;
   unitName: string | null;
   brandName: string | null;
   issueName: string | null;
+  onEdit: () => void;
   onRemove: () => void;
 }
 
@@ -13,9 +15,11 @@ interface IgnoreChip {
 }
 
 function IgnoreListItemCard({
+  isDisabled,
   unitName,
   brandName,
   issueName,
+  onEdit,
   onRemove,
 }: IgnoreListCardProps) {
   const ignoreChips: IgnoreChip[] = [
@@ -23,12 +27,12 @@ function IgnoreListItemCard({
       ? { label: "Unit", value: unitName }
       : issueName
         ? null
-        : { value: "All units" },
+        : { value: "Any unit" },
     brandName
       ? { label: "Brand", value: brandName }
       : issueName
         ? null
-        : { value: "All brands" },
+        : { value: "Any brand" },
     issueName ? { label: "Issue", value: issueName } : null,
   ].filter((chip): chip is IgnoreChip => Boolean(chip));
 
@@ -47,6 +51,8 @@ function IgnoreListItemCard({
 
       <button
         type="button"
+        disabled={isDisabled}
+        onClick={onEdit}
         className="focus-visible:ring-main-500 inline-flex h-8 cursor-pointer items-center justify-center rounded-lg px-3 text-xs font-semibold text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-800 focus-visible:ring-2 focus-visible:outline-none disabled:opacity-50 dark:text-zinc-400 dark:hover:bg-zinc-700/60 dark:hover:text-zinc-100"
       >
         Edit
@@ -55,6 +61,7 @@ function IgnoreListItemCard({
       <DeleteButton
         label={ignoreChips.map((c) => c.value).join(", ")}
         onDelete={onRemove}
+        isDisabled={isDisabled}
       />
     </div>
   );

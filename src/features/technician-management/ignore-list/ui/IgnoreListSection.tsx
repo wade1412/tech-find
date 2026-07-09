@@ -1,7 +1,7 @@
 import type { Technician } from "../../../../entities/technician/technician.types";
 import TechnicianSkeleton from "../../../../entities/technician/ui/TechnicianSkeleton";
 import ErrorMessage from "../../../../shared/ui/ErrorMessage";
-import { useTechniciangIgnoreListEditorData } from "../model/useTechniciangIgnoreListEditorData";
+import { useTechnicianIgnoreListEditorData } from "../model/useTechnicianIgnoreListEditorData";
 import IgnoreListForm from "./IgnoreListForm";
 
 interface IgnoreListSectionProps {
@@ -20,7 +20,7 @@ function IgnoreListSection({ technician }: IgnoreListSectionProps) {
     isPending,
     isError,
     error,
-  } = useTechniciangIgnoreListEditorData(technician.id);
+  } = useTechnicianIgnoreListEditorData(technician.id);
 
   if (isPending) {
     return <TechnicianSkeleton />;
