@@ -4,7 +4,7 @@ import { useUnitsQuery } from "../../../../entities/unit/useUnitsQuery";
 import { useTechnicianIgnoreListQuery } from "../../../../entities/technician-ignore-list/technicianIgnoreListQuery";
 import { useBrandsQuery } from "../../../../entities/brand/useBrandsQuery";
 
-export const useTechniciangIgnoreListEditorData = (technicianId: string) => {
+export const useTechnicianIgnoreListEditorData = (technicianId: string) => {
   const {
     data: ignoreLists,
     isPending: isIgnorePending,
@@ -41,7 +41,7 @@ export const useTechniciangIgnoreListEditorData = (technicianId: string) => {
     () => new Map(units?.map((u) => [u.id, u]) ?? []),
     [units],
   );
-  // Map - brandGroupId: brandGroup
+  // Map - brandId: brand
   const brandsById = useMemo(
     () => new Map(brands?.map((b) => [b.id, b]) ?? []),
     [brands],
