@@ -243,7 +243,7 @@ function IgnoreListForm({
         {ignoreListDraft.length > 0 ? (
           <motion.div
             key="ignore-items-container"
-            className="grid grid-cols-2 gap-4"
+            className="grid grid-cols-1 gap-3 lg:grid-cols-2"
             {...fadePresenceMotionProps}
           >
             {ignoreListDraft.map((ignoreItem) => {
