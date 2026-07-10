@@ -17,8 +17,6 @@ function EditorActions({
   onClear,
   onSubmit,
 }: EditorActionsProps) {
-  const isSubmitDisabled = isValid ? !isValid || isDisabled : isDisabled;
-
   return (
     <div className="flex items-center justify-end gap-2">
       <button
@@ -34,7 +32,7 @@ function EditorActions({
       <button
         type="button"
         onClick={onSubmit}
-        disabled={isSubmitDisabled}
+        disabled={!isValid || isDisabled}
         className={primaryButton}
       >
         {label}
