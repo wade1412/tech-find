@@ -157,7 +157,7 @@ function IgnoreListForm({
   };
 
   return (
-    <form className={`${formStyle} p-2`}>
+    <form className={`${formStyle} p-2`} onSubmit={handleSubmit} noValidate>
       {/* Header Section - Add Technician Ignore Item and Title */}
       <div className="flex flex-col">
         <div className="flex items-start justify-between gap-3">
@@ -216,14 +216,15 @@ function IgnoreListForm({
               <div className="pt-4">
                 <IgnoreItemEditor
                   key={selectedIgnoreItem?.key ?? "new"}
+                  technicianId={technicianId}
                   selectedIgnoreItem={selectedIgnoreItem}
                   isDisabled={isPending}
                   units={units}
                   unitsById={unitsById}
                   brands={brands}
                   specificIssues={specificIssues}
-                  error={editorError}
-                  resetError={() => setEditorError(null)}
+                  editorError={editorError}
+                  resetEditorError={() => setEditorError(null)}
                   handleSubmitIgnoreItem={handleSubmitIgnoreItem}
                 />
               </div>
