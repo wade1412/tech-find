@@ -5,11 +5,11 @@ import type { Unit } from "../../../../entities/unit/unit.types";
 import { useMemo, useState, type SyntheticEvent } from "react";
 import type { SkillDraft } from "../model/skills.types";
 import { selectStyle } from "../../../../shared/styles/muiSelectStyles";
-import {
-  ghostButton,
-  headingStyleDefault,
-  primaryButton,
-} from "../../../../shared/styles/styles";
+import { getSelectOptionsFromEntity } from "../../model/technician-management.helpers";
+import type { SelectOption } from "../../model/technician-management.types";
+import EditorError from "../../ui/Editor/EditorError";
+import EditorActions from "../../ui/Editor/EditorActions";
+import EditorPanel from "../../ui/Editor/EditorPanel";
 
 interface EditSkillProps {
   isDisabled: boolean;
@@ -22,14 +22,6 @@ interface EditSkillProps {
   duplicateError: string | null;
   resetDuplicateError: () => void;
 }
-
-type SelectOption = {
-  label: string;
-  value: string;
-};
-
-const getSelectOptionsFromEntity = (entity: { name: string; id: string }[]) =>
-  entity.map((element) => ({ label: element.name, value: element.id }));
 
 type SkillKind = SkillDraft["kind"];
 
@@ -100,12 +92,14 @@ function SkillEditor({
   const specificIssuesSelectOptions = useMemo(() => {
     if (!selectedUnitId) return [];
 
+    if (!specificIssueUnitIds.has(selectedUnitId)) return [];
+
     const relevantIssues = specificIssues.filter(
       (issue) => issue.unit_id === selectedUnitId,
     );
 
     return getSelectOptionsFromEntity(relevantIssues);
-  }, [specificIssues, selectedUnitId]);
+  }, [specificIssues, selectedUnitId, specificIssueUnitIds]);
 
   const selectedSpecificIssueOption =
     specificIssuesSelectOptions.find(
@@ -235,121 +229,91 @@ function SkillEditor({
         selectedSpecificIssueId !== null));
 
   return (
-    <div className="mx-auto max-w-2xl rounded-xl border border-zinc-200 bg-zinc-50/50 py-3 px-4 dark:border-zinc-800 dark:bg-zinc-900/40">
-      <div className="flex flex-col gap-4">
-        {/* Header */}
-        <div className="flex items-center justify-between gap-3">
-          <h3 className={headingStyleDefault}>
-            {selectedSkillDraft ? "Edit Skill" : "New Skill"}
-          </h3>{" "}
-        </div>
+    <EditorPanel title={selectedSkillDraft ? "Edit Skill" : "New Skill"}>
+      {/* Unit Select */}
+      <Autocomplete
+        disabled={Boolean(skillUnitId) || isDisabled}
+        value={selectedUnitOption}
+        options={unitSelectOptions}
+        onChange={handleUnitChange}
+        isOptionEqualToValue={(option, value) => option?.value === value?.value}
+        getOptionLabel={(option) => option.label}
+        sx={(theme) => ({ ...selectStyle(theme) })}
+        renderInput={(params) => <TextField {...params} label="Unit" />}
+      />
 
-        {/* Unit Select */}
+      {/* Skill Kind Toggle */}
+      <div
+        role="group"
+        aria-label="Select skill kind"
+        className="flex overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900/60"
+      >
+        {allowedSkillKindOptions.map((kind, index) => (
+          <button
+            key={kind.value}
+            type="button"
+            disabled={!selectedUnitId || isDisabled}
+            onClick={() => handleSkillKindSelect(kind.value)}
+            className={[
+              "flex-1 px-2 py-2.5 text-xs font-semibold transition-colors cursor-pointer focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-main-500 disabled:cursor-not-allowed disabled:opacity-50",
+              index > 0 && "border-l border-zinc-200 dark:border-zinc-800",
+              selectedSkillKind === kind.value
+                ? "bg-main-500 dark:bg-main-400 text-zinc-950"
+                : "text-zinc-500 hover:bg-zinc-50 hover:text-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-800/70 dark:hover:text-zinc-100",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+          >
+            {kind.label}
+          </button>
+        ))}
+      </div>
+
+      {selectedSkillKind === "brandGroup" && (
         <Autocomplete
-          disabled={Boolean(skillUnitId) || isDisabled}
-          value={selectedUnitOption}
-          options={unitSelectOptions}
-          onChange={handleUnitChange}
+          disabled={isDisabled}
+          value={selectedBrandGroupOption}
+          options={brandGroupSelectOptions}
+          onChange={handleBrandGroupChange}
           isOptionEqualToValue={(option, value) =>
             option?.value === value?.value
           }
           getOptionLabel={(option) => option.label}
-          sx={(theme) => ({ ...selectStyle(theme) })}
-          renderInput={(params) => <TextField {...params} label="Unit" />}
+          sx={(theme) => selectStyle(theme)}
+          renderInput={(params) => (
+            <TextField {...params} label="Brand Group" />
+          )}
         />
+      )}
 
-        {/* Skill Kind Toggle */}
-        <div
-          role="group"
-          aria-label="Select skill kind"
-          className="flex overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900/60"
-        >
-          {allowedSkillKindOptions.map((kind, index) => (
-            <button
-              key={kind.value}
-              type="button"
-              disabled={!selectedUnitId || isDisabled}
-              onClick={() => handleSkillKindSelect(kind.value)}
-              className={[
-                "flex-1 px-2 py-2.5 text-xs font-semibold transition-colors cursor-pointer focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-main-500 disabled:cursor-not-allowed disabled:opacity-50",
-                index > 0 && "border-l border-zinc-200 dark:border-zinc-800",
-                selectedSkillKind === kind.value
-                  ? "bg-main-500 dark:bg-main-400 text-zinc-950"
-                  : "text-zinc-500 hover:bg-zinc-50 hover:text-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-800/70 dark:hover:text-zinc-100",
-              ]
-                .filter(Boolean)
-                .join(" ")}
-            >
-              {kind.label}
-            </button>
-          ))}
-        </div>
+      {selectedSkillKind === "specificIssue" && (
+        <Autocomplete
+          disabled={isDisabled}
+          value={selectedSpecificIssueOption}
+          options={specificIssuesSelectOptions}
+          onChange={handleSpecificIssueChange}
+          isOptionEqualToValue={(option, value) =>
+            option?.value === value?.value
+          }
+          getOptionLabel={(option) => option.label}
+          sx={(theme) => selectStyle(theme)}
+          renderInput={(params) => (
+            <TextField {...params} label="Specific Issue" />
+          )}
+        />
+      )}
 
-        {selectedSkillKind === "brandGroup" && (
-          <Autocomplete
-            disabled={isDisabled}
-            value={selectedBrandGroupOption}
-            options={brandGroupSelectOptions}
-            onChange={handleBrandGroupChange}
-            isOptionEqualToValue={(option, value) =>
-              option?.value === value?.value
-            }
-            getOptionLabel={(option) => option.label}
-            sx={(theme) => selectStyle(theme)}
-            renderInput={(params) => (
-              <TextField {...params} label="Brand Group" />
-            )}
-          />
-        )}
+      {duplicateError && <EditorError error={duplicateError} />}
 
-        {selectedSkillKind === "specificIssue" && (
-          <Autocomplete
-            disabled={isDisabled}
-            value={selectedSpecificIssueOption}
-            options={specificIssuesSelectOptions}
-            onChange={handleSpecificIssueChange}
-            isOptionEqualToValue={(option, value) =>
-              option?.value === value?.value
-            }
-            getOptionLabel={(option) => option.label}
-            sx={(theme) => selectStyle(theme)}
-            renderInput={(params) => (
-              <TextField {...params} label="Specific Issue" />
-            )}
-          />
-        )}
-
-        {duplicateError && (
-          <p
-            role="alert"
-            className="rounded-lg border border-red-200 bg-red-50/70 px-3 py-2 text-xs font-medium text-red-600 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-400"
-          >
-            {duplicateError}
-          </p>
-        )}
-
-        <div className="flex items-center justify-end gap-2">
-          <button
-            type="button"
-            disabled={isDisabled || isInputEmpty}
-            className={ghostButton}
-            aria-label={`Clear skill editor inputs`}
-            onClick={onClear}
-          >
-            Clear
-          </button>
-
-          <button
-            type="button"
-            onClick={onSubmit}
-            disabled={!isValid || isDisabled}
-            className={primaryButton}
-          >
-            {selectedSkillDraft ? "Save Skill" : "Add Skill"}
-          </button>
-        </div>
-      </div>
-    </div>
+      <EditorActions
+        isDisabled={isDisabled}
+        isValid={isValid}
+        isInputEmpty={isInputEmpty}
+        label={selectedSkillDraft ? "Save Skill" : "Add Skill"}
+        onClear={onClear}
+        onSubmit={onSubmit}
+      />
+    </EditorPanel>
   );
 }
 
