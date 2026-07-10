@@ -5,11 +5,12 @@ import type { Unit } from "../../../../entities/unit/unit.types";
 import { useMemo, useState, type SyntheticEvent } from "react";
 import type { SkillDraft } from "../model/skills.types";
 import { selectStyle } from "../../../../shared/styles/muiSelectStyles";
-import { getSelectOptionsFromEntity } from "../../model/technician-management.helpers";
-import type { SelectOption } from "../../model/technician-management.types";
+import { getSelectOptionsFromEntity } from "../../ui/Editor/editor.helpers";
+import type { SelectOption } from "../../ui/Editor/editor.types";
 import EditorError from "../../ui/Editor/EditorError";
 import EditorActions from "../../ui/Editor/EditorActions";
 import EditorPanel from "../../ui/Editor/EditorPanel";
+import { useSpecificIssueOptions } from "../../ui/Editor/useSpecificIssueOptions";
 
 interface EditSkillProps {
   isDisabled: boolean;
@@ -85,21 +86,8 @@ function SkillEditor({
     null;
 
   // Specific Issues Map By unit, options and selected
-  const specificIssueUnitIds = useMemo(
-    () => new Set(specificIssues.map((issue) => issue.unit_id)),
-    [specificIssues],
-  );
-  const specificIssuesSelectOptions = useMemo(() => {
-    if (!selectedUnitId) return [];
-
-    if (!specificIssueUnitIds.has(selectedUnitId)) return [];
-
-    const relevantIssues = specificIssues.filter(
-      (issue) => issue.unit_id === selectedUnitId,
-    );
-
-    return getSelectOptionsFromEntity(relevantIssues);
-  }, [specificIssues, selectedUnitId, specificIssueUnitIds]);
+  const { specificIssuesSelectOptions, specificIssueUnitIds } =
+    useSpecificIssueOptions(selectedUnitId, specificIssues);
 
   const selectedSpecificIssueOption =
     specificIssuesSelectOptions.find(
