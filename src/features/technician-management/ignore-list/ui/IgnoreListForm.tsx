@@ -89,7 +89,7 @@ function IgnoreListForm({
   );
 
   const isDirty =
-    patch.addedItems.length > 0 || patch.removedItemsIds.length > 0;
+    patch.addedItems.length > 0 || patch.removedItemIds.length > 0;
   const isPending = updateTechnicianIgnoreListMutation.isPending;
 
   const handleDiscardChanges = () => {
@@ -141,19 +141,22 @@ function IgnoreListForm({
 
     if (!isDirty || isPending) return;
 
-    // updateTechnicianIgnoreListMutation.mutate(
-    //   {
-    //     technicianId,
-    //     ...patch,
-    //   },
-    //   {
-    //     onSuccess: (savedIgnoreItems) => {
-    //       setIgnoreListDraft(createIgnoreItemDraft(savedIgnoreItems));
-    //       setDuplicateError(null);
-    //       setIsSavedSnackbarOpen(true);
-    //     },
-    //   },
-    // );
+    updateTechnicianIgnoreListMutation.mutate(
+      {
+        technicianId,
+        addedItems: patch.addedItems,
+        removedItemIds: patch.removedItemIds,
+      },
+      {
+        onSuccess: (savedIgnoreItems) => {
+          setIgnoreListDraft(
+            savedIgnoreItems.map((item) => createIgnoreItemDraft(item)),
+          );
+          setEditorError(null);
+          setIsSavedSnackbarOpen(true);
+        },
+      },
+    );
   };
 
   return (

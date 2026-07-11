@@ -1,9 +1,12 @@
-import type { TechnicianIgnoreList } from "../../../../entities/technician-ignore-list/technicianIgnoreList.types";
+import type {
+  NewIgnoreItemInput,
+  TechnicianIgnoreList,
+} from "../../../../entities/technician-ignore-list/technicianIgnoreList.types";
 import type { IgnoreItemDraft } from "./ignoreList.types";
 
 type IgnoreListPatch = {
-  addedItems: IgnoreItemDraft[];
-  removedItemsIds: string[];
+  addedItems: NewIgnoreItemInput[];
+  removedItemIds: string[];
 };
 
 export const createIgnoreItemDraft = (
@@ -56,14 +59,20 @@ export const createIgnoreListPatch = (
     draftIgnoreList.map((item) => item.sourceId).filter((id) => id !== null),
   );
 
-  const addedItems = draftIgnoreList.filter((item) => item.sourceId === null);
+  const addedItems = draftIgnoreList
+    .filter((item) => item.sourceId === null)
+    .map((item) => ({
+      unit_id: item.unit_id,
+      brand_id: item.brand_id,
+      specific_issue_id: item.specific_issue_id,
+    }));
 
-  const removedItemsIds = Array.from(initialListIds).filter(
+  const removedItemIds = Array.from(initialListIds).filter(
     (id) => !draftListIds.has(id),
   );
 
   return {
     addedItems,
-    removedItemsIds,
+    removedItemIds,
   };
 };
