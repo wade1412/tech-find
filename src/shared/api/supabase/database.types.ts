@@ -437,6 +437,23 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      update_technician_service_zones: {
+        Args: {
+          p_added_zone_ids?: string[]
+          p_removed_zone_ids?: string[]
+          p_technician_id: string
+        }
+        Returns: {
+          technician_id: string
+          zone_id: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "technician_service_zone"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       update_technician_skills: {
         Args: {
           p_added_skills?: Json
