@@ -31,7 +31,7 @@ const TechnicianSortSelect = ({
               )
             }
             className={`
-          flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs transition-all duration-150
+          flex items-center gap-1 rounded-lg px-2.5 py-0.5 text-xs transition-all duration-150
           ${
             value === option.value
               ? "bg-white font-medium text-zinc-800 shadow-sm dark:bg-zinc-700 dark:text-zinc-100"

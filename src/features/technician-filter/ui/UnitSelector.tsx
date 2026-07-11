@@ -34,7 +34,7 @@ function UnitSelector() {
       </div>
 
       {/* Units Grid */}
-      <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4">
         {data && data.length > 0 ? (
           data.map((unit) => (
             <UnitCard
