@@ -18,7 +18,7 @@ interface ProfileAndCapabilitiesFieldsProps {
   onCapabilityToggle: (key: CapabilityFieldKey) => void;
   jobsPerDayRange: JobsPerDayDraft;
   onJobsPerDayRangeChange: (next: JobsPerDayDraft) => void;
-  formError: ProfileValidationErrors | null;
+  formError?: ProfileValidationErrors | null;
 }
 
 function ProfileAndCapabilitiesFields({
