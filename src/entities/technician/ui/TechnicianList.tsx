@@ -72,7 +72,7 @@ function TechnicianList() {
   if (isError) return <ErrorMessage message={error?.message} />;
 
   return (
-    <div className="flex min-h-0 flex-col gap-4 md:max-h-[calc(100dvh-14rem)]">
+    <div className="flex min-h-0 flex-col gap-4 md:max-h-[96dvh]">
       <div className="flex items-center justify-between">
         <h2 className="font-heading text-sm font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
           Technicians
