@@ -4,7 +4,7 @@ import { Autocomplete, TextField } from "@mui/material";
 import { selectStyle } from "../../../../shared/styles/muiSelectStyles";
 import { useUpdateTechnicianServiceZonesMutation } from "../model/useUpdateTechnicianServiceZonesMutation";
 import { buildTechnicianZonesPatch } from "../model/serviceZones.helpers";
-import { formStyle, noZonesStyle } from "../../../../shared/styles/styles";
+import { formStyle, noEditValuesStyle } from "../../../../shared/styles/styles";
 import SubmitArea from "../../ui/SubmitArea";
 import SectionHeader from "../../ui/SectionHeader";
 import SubmitSnackbar from "../../ui/SubmitSnackbar";
@@ -191,7 +191,7 @@ function ServiceZonesForm({
               ) : (
                 <motion.div
                   key="zones-empty"
-                  className={noZonesStyle}
+                  className={noEditValuesStyle}
                   {...fadePresenceMotionProps}
                 >
                   No zones assigned. Use the selector to add one.

@@ -18,33 +18,24 @@ export const getTechnicianServiceZones = async (): Promise<
   return data ?? [];
 };
 
-export const addTechnicianServiceZones = async (
-  technicianId: string,
-  addedIds: readonly string[],
-): Promise<void> => {
-  if (addedIds.length === 0) return;
-
-  const { error } = await supabase.from("technician_service_zone").insert(
-    addedIds.map((zoneId) => ({
-      technician_id: technicianId,
-      zone_id: zoneId,
-    })),
-  );
-
-  if (error) throw error;
+type UpdateTechnicianServiceZonesArg = {
+  technicianId: string;
+  addedIds: string[];
+  removedIds: string[];
 };
 
-export const deleteTechnicianServiceZones = async (
-  technicianId: string,
-  removedIds: readonly string[],
-): Promise<void> => {
-  if (removedIds.length === 0) return;
-
-  const { error } = await supabase
-    .from("technician_service_zone")
-    .delete()
-    .eq("technician_id", technicianId)
-    .in("zone_id", removedIds);
+export const updateTechnicianServiceZonesApi = async ({
+  technicianId,
+  addedIds,
+  removedIds,
+}: UpdateTechnicianServiceZonesArg): Promise<TechnicianServiceZone[]> => {
+  const { data, error } = await supabase.rpc("update_technician_service_zones", {
+    p_technician_id: technicianId,
+    p_added_zone_ids: addedIds,
+    p_removed_zone_ids: removedIds,
+  });
 
   if (error) throw error;
+
+  return data ?? [];
 };

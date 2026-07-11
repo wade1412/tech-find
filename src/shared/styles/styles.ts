@@ -27,4 +27,4 @@ const autocompleteMutedBase =
 
 export const autocompleteMutedStyle = `${autocompleteMutedBase} text-xs py-[1.2rem]`; // text xs + 1.2rem py matches the 56 pixels height of the active autocomplete
 
-export const noZonesStyle = `${autocompleteMutedBase} py-[1.075rem] text-center text-sm`; // text sm + 1.075rem py matches the 56 pixels as well
+export const noEditValuesStyle = `${autocompleteMutedBase} py-[1.075rem] text-center text-sm`; // text sm + 1.075rem py matches the 56 pixels as well

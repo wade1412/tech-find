@@ -34,7 +34,7 @@ function FilterPanel() {
         </button>
       </div>
 
-      <div className="flex flex-col gap-2.5">
+      <div className="flex flex-col gap-3">
         <section>
           <h2 className={headingStyleWithBottomMargin}>Filter by Zone</h2>
           <ZoneSelect />
