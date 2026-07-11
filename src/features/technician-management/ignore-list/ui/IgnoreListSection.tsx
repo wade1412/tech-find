@@ -1,6 +1,6 @@
 import type { Technician } from "../../../../entities/technician/technician.types";
-import TechnicianSkeleton from "../../../../entities/technician/ui/TechnicianSkeleton";
 import ErrorMessage from "../../../../shared/ui/ErrorMessage";
+import ManagementSectionSkeleton from "../../ui/ManagementSectionSkeleton";
 import { useTechnicianIgnoreListEditorData } from "../model/useTechnicianIgnoreListEditorData";
 import IgnoreListForm from "./IgnoreListForm";
 
@@ -23,7 +23,7 @@ function IgnoreListSection({ technician }: IgnoreListSectionProps) {
   } = useTechnicianIgnoreListEditorData(technician.id);
 
   if (isPending) {
-    return <TechnicianSkeleton />;
+    return <ManagementSectionSkeleton variant="ignoreList" />;
   }
 
   if (isError) {

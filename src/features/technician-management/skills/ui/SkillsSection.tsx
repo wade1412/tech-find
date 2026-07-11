@@ -1,6 +1,6 @@
 import type { Technician } from "../../../../entities/technician/technician.types";
-import TechnicianSkeleton from "../../../../entities/technician/ui/TechnicianSkeleton";
 import ErrorMessage from "../../../../shared/ui/ErrorMessage";
+import ManagementSectionSkeleton from "../../ui/ManagementSectionSkeleton";
 import SkillsForm from "./SkillsForm";
 import { useTechnicianSkillEditorData } from "../model/useTechnicianSkillEditorData";
 
@@ -23,7 +23,7 @@ function SkillsSection({ technician }: SkillSectionProps) {
   } = useTechnicianSkillEditorData(technician.id);
 
   if (isPending) {
-    return <TechnicianSkeleton />;
+    return <ManagementSectionSkeleton variant="skills" />;
   }
 
   if (isError) {

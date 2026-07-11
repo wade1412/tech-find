@@ -1,8 +1,8 @@
 import { useServiceZonesQuery } from "../../../../entities/service-zone/useServiceZonesQuery";
 import { useTechnicianServiceZonesQuery } from "../../../../entities/technician-service-zone/useTechnicianServiceZonesQuery";
 import type { Technician } from "../../../../entities/technician/technician.types";
-import TechnicianSkeleton from "../../../../entities/technician/ui/TechnicianSkeleton";
 import ErrorMessage from "../../../../shared/ui/ErrorMessage";
+import ManagementSectionSkeleton from "../../ui/ManagementSectionSkeleton";
 import ServiceZonesForm from "./ServiceZonesForm";
 
 interface ServiceZonesSectionProps {
@@ -24,7 +24,7 @@ function ServiceZonesSection({ technician }: ServiceZonesSectionProps) {
   } = useServiceZonesQuery();
 
   if (isTechnicianZonesPending || isZonesPending) {
-    return <TechnicianSkeleton />;
+    return <ManagementSectionSkeleton variant="serviceZones" />;
   }
   if (isTechnicianZonesError || isZonesError) {
     return (
