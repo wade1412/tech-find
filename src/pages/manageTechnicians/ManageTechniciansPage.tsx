@@ -12,6 +12,7 @@ import {
   technicianListVariants,
 } from "../../shared/styles/motionVariants";
 import ErrorMessage from "../../shared/ui/ErrorMessage";
+import { Link } from "react-router";
 
 function ManageTechniciansPage() {
   const {
@@ -83,6 +84,30 @@ function ManageTechniciansPage() {
             title="Manage Technicians"
             subtitle="Select a technician to edit the data"
           />
+
+          <Link
+            to="new"
+            type="button"
+            className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl border px-4 py-2.5 text-xs font-semibold transition-[background-color,border-color,color,opacity,transform] focus-visible:ring-main-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98] hover:text-main-500 dark:hover:text-main-400 border-zinc-200 bg-white text-zinc-600 hover:border-main-400 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-zinc-400 dark:hover:border-main-400 dark:hover:bg-zinc-900"
+          >
+            <svg
+              fill="none"
+              className="h-3.5 w-3.5"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2.5}
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 4.5v15m7.5-7.5h-15"
+              />
+            </svg>
+
+            <span className="text-center">Add New Technician</span>
+          </Link>
+
           <ManageTechniciansSearch
             value={searchTerm}
             onValueChange={handleSearchChange}

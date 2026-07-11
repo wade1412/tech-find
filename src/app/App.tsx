@@ -5,6 +5,7 @@ import { FullPageSpinner } from "../shared/ui/Spinners";
 import AuthenticatedLayout from "../layouts/AuthenticatedLayout";
 import PermissionRoute from "../features/auth/ui/PermissionRoute";
 import NotFoundPage from "../pages/NotFoundPage";
+import NewTechnicianPage from "../pages/manageTechnicians/NewTechnicianPage";
 
 const HomePage = lazy(() => import("../pages/HomePage"));
 const LoginPage = lazy(() => import("../pages/LoginPage"));
@@ -49,6 +50,7 @@ function App() {
         >
           <Route index element={<ManageTechniciansPage />} />
           <Route path=":technicianId/edit" element={<EditTechnicianPage />} />
+          <Route path="new" element={<NewTechnicianPage />} />
         </Route>
 
         <Route
