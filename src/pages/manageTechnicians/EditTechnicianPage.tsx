@@ -10,15 +10,10 @@ import ServiceZonesSection from "../../features/technician-management/service-zo
 import ErrorMessage from "../../shared/ui/ErrorMessage";
 import SkillsSection from "../../features/technician-management/skills/ui/SkillsSection";
 import IgnoreListSection from "../../features/technician-management/ignore-list/ui/IgnoreListSection";
-
-const editSections = [
-  { id: "profile", title: "Profile & Capabilities" },
-  { id: "service_zones", title: "Service Zones" },
-  { id: "skills", title: "Skills" },
-  { id: "ignore_list", title: "Ignore List" },
-] as const;
-
-type EditSectionId = (typeof editSections)[number]["id"];
+import {
+  editSections,
+  type EditSectionId,
+} from "../../features/technician-management/model/editSections.constants";
 
 function EditTechnicianPage() {
   const { technicianId } = useParams();
