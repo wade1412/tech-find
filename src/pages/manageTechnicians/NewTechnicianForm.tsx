@@ -27,6 +27,7 @@ import type { Brand } from "../../entities/brand/brand.types";
 import type { BrandGroup } from "../../entities/brandGroup/brandGroup.types";
 import type { SpecificIssue } from "../../entities/specific-issue/specific-issue.types";
 import type { ServiceZone } from "../../entities/service-zone/service-zone.types";
+import SkillFields from "../../features/technician-management/skills/ui/SkillFields";
 
 interface NewTechnicianFormProps {
   units: Unit[];
@@ -69,8 +70,6 @@ type NewTechnicianDraft = {
 function NewTechnicianForm({
   units,
   unitsById,
-  brands,
-  brandsById,
   brandGroups,
   brandGroupById,
   specificIssues,
@@ -115,6 +114,13 @@ function NewTechnicianForm({
       zoneIds: newZoneIds,
     }));
 
+  // ----- Skills Section Handler -----
+  const onSkillsChange = (skills: SkillDraft[]) =>
+    setNewTechnicianDraft((prev) => ({
+      ...prev,
+      skills,
+    }));
+
   // false for now, update when mutation will be connected
   const isPending = false;
 
@@ -126,6 +132,7 @@ function NewTechnicianForm({
     isValidProfile &&
     newTechnicianDraft.zoneIds.length > 0 &&
     newTechnicianDraft.skills.length > 0;
+
   return (
     <div className="mx-auto max-w-6xl p-4 md:p-6">
       <section className="flex flex-col gap-4">
@@ -186,20 +193,30 @@ function NewTechnicianForm({
           </div>
         )}
 
-        {/* 
         {selectedSectionId === "skills" && (
-          <SkillsSection
-            key={"New Technician Skills"}
-            technician={selectedTechnician}
-          />
+          <div className={`${formStyle} p-2`}>
+            <SkillFields
+              skills={newTechnicianDraft.skills}
+              onChange={onSkillsChange}
+              units={units}
+              unitsById={unitsById}
+              brandGroups={brandGroups}
+              brandGroupById={brandGroupById}
+              specificIssues={specificIssues}
+              specificIssuesById={specificIssuesById}
+              disabled={isPending}
+            />
+          </div>
         )}
 
+        {/*
         {selectedSectionId === "ignore_list" && (
           <IgnoreListSection
             key={"New Technician Ignore List"}
             technician={selectedTechnician}
           />
-        )} */}
+        )}
+        */}
       </section>
     </div>
   );
