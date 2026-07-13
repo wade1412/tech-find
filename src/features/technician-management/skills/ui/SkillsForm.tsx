@@ -1,24 +1,18 @@
-import type { TechnicianSkill } from "../../../../entities/technician-skill-set/technicianSkillSet.types";
-import type { Unit } from "../../../../entities/unit/unit.types";
+import { useMemo, useState } from "react";
 import type { BrandGroup } from "../../../../entities/brandGroup/brandGroup.types";
 import type { SpecificIssue } from "../../../../entities/specific-issue/specific-issue.types";
-import { useMemo, useState } from "react";
-import SectionHeader from "../../ui/SectionHeader";
-import { formStyle, noEditValuesStyle } from "../../../../shared/styles/styles";
-import type { SkillDraft } from "../model/skills.types";
+import type { TechnicianSkill } from "../../../../entities/technician-skill-set/technicianSkillSet.types";
+import type { Unit } from "../../../../entities/unit/unit.types";
+import { formStyle } from "../../../../shared/styles/styles";
+import SubmitArea from "../../ui/SubmitArea";
+import SubmitSnackbar from "../../ui/SubmitSnackbar";
 import {
   createSkillsDraft,
   createSkillsPatch,
-  getSkillIdentity,
 } from "../model/skills.helpers";
-import SkillGroup from "./SkillGroup";
-import SubmitSnackbar from "../../ui/SubmitSnackbar";
-import SubmitArea from "../../ui/SubmitArea";
+import type { SkillDraft } from "../model/skills.types";
 import { useUpdateTechnicianSkillsMutation } from "../model/useUpdateTechnicianSkillsMutation";
-import SkillEditor from "./SkillEditor";
-import { AnimatePresence, motion } from "motion/react";
-import { fadePresenceMotionProps } from "../../../../shared/styles/motionVariants";
-import OpenEditorButton from "../../ui/Editor/OpenEditorButton";
+import SkillFields from "./SkillFields";
 
 interface SkillsFormProps {
   technicianId: string;
@@ -31,11 +25,6 @@ interface SkillsFormProps {
   specificIssuesById: Map<string, SpecificIssue>;
 }
 
-type SkillEditorState =
-  | { mode: "closed" }
-  | { mode: "add" }
-  | { mode: "edit"; skill: SkillDraft };
-
 function SkillsForm({
   technicianId,
   technicianSkills,
@@ -46,59 +35,16 @@ function SkillsForm({
   specificIssues,
   specificIssuesById,
 }: SkillsFormProps) {
-  const initialSkillsDraft: SkillDraft[] = createSkillsDraft(technicianSkills);
-
-  const [skillsDraft, setSkillsDraft] =
-    useState<SkillDraft[]>(initialSkillsDraft);
-  const [editor, setEditor] = useState<SkillEditorState>({
-    mode: "closed",
-  });
-  const [duplicateError, setDuplicateError] = useState<string | null>(null);
+  const initialSkills = useMemo(
+    () => createSkillsDraft(technicianSkills),
+    [technicianSkills],
+  );
+  const [skillsDraft, setSkillsDraft] = useState<SkillDraft[]>(initialSkills);
   const [isSavedSnackbarOpen, setIsSavedSnackbarOpen] = useState(false);
 
-  const updateTechnicanSkillsMutation = useUpdateTechnicianSkillsMutation();
+  const updateTechnicianSkillsMutation =
+    useUpdateTechnicianSkillsMutation();
 
-  // Map - unitId: skill draft for this unitId
-  const skillsDraftByUnitId = useMemo(() => {
-    const map = new Map<string, SkillDraft[]>();
-
-    skillsDraft?.forEach((draft) => {
-      const currentDraftForUnit = map.get(draft.unitId) ?? [];
-      currentDraftForUnit.push(draft);
-      map.set(draft.unitId, currentDraftForUnit);
-    });
-
-    return map;
-  }, [skillsDraft]);
-
-  //Editor handlers
-  const toggleOpenEditSkill = () => {
-    setDuplicateError(null);
-
-    setEditor((prev) =>
-      prev.mode === "closed" ? { mode: "add" } : { mode: "closed" },
-    );
-  };
-  const handleOpenEditSkill = (skill: SkillDraft) => {
-    setDuplicateError(null);
-    setEditor({ mode: "edit", skill });
-  };
-  const isEditorOpen = editor.mode !== "closed";
-  const selectedSkill = editor.mode === "edit" ? editor.skill : undefined;
-
-  const handleRemoveSkill = (key: string) => {
-    setSkillsDraft((prev) => prev.filter((s) => s.key !== key));
-  };
-
-  //Check for duplicates
-  const isDuplicateSkill = (next: SkillDraft) =>
-    skillsDraft.some(
-      (skill) =>
-        skill.key !== next.key &&
-        getSkillIdentity(skill) === getSkillIdentity(next),
-    );
-
-  // patch and submit logic
   const patch = useMemo(
     () => createSkillsPatch(technicianSkills, skillsDraft),
     [technicianSkills, skillsDraft],
@@ -106,51 +52,18 @@ function SkillsForm({
 
   const isDirty =
     patch.addedSkills.length > 0 || patch.removedSkillIds.length > 0;
-  const isPending = updateTechnicanSkillsMutation.isPending;
+  const isPending = updateTechnicianSkillsMutation.isPending;
 
   const handleDiscardChanges = () => {
-    setDuplicateError(null);
-    setSkillsDraft(initialSkillsDraft);
+    setSkillsDraft(initialSkills);
   };
 
-  // Null source Id on edit skill, add new skill to skillsDraft array on add skill
-  const handleSubmitSkill = (next: SkillDraft) => {
-    // return early on unchanged skill
-    const isSkillUnchanged =
-      editor.mode === "edit" &&
-      getSkillIdentity(editor.skill) === getSkillIdentity(next);
-
-    if (isSkillUnchanged) {
-      setEditor({ mode: "closed" });
-      return;
-    }
-
-    if (isDuplicateSkill(next)) {
-      setDuplicateError(
-        "Technician already has a skill of this type, please add a unique skill",
-      );
-      return;
-    }
-
-    setSkillsDraft((prev) =>
-      editor.mode === "edit"
-        ? prev.map((skill) =>
-            skill.key === editor.skill.key
-              ? { ...next, key: skill.key, sourceId: null }
-              : skill,
-          )
-        : [...prev, next],
-    );
-
-    setEditor({ mode: "closed" });
-  };
-
-  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
     if (!isDirty || isPending) return;
 
-    updateTechnicanSkillsMutation.mutate(
+    updateTechnicianSkillsMutation.mutate(
       {
         technicianId,
         ...patch,
@@ -158,7 +71,6 @@ function SkillsForm({
       {
         onSuccess: (savedSkills) => {
           setSkillsDraft(createSkillsDraft(savedSkills));
-          setDuplicateError(null);
           setIsSavedSnackbarOpen(true);
         },
       },
@@ -167,100 +79,25 @@ function SkillsForm({
 
   return (
     <form className={`${formStyle} p-2`} onSubmit={handleSubmit} noValidate>
-      {/* Header Section - Add Technician Skill and Title */}
-      <div className="flex flex-col">
-        <div className="flex items-start justify-between gap-3">
-          <SectionHeader
-            label="Edit Skills"
-            subtext="Add or remove technician skills"
-          />
-
-          <OpenEditorButton
-            isDisabled={isPending}
-            isEditorOpen={isEditorOpen}
-            toggleOpen={toggleOpenEditSkill}
-            label={isEditorOpen ? "Close" : "Add Skill"}
-          />
-        </div>
-
-        <AnimatePresence>
-          {editor.mode !== "closed" && (
-            <motion.div
-              key="skill-editor"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2, ease: "easeInOut" }}
-              style={{ overflow: "hidden" }}
-            >
-              <div className="pt-4">
-                <SkillEditor
-                  key={selectedSkill?.key ?? "new"}
-                  selectedSkillDraft={selectedSkill}
-                  isDisabled={isPending}
-                  units={units}
-                  unitsById={unitsById}
-                  brandGroups={brandGroups}
-                  specificIssues={specificIssues}
-                  handleSubmitSkill={handleSubmitSkill}
-                  duplicateError={duplicateError}
-                  resetDuplicateError={() => setDuplicateError(null)}
-                />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-
-      {/* Divider */}
-      <div
-        aria-hidden="true"
-        className="h-px w-full bg-zinc-200 dark:bg-zinc-800"
+      <SkillFields
+        skills={skillsDraft}
+        onChange={setSkillsDraft}
+        units={units}
+        unitsById={unitsById}
+        brandGroups={brandGroups}
+        brandGroupById={brandGroupById}
+        specificIssues={specificIssues}
+        specificIssuesById={specificIssuesById}
+        disabled={isPending}
       />
 
-      {/* Skills Grid */}
-      <AnimatePresence initial={false} mode="wait">
-        {skillsDraft.length > 0 ? (
-          <motion.div
-            key="skills-cointainer"
-            className="columns-1 gap-3 md:columns-2"
-            {...fadePresenceMotionProps}
-          >
-            {Array.from(skillsDraftByUnitId.entries()).map(
-              ([unitId, currentUnitSkillDrafts]) => (
-                <SkillGroup
-                  key={unitId}
-                  isDisabled={isPending}
-                  unitName={unitsById.get(unitId)?.name}
-                  skillDraftsForUnit={currentUnitSkillDrafts}
-                  brandGroupById={brandGroupById}
-                  specificIssuesById={specificIssuesById}
-                  onEditSkill={handleOpenEditSkill}
-                  onRemoveSkill={handleRemoveSkill}
-                />
-              ),
-            )}
-          </motion.div>
-        ) : (
-          <motion.div
-            key="skills-empty"
-            className={noEditValuesStyle}
-            {...fadePresenceMotionProps}
-          >
-            No skills for this technician. Use "Add Skill" to add one.
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Submit Area */}
       <SubmitArea
-        error={updateTechnicanSkillsMutation.error}
+        error={updateTechnicianSkillsMutation.error}
         isDirty={isDirty}
         isPending={isPending}
         handleDiscardChanges={handleDiscardChanges}
       />
 
-      {/* Success Snackbar */}
       <SubmitSnackbar
         isOpen={isSavedSnackbarOpen}
         handleClose={() => setIsSavedSnackbarOpen(false)}
