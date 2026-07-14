@@ -7,13 +7,14 @@ import { fadePresenceMotionProps } from "../../../../shared/styles/motionVariant
 import { noEditValuesStyle } from "../../../../shared/styles/styles";
 import OpenEditorButton from "../../ui/Editor/OpenEditorButton";
 import SectionHeader from "../../ui/SectionHeader";
-import { getSkillIdentity } from "../model/skills.helpers";
+import {
+  filterSkillsBySearch,
+  getSkillIdentity,
+} from "../model/skills.helpers";
 import type { SkillDraft } from "../model/skills.types";
 import SkillEditor from "./SkillEditor";
 import SkillGroup from "./SkillGroup";
-import SkillTemplates, {
-  type SkillTemplateFeedback,
-} from "./SkillTemplates";
+import SkillTemplates, { type SkillTemplateFeedback } from "./SkillTemplates";
 import type {
   SkillTemplateAvailability,
   SkillTemplateDefinition,
@@ -23,6 +24,7 @@ import {
   getSkillTemplateAvailability,
 } from "../model/skillTemplates.helpers";
 import ClearSkillsDialog from "./ClearSkillsDialog";
+import SearchInput from "../../../../shared/ui/SearchInput";
 
 interface SkillFieldsProps {
   skills: SkillDraft[];
@@ -56,35 +58,44 @@ function SkillFields({
   templates = [],
   allowClearAll = false,
 }: SkillFieldsProps) {
+  const [searchTerm, setSearchTerm] = useState("");
   const [editor, setEditor] = useState<SkillEditorState>({ mode: "closed" });
   const [duplicateError, setDuplicateError] = useState<string | null>(null);
   const [templateFeedback, setTemplateFeedback] =
     useState<SkillTemplateFeedback | null>(null);
   const [isClearDialogOpen, setIsClearDialogOpen] = useState(false);
 
+  const visibleSkills = useMemo(
+    () =>
+      filterSkillsBySearch(
+        skills,
+        searchTerm,
+        unitsById,
+        brandGroupById,
+        specificIssuesById,
+      ),
+    [skills, searchTerm, unitsById, brandGroupById, specificIssuesById],
+  );
+
+  //Maps
   const skillsByUnitId = useMemo(() => {
     const map = new Map<string, SkillDraft[]>();
 
-    skills.forEach((skill) => {
+    visibleSkills.forEach((skill) => {
       const unitSkills = map.get(skill.unitId) ?? [];
       unitSkills.push(skill);
       map.set(skill.unitId, unitSkills);
     });
 
     return map;
-  }, [skills]);
+  }, [visibleSkills]);
 
   const templateAvailabilityById = useMemo(
     () =>
       new Map<SkillTemplateDefinition["id"], SkillTemplateAvailability>(
         templates.map((template) => [
           template.id,
-          getSkillTemplateAvailability(
-            skills,
-            units,
-            brandGroups,
-            template,
-          ),
+          getSkillTemplateAvailability(skills, units, brandGroups, template),
         ]),
       ),
     [brandGroups, skills, templates, units],
@@ -103,8 +114,14 @@ function SkillFields({
   };
 
   const removeSkill = (key: string) => {
-    onChange(skills.filter((skill) => skill.key !== key));
+    const nextSkills = skills.filter((skill) => skill.key !== key);
+
+    onChange(nextSkills);
     setTemplateFeedback(null);
+
+    if (nextSkills.length === 0) {
+      setSearchTerm("");
+    }
 
     if (editor.mode === "edit" && editor.skill.key === key) {
       setEditor({ mode: "closed" });
@@ -146,6 +163,7 @@ function SkillFields({
     setEditor({ mode: "closed" });
     setDuplicateError(null);
     setTemplateFeedback(null);
+    setSearchTerm("");
     setIsClearDialogOpen(false);
   };
 
@@ -191,7 +209,7 @@ function SkillFields({
 
   return (
     <>
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-3">
         <div className="flex items-start justify-between gap-3">
           <SectionHeader label="Skills" subtext="Add or remove skills" />
 
@@ -266,8 +284,17 @@ function SkillFields({
         </>
       )}
 
+      <SearchInput
+        placeholder="Search skills..."
+        ariaLabel="Search skills"
+        className="w-full sm:max-w-sm sm:self-end"
+        value={searchTerm}
+        onValueChange={setSearchTerm}
+        disabled={disabled || skills.length === 0}
+      />
+
       <AnimatePresence initial={false} mode="wait">
-        {skills.length > 0 ? (
+        {visibleSkills.length > 0 ? (
           <motion.div
             key="skills-container"
             className="columns-1 gap-3 md:columns-2"
@@ -294,7 +321,9 @@ function SkillFields({
             className={noEditValuesStyle}
             {...fadePresenceMotionProps}
           >
-            No skills for this technician. Use "Add Skill" to add one.
+            {searchTerm.trim().length > 0
+              ? `No skills match your search.`
+              : `No skills for this technician. Use "Add Skill" to add one.`}
           </motion.div>
         )}
       </AnimatePresence>
