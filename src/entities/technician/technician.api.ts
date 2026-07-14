@@ -53,3 +53,14 @@ export const updateTechnician = async (
 
   return data;
 };
+
+export const deleteTechnician = async (id: string): Promise<string> => {
+  const { data, error } = await supabase.rpc("delete_technician", {
+    p_technician_id: id,
+  });
+
+  if (error) throw error;
+  if (!data) throw new Error("Technician deletion returned no id");
+
+  return data;
+};
