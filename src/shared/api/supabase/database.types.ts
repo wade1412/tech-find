@@ -417,6 +417,28 @@ export type Database = {
         Args: { required_role: Database["public"]["Enums"]["app_role"] }
         Returns: boolean
       }
+      create_technician: {
+        Args: {
+          p_ignore_items?: Json
+          p_profile: Json
+          p_skills: Json
+          p_zone_ids: string[]
+        }
+        Returns: {
+          active: boolean
+          alias: string
+          can_service_built_in: boolean
+          can_service_stacked_dryer: boolean
+          can_service_stacked_washer: boolean
+          commercial: boolean
+          gas: boolean
+          home_zip_code: string
+          id: string
+          jobs_per_day: string
+          name: string
+          notes: string | null
+        }
+      }
       delete_technician: {
         Args: { p_technician_id: string }
         Returns: string
