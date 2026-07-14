@@ -28,6 +28,7 @@ import type { BrandGroup } from "../../entities/brandGroup/brandGroup.types";
 import type { SpecificIssue } from "../../entities/specific-issue/specific-issue.types";
 import type { ServiceZone } from "../../entities/service-zone/service-zone.types";
 import SkillFields from "../../features/technician-management/skills/ui/SkillFields";
+import IgnoreListFields from "../../features/technician-management/ignore-list/ui/IgnoreListFields";
 
 interface NewTechnicianFormProps {
   units: Unit[];
@@ -70,6 +71,8 @@ type NewTechnicianDraft = {
 function NewTechnicianForm({
   units,
   unitsById,
+  brands,
+  brandsById,
   brandGroups,
   brandGroupById,
   specificIssues,
@@ -119,6 +122,13 @@ function NewTechnicianForm({
     setNewTechnicianDraft((prev) => ({
       ...prev,
       skills,
+    }));
+
+  // ----- Ignore List Section Handler -----
+  const onIgnoreListChange = (ignoreList: IgnoreItemDraft[]) =>
+    setNewTechnicianDraft((prev) => ({
+      ...prev,
+      ignoreList,
     }));
 
   // false for now, update when mutation will be connected
@@ -209,14 +219,21 @@ function NewTechnicianForm({
           </div>
         )}
 
-        {/*
         {selectedSectionId === "ignore_list" && (
-          <IgnoreListSection
-            key={"New Technician Ignore List"}
-            technician={selectedTechnician}
-          />
+          <div className={`${formStyle} p-2`}>
+            <IgnoreListFields
+              items={newTechnicianDraft.ignoreList}
+              onChange={onIgnoreListChange}
+              units={units}
+              unitsById={unitsById}
+              brands={brands}
+              brandsById={brandsById}
+              specificIssues={specificIssues}
+              specificIssuesById={specificIssuesById}
+              disabled={isPending}
+            />
+          </div>
         )}
-        */}
       </section>
     </div>
   );
