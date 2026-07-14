@@ -3,24 +3,16 @@ import type { Brand } from "../../../../entities/brand/brand.types";
 import type { SpecificIssue } from "../../../../entities/specific-issue/specific-issue.types";
 import type { TechnicianIgnoreList } from "../../../../entities/technician-ignore-list/technicianIgnoreList.types";
 import type { Unit } from "../../../../entities/unit/unit.types";
-import { formStyle, noEditValuesStyle } from "../../../../shared/styles/styles";
-import SectionHeader from "../../ui/SectionHeader";
-import SubmitSnackbar from "../../ui/SubmitSnackbar";
-import IgnoreListItemCard from "./IgnoreListItemCard";
-import { AnimatePresence, motion } from "motion/react";
-import { fadePresenceMotionProps } from "../../../../shared/styles/motionVariants";
-import IgnoreItemEditor from "./IgnoreItemEditor";
+import { formStyle } from "../../../../shared/styles/styles";
 import SubmitArea from "../../ui/SubmitArea";
-import { useUpdateTechnicianIgnoreListMutation } from "../model/useUpdateTechnicianIgnoreListMutation";
+import SubmitSnackbar from "../../ui/SubmitSnackbar";
 import {
   createIgnoreItemDraft,
   createIgnoreListPatch,
-  getIgnoreItemIdentity,
-  isDuplicateIgnoreItem,
-  isEmptyIgnoreItem,
 } from "../model/ignoreList.helpers";
 import type { IgnoreItemDraft } from "../model/ignoreList.types";
-import OpenEditorButton from "../../ui/Editor/OpenEditorButton";
+import { useUpdateTechnicianIgnoreListMutation } from "../model/useUpdateTechnicianIgnoreListMutation";
+import IgnoreListFields from "./IgnoreListFields";
 
 interface IgnoreListFormProps {
   technicianId: string;
@@ -33,11 +25,6 @@ interface IgnoreListFormProps {
   specificIssuesById: Map<string, SpecificIssue>;
 }
 
-type IgnoreListEditorState =
-  | { mode: "closed" }
-  | { mode: "add" }
-  | { mode: "edit"; item: IgnoreItemDraft };
-
 function IgnoreListForm({
   technicianId,
   technicianIgnoreList,
@@ -48,45 +35,20 @@ function IgnoreListForm({
   specificIssues,
   specificIssuesById,
 }: IgnoreListFormProps) {
-  const initialIgnoreListDraft: IgnoreItemDraft[] = technicianIgnoreList.map(
-    (item) => createIgnoreItemDraft(item),
+  const initialItems = useMemo(
+    () => technicianIgnoreList.map(createIgnoreItemDraft),
+    [technicianIgnoreList],
   );
-
-  const [ignoreListDraft, setIgnoreListDraft] = useState(
-    initialIgnoreListDraft,
-  );
-  const [editor, setEditor] = useState<IgnoreListEditorState>({
-    mode: "closed",
-  });
-  const [editorError, setEditorError] = useState<string | null>(null);
+  const [itemsDraft, setItemsDraft] =
+    useState<IgnoreItemDraft[]>(initialItems);
   const [isSavedSnackbarOpen, setIsSavedSnackbarOpen] = useState(false);
 
   const updateTechnicianIgnoreListMutation =
     useUpdateTechnicianIgnoreListMutation();
 
-  //Editor handlers
-  const toggleOpenEditIgnoreItem = () => {
-    setEditorError(null);
-
-    setEditor((prev) =>
-      prev.mode === "closed" ? { mode: "add" } : { mode: "closed" },
-    );
-  };
-  const handleOpenEditIgnoreItem = (ignoreItem: IgnoreItemDraft) => {
-    setEditorError(null);
-    setEditor({ mode: "edit", item: ignoreItem });
-  };
-  const isEditorOpen = editor.mode !== "closed";
-  const selectedIgnoreItem = editor.mode === "edit" ? editor.item : undefined;
-
-  const handleRemoveIgnoreItem = (key: string) => {
-    setIgnoreListDraft((prev) => prev.filter((i) => i.key !== key));
-  };
-
-  // patch and submit logic
   const patch = useMemo(
-    () => createIgnoreListPatch(technicianIgnoreList, ignoreListDraft),
-    [technicianIgnoreList, ignoreListDraft],
+    () => createIgnoreListPatch(technicianIgnoreList, itemsDraft),
+    [technicianIgnoreList, itemsDraft],
   );
 
   const isDirty =
@@ -94,51 +56,11 @@ function IgnoreListForm({
   const isPending = updateTechnicianIgnoreListMutation.isPending;
 
   const handleDiscardChanges = () => {
-    setEditorError(null);
-    setIgnoreListDraft(initialIgnoreListDraft);
+    setItemsDraft(initialItems);
   };
 
-  // Submit handler
-  const handleSubmitIgnoreItem = (next: IgnoreItemDraft) => {
-    // return early on unchanged skill
-    const isIgnoreItemUnchanged =
-      editor.mode === "edit" &&
-      getIgnoreItemIdentity(editor.item) === getIgnoreItemIdentity(next);
-
-    if (isIgnoreItemUnchanged) {
-      setEditor({ mode: "closed" });
-      return;
-    }
-
-    if (isEmptyIgnoreItem(next)) {
-      setEditorError(
-        "Ignore item cannot be empty, please make sure to fill at least one field",
-      );
-      return;
-    }
-
-    if (isDuplicateIgnoreItem(next, ignoreListDraft)) {
-      setEditorError(
-        "Technician already has a an ignore item of this type, please add a unique item",
-      );
-      return;
-    }
-
-    setIgnoreListDraft((prev) =>
-      editor.mode === "edit"
-        ? prev.map((item) =>
-            item.key === editor.item.key
-              ? { ...next, key: item.key, sourceId: null }
-              : item,
-          )
-        : [...prev, next],
-    );
-
-    setEditor({ mode: "closed" });
-  };
-
-  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
     if (!isDirty || isPending) return;
 
@@ -149,11 +71,8 @@ function IgnoreListForm({
         removedItemIds: patch.removedItemIds,
       },
       {
-        onSuccess: (savedIgnoreItems) => {
-          setIgnoreListDraft(
-            savedIgnoreItems.map((item) => createIgnoreItemDraft(item)),
-          );
-          setEditorError(null);
+        onSuccess: (savedItems) => {
+          setItemsDraft(savedItems.map(createIgnoreItemDraft));
           setIsSavedSnackbarOpen(true);
         },
       },
@@ -162,105 +81,18 @@ function IgnoreListForm({
 
   return (
     <form className={`${formStyle} p-2`} onSubmit={handleSubmit} noValidate>
-      {/* Header Section - Add Technician Ignore Item and Title */}
-      <div className="flex flex-col">
-        <div className="flex items-start justify-between gap-3">
-          <SectionHeader
-            label="Edit Ignore List"
-            subtext="Edit technician ignore list"
-          />
-
-          <OpenEditorButton
-            label={isEditorOpen ? "Close" : "Add Ignore Item"}
-            isDisabled={isPending}
-            toggleOpen={toggleOpenEditIgnoreItem}
-            isEditorOpen={isEditorOpen}
-          />
-        </div>
-
-        <AnimatePresence>
-          {editor.mode !== "closed" && (
-            <motion.div
-              key="ignore-item-editor"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2, ease: "easeInOut" }}
-              style={{ overflow: "hidden" }}
-            >
-              <div className="pt-4">
-                <IgnoreItemEditor
-                  key={selectedIgnoreItem?.key ?? "new"}
-                  technicianId={technicianId}
-                  selectedIgnoreItem={selectedIgnoreItem}
-                  isDisabled={isPending}
-                  units={units}
-                  unitsById={unitsById}
-                  brands={brands}
-                  specificIssues={specificIssues}
-                  editorError={editorError}
-                  resetEditorError={() => setEditorError(null)}
-                  handleSubmitIgnoreItem={handleSubmitIgnoreItem}
-                />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-
-      {/* Divider */}
-      <div
-        aria-hidden="true"
-        className="h-px w-full bg-zinc-200 dark:bg-zinc-800"
+      <IgnoreListFields
+        items={itemsDraft}
+        onChange={setItemsDraft}
+        units={units}
+        unitsById={unitsById}
+        brands={brands}
+        brandsById={brandsById}
+        specificIssues={specificIssues}
+        specificIssuesById={specificIssuesById}
+        disabled={isPending}
       />
 
-      <AnimatePresence initial={false} mode="wait">
-        {ignoreListDraft.length > 0 ? (
-          <motion.div
-            key="ignore-items-container"
-            className="grid grid-cols-1 gap-3 lg:grid-cols-2"
-            {...fadePresenceMotionProps}
-          >
-            {ignoreListDraft.map((ignoreItem) => {
-              const unitName = ignoreItem.unit_id
-                ? (unitsById.get(ignoreItem.unit_id)?.name ?? null)
-                : null;
-
-              const brandName = ignoreItem.brand_id
-                ? (brandsById.get(ignoreItem.brand_id)?.name ?? null)
-                : null;
-
-              const issueName = ignoreItem.specific_issue_id
-                ? (specificIssuesById.get(ignoreItem.specific_issue_id)?.name ??
-                  null)
-                : null;
-
-              return (
-                <IgnoreListItemCard
-                  key={ignoreItem.key}
-                  isDisabled={isPending}
-                  unitName={unitName}
-                  brandName={brandName}
-                  issueName={issueName}
-                  onEdit={() => handleOpenEditIgnoreItem(ignoreItem)}
-                  onRemove={() => handleRemoveIgnoreItem(ignoreItem.key)}
-                />
-              );
-            })}
-          </motion.div>
-        ) : (
-          <motion.div
-            key="ignore-items-empty"
-            className={`${noEditValuesStyle} col-span-2`}
-            {...fadePresenceMotionProps}
-          >
-            No ignore itmes for this technician. Use "Add Ignore Item" to add
-            one.
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Submit Area */}
       <SubmitArea
         error={updateTechnicianIgnoreListMutation.error}
         isDirty={isDirty}
@@ -268,7 +100,6 @@ function IgnoreListForm({
         handleDiscardChanges={handleDiscardChanges}
       />
 
-      {/* Success Snackbar */}
       <SubmitSnackbar
         isOpen={isSavedSnackbarOpen}
         handleClose={() => setIsSavedSnackbarOpen(false)}

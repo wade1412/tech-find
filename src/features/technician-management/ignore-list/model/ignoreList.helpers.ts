@@ -14,7 +14,6 @@ export const createIgnoreItemDraft = (
 ): IgnoreItemDraft => ({
   key: item.id ?? crypto.randomUUID(),
   sourceId: item.id ?? null,
-  technician_id: item.technician_id,
   unit_id: item.unit_id ?? null,
   brand_id: item.brand_id ?? null,
   specific_issue_id: item.specific_issue_id ?? null,
@@ -24,7 +23,6 @@ const getValue = (id: string | null) => id ?? "*";
 
 export const getIgnoreItemIdentity = (item: IgnoreItemDraft) =>
   [
-    item.technician_id,
     getValue(item.unit_id),
     getValue(item.brand_id),
     getValue(item.specific_issue_id),

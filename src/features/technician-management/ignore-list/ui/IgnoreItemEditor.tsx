@@ -13,11 +13,9 @@ import EditorActions from "../../ui/Editor/EditorActions";
 import EditorError from "../../ui/Editor/EditorError";
 
 interface IgnoreItemEditorProps {
-  technicianId: string;
   isDisabled: boolean;
   selectedIgnoreItem?: IgnoreItemDraft;
   units: Unit[];
-  unitsById: Map<string, Unit>;
   brands: Brand[];
   specificIssues: SpecificIssue[];
   handleSubmitIgnoreItem: (newSkill: IgnoreItemDraft) => void;
@@ -26,7 +24,6 @@ interface IgnoreItemEditorProps {
 }
 
 function IgnoreItemEditor({
-  technicianId,
   isDisabled,
   selectedIgnoreItem,
   units,
@@ -133,7 +130,6 @@ function IgnoreItemEditor({
 
     const newIgnoreItemDraft: IgnoreItemDraft = {
       key: selectedIgnoreItem?.key ?? crypto.randomUUID(),
-      technician_id: technicianId,
       sourceId: null,
       unit_id: selectedSpecificIssue?.unit_id ?? selectedUnitId,
       brand_id: selectedBrandId,
