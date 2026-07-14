@@ -48,6 +48,12 @@ export const isDuplicateIgnoreItem = (
   return false;
 };
 
+export const ignoreItemDraftToInput = (item: IgnoreItemDraft) => ({
+  unit_id: item.unit_id,
+  brand_id: item.brand_id,
+  specific_issue_id: item.specific_issue_id,
+});
+
 export const createIgnoreListPatch = (
   initialIgnoreList: TechnicianIgnoreList[],
   draftIgnoreList: IgnoreItemDraft[],
@@ -59,11 +65,7 @@ export const createIgnoreListPatch = (
 
   const addedItems = draftIgnoreList
     .filter((item) => item.sourceId === null)
-    .map((item) => ({
-      unit_id: item.unit_id,
-      brand_id: item.brand_id,
-      specific_issue_id: item.specific_issue_id,
-    }));
+    .map(ignoreItemDraftToInput);
 
   const removedItemIds = Array.from(initialListIds).filter(
     (id) => !draftListIds.has(id),

@@ -46,6 +46,25 @@ export const createSkillsDraft = (
   technicianSkills: TechnicianSkill[],
 ): SkillDraft[] => technicianSkills.map((skill) => createSkillDraft(skill));
 
+export const skillDraftToInput = (skill: SkillDraft) => {
+  const baseFields = {
+    unit_id: skill.unitId,
+    commercial: false,
+    brand_group_id: null,
+    specific_issue_id: null,
+  };
+
+  if (skill.kind === "brandGroup") {
+    return { ...baseFields, brand_group_id: skill.brandGroupId };
+  }
+
+  if (skill.kind === "specificIssue") {
+    return { ...baseFields, specific_issue_id: skill.specificIssueId };
+  }
+
+  return { ...baseFields, commercial: true };
+};
+
 // Edit with unchanged source Id wont be caught in patch, so Edit has to create new skill draft with sourceId: null and remove the old skill record
 export const createSkillsPatch = (
   initialSkills: TechnicianSkill[],
@@ -59,24 +78,7 @@ export const createSkillsPatch = (
   // Technician Id is added by api function
   const addedSkills = draftSkills
     .filter((skill) => skill.sourceId === null)
-    .map((skill) => {
-      const baseFields = {
-        unit_id: skill.unitId,
-        commercial: false,
-        brand_group_id: null,
-        specific_issue_id: null,
-      };
-
-      if (skill.kind === "brandGroup") {
-        return { ...baseFields, brand_group_id: skill.brandGroupId };
-      }
-
-      if (skill.kind === "specificIssue") {
-        return { ...baseFields, specific_issue_id: skill.specificIssueId };
-      }
-
-      return { ...baseFields, commercial: true };
-    });
+    .map(skillDraftToInput);
 
   const removedSkillIds = Array.from(initialSkillIdsSet).filter(
     (id) => !draftSkillIdsSet.has(id),
