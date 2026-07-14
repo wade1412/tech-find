@@ -3,7 +3,7 @@ import ManageTechnicianCard from "../../features/technician-management/ui/Manage
 import { useTechniciansQuery } from "../../entities/technician/useTechniciansQuery";
 import PageHeader from "../../shared/ui/PageHeader";
 import { useZoneNamesByTechnicianId } from "../../entities/technician-service-zone/useZoneNamesByTechnicianId";
-import ManageTechniciansSearch from "../../features/technician-management/ui/ManageTechniciansSearch";
+import SearchInput from "../../shared/ui/SearchInput";
 import { filterTechniciansBySearch } from "../../features/technician-management/model/filterTechniciansBySearch";
 import { AnimatePresence } from "motion/react";
 import { motion } from "motion/react";
@@ -33,10 +33,6 @@ function ManageTechniciansPage() {
   const error = techniciansError ?? zoneNamesErrorObj;
 
   const [searchTerm, setSearchTerm] = useState("");
-
-  const handleSearchChange = (value: string) => {
-    setSearchTerm(value);
-  };
 
   const visibleTechnicians = useMemo(
     () =>
@@ -85,34 +81,37 @@ function ManageTechniciansPage() {
             subtitle="Select a technician to edit the data"
           />
 
-          <Link
-            to="new"
-            type="button"
-            className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl border px-4 py-2.5 text-xs font-semibold transition-[background-color,border-color,color,opacity,transform] focus-visible:ring-main-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98] hover:text-main-500 dark:hover:text-main-400 border-zinc-200 bg-white text-zinc-600 hover:border-main-400 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-zinc-400 dark:hover:border-main-400 dark:hover:bg-zinc-900"
-          >
-            <svg
-              fill="none"
-              className="h-3.5 w-3.5"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2.5}
-              aria-hidden="true"
+          <div className="flex w-full flex-col gap-2 sm:flex-row md:w-auto md:items-center">
+            <Link
+              to="new"
+              className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-xs font-semibold text-zinc-600 transition-[background-color,border-color,color,opacity,transform] hover:border-main-400 hover:bg-zinc-50 hover:text-main-500 focus-visible:ring-2 focus-visible:ring-main-500 focus-visible:ring-offset-2 focus:outline-none active:scale-[0.98] dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-zinc-400 dark:hover:border-main-400 dark:hover:bg-zinc-900 dark:hover:text-main-400"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 4.5v15m7.5-7.5h-15"
-              />
-            </svg>
+              <svg
+                fill="none"
+                className="h-3.5 w-3.5"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2.5}
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 4.5v15m7.5-7.5h-15"
+                />
+              </svg>
 
-            <span className="text-center">Add New Technician</span>
-          </Link>
+              <span className="text-center">Add New Technician</span>
+            </Link>
 
-          <ManageTechniciansSearch
-            value={searchTerm}
-            onValueChange={handleSearchChange}
-            className="w-full md:w-72"
-          />
+            <SearchInput
+              placeholder="Search technicians..."
+              ariaLabel="Search technicians"
+              className="w-full sm:w-72"
+              value={searchTerm}
+              onValueChange={setSearchTerm}
+            />
+          </div>
         </div>
 
         {/* List */}
