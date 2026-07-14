@@ -11,6 +11,9 @@ import { getSkillIdentity } from "../model/skills.helpers";
 import type { SkillDraft } from "../model/skills.types";
 import SkillEditor from "./SkillEditor";
 import SkillGroup from "./SkillGroup";
+import SkillTemplates from "./SkillTemplates";
+import type { SkillTemplateDefinition } from "../model/skillTemplates.types";
+import { applySkillTemplate } from "../model/skillTemplates.helpers";
 
 interface SkillFieldsProps {
   skills: SkillDraft[];
@@ -22,6 +25,7 @@ interface SkillFieldsProps {
   specificIssues: SpecificIssue[];
   specificIssuesById: Map<string, SpecificIssue>;
   disabled: boolean;
+  templates?: readonly SkillTemplateDefinition[];
 }
 
 type SkillEditorState =
@@ -39,6 +43,7 @@ function SkillFields({
   specificIssues,
   specificIssuesById,
   disabled,
+  templates,
 }: SkillFieldsProps) {
   const [editor, setEditor] = useState<SkillEditorState>({ mode: "closed" });
   const [duplicateError, setDuplicateError] = useState<string | null>(null);
@@ -74,6 +79,12 @@ function SkillFields({
       setEditor({ mode: "closed" });
       setDuplicateError(null);
     }
+  };
+
+  const handleApplyTemplate = (template: SkillTemplateDefinition) => {
+    const result = applySkillTemplate(skills, units, brandGroups, template);
+
+    onChange(result.skills);
   };
 
   const submitSkill = (next: SkillDraft) => {
@@ -165,6 +176,10 @@ function SkillFields({
         aria-hidden="true"
         className="h-px w-full bg-zinc-200 dark:bg-zinc-800"
       />
+
+      {templates && templates?.length > 0 && (
+        <SkillTemplates templates={templates} onApply={handleApplyTemplate} />
+      )}
 
       <AnimatePresence initial={false} mode="wait">
         {skills.length > 0 ? (
