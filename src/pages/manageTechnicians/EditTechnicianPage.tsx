@@ -15,6 +15,7 @@ import {
   type EditSectionId,
 } from "../../features/technician-management/model/editSections.constants";
 import EditTechnicianSkeleton from "../../features/technician-management/ui/EditTechnicianSkeleton";
+import DeleteTechnicianButton from "../../features/technician-management/delete-technician/ui/DeleteTechnicianButton";
 
 function EditTechnicianPage() {
   const { technicianId } = useParams();
@@ -65,11 +66,12 @@ function EditTechnicianPage() {
     <div className="mx-auto max-w-6xl p-4 md:p-6">
       <section className="flex flex-col gap-4">
         {/* Header */}
-        <div>
+        <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
           <PageHeader
             title={selectedTechnician?.alias || "Technician Alias"}
             subtitle={subtitle}
           />
+          <DeleteTechnicianButton technician={selectedTechnician} />
         </div>
 
         {/* Sections Cards */}
