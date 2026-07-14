@@ -11,9 +11,18 @@ import { getSkillIdentity } from "../model/skills.helpers";
 import type { SkillDraft } from "../model/skills.types";
 import SkillEditor from "./SkillEditor";
 import SkillGroup from "./SkillGroup";
-import SkillTemplates from "./SkillTemplates";
-import type { SkillTemplateDefinition } from "../model/skillTemplates.types";
-import { applySkillTemplate } from "../model/skillTemplates.helpers";
+import SkillTemplates, {
+  type SkillTemplateFeedback,
+} from "./SkillTemplates";
+import type {
+  SkillTemplateAvailability,
+  SkillTemplateDefinition,
+} from "../model/skillTemplates.types";
+import {
+  applySkillTemplate,
+  getSkillTemplateAvailability,
+} from "../model/skillTemplates.helpers";
+import ClearSkillsDialog from "./ClearSkillsDialog";
 
 interface SkillFieldsProps {
   skills: SkillDraft[];
@@ -26,6 +35,7 @@ interface SkillFieldsProps {
   specificIssuesById: Map<string, SpecificIssue>;
   disabled: boolean;
   templates?: readonly SkillTemplateDefinition[];
+  allowClearAll?: boolean;
 }
 
 type SkillEditorState =
@@ -43,10 +53,14 @@ function SkillFields({
   specificIssues,
   specificIssuesById,
   disabled,
-  templates,
+  templates = [],
+  allowClearAll = false,
 }: SkillFieldsProps) {
   const [editor, setEditor] = useState<SkillEditorState>({ mode: "closed" });
   const [duplicateError, setDuplicateError] = useState<string | null>(null);
+  const [templateFeedback, setTemplateFeedback] =
+    useState<SkillTemplateFeedback | null>(null);
+  const [isClearDialogOpen, setIsClearDialogOpen] = useState(false);
 
   const skillsByUnitId = useMemo(() => {
     const map = new Map<string, SkillDraft[]>();
@@ -59,6 +73,22 @@ function SkillFields({
 
     return map;
   }, [skills]);
+
+  const templateAvailabilityById = useMemo(
+    () =>
+      new Map<SkillTemplateDefinition["id"], SkillTemplateAvailability>(
+        templates.map((template) => [
+          template.id,
+          getSkillTemplateAvailability(
+            skills,
+            units,
+            brandGroups,
+            template,
+          ),
+        ]),
+      ),
+    [brandGroups, skills, templates, units],
+  );
 
   const toggleEditor = () => {
     setDuplicateError(null);
@@ -74,6 +104,7 @@ function SkillFields({
 
   const removeSkill = (key: string) => {
     onChange(skills.filter((skill) => skill.key !== key));
+    setTemplateFeedback(null);
 
     if (editor.mode === "edit" && editor.skill.key === key) {
       setEditor({ mode: "closed" });
@@ -84,7 +115,38 @@ function SkillFields({
   const handleApplyTemplate = (template: SkillTemplateDefinition) => {
     const result = applySkillTemplate(skills, units, brandGroups, template);
 
+    if (!result.success) {
+      setTemplateFeedback({ tone: "error", message: result.error });
+      return;
+    }
+
     onChange(result.skills);
+
+    if (result.addedCount === 0) {
+      setTemplateFeedback({
+        tone: "info",
+        message: `All skills from ${template.label} are already added.`,
+      });
+      return;
+    }
+
+    const skippedMessage =
+      result.skippedCount > 0
+        ? ` Skipped ${result.skippedCount} existing ${result.skippedCount === 1 ? "skill" : "skills"}.`
+        : "";
+
+    setTemplateFeedback({
+      tone: "success",
+      message: `Added ${result.addedCount} ${result.addedCount === 1 ? "skill" : "skills"}.${skippedMessage}`,
+    });
+  };
+
+  const handleClearAllSkills = () => {
+    onChange([]);
+    setEditor({ mode: "closed" });
+    setDuplicateError(null);
+    setTemplateFeedback(null);
+    setIsClearDialogOpen(false);
   };
 
   const submitSkill = (next: SkillDraft) => {
@@ -120,6 +182,7 @@ function SkillFields({
 
     onChange(nextSkills);
     setDuplicateError(null);
+    setTemplateFeedback(null);
     setEditor({ mode: "closed" });
   };
 
@@ -130,17 +193,27 @@ function SkillFields({
     <>
       <div className="flex flex-col">
         <div className="flex items-start justify-between gap-3">
-          <SectionHeader
-            label="Edit Skills"
-            subtext="Add or remove technician skills"
-          />
+          <SectionHeader label="Skills" subtext="Add or remove skills" />
 
-          <OpenEditorButton
-            isDisabled={disabled}
-            isEditorOpen={isEditorOpen}
-            toggleOpen={toggleEditor}
-            label={isEditorOpen ? "Close" : "Add Skill"}
-          />
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            {allowClearAll && (
+              <button
+                type="button"
+                disabled={disabled || skills.length === 0}
+                onClick={() => setIsClearDialogOpen(true)}
+                className="inline-flex cursor-pointer items-center justify-center rounded-xl px-3 py-2 text-xs font-semibold text-red-600 transition-colors hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:text-red-400 dark:hover:bg-red-950/30"
+              >
+                Clear all ({skills.length})
+              </button>
+            )}
+
+            <OpenEditorButton
+              isDisabled={disabled}
+              isEditorOpen={isEditorOpen}
+              toggleOpen={toggleEditor}
+              label={isEditorOpen ? "Close" : "Add Skill"}
+            />
+          </div>
         </div>
 
         <AnimatePresence>
@@ -177,8 +250,20 @@ function SkillFields({
         className="h-px w-full bg-zinc-200 dark:bg-zinc-800"
       />
 
-      {templates && templates?.length > 0 && (
-        <SkillTemplates templates={templates} onApply={handleApplyTemplate} />
+      {templates.length > 0 && (
+        <>
+          <SkillTemplates
+            templates={templates}
+            onApply={handleApplyTemplate}
+            disabled={disabled}
+            availabilityById={templateAvailabilityById}
+            feedback={templateFeedback}
+          />
+          <div
+            aria-hidden="true"
+            className="h-px w-full bg-zinc-200 dark:bg-zinc-800"
+          />
+        </>
       )}
 
       <AnimatePresence initial={false} mode="wait">
@@ -213,6 +298,15 @@ function SkillFields({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {allowClearAll && (
+        <ClearSkillsDialog
+          isOpen={isClearDialogOpen}
+          skillsCount={skills.length}
+          onClose={() => setIsClearDialogOpen(false)}
+          onConfirm={handleClearAllSkills}
+        />
+      )}
     </>
   );
 }

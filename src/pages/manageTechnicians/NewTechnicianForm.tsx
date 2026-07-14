@@ -35,6 +35,7 @@ import {
 } from "../../features/technician-management/new-technician/model/newTechnician.helpers";
 import type { NewTechnicianDraft } from "../../features/technician-management/new-technician/model/newTechnician.types";
 import { useCreateTechnicianMutation } from "../../features/technician-management/new-technician/model/useCreateTechnicianMutation";
+import { SKILL_TEMPLATES } from "../../features/technician-management/skills/model/skillTemplates.constants";
 
 interface NewTechnicianFormProps {
   units: Unit[];
@@ -224,6 +225,8 @@ function NewTechnicianForm({
               specificIssues={specificIssues}
               specificIssuesById={specificIssuesById}
               disabled={isPending}
+              templates={SKILL_TEMPLATES}
+              allowClearAll
             />
           </div>
         )}
