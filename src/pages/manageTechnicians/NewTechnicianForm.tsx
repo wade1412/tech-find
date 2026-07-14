@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router";
 import type { IgnoreItemDraft } from "../../features/technician-management/ignore-list/model/ignoreList.types";
 import type {
   CapabilityFieldKey,
   JobsPerDayDraft,
   ProfileFieldKey,
-  TechnicianFormState,
 } from "../../features/technician-management/profile-and-capabilities/model/profile.types";
 import type { SkillDraft } from "../../features/technician-management/skills/model/skills.types";
 import PageHeader from "../../shared/ui/PageHeader";
@@ -29,6 +29,12 @@ import type { SpecificIssue } from "../../entities/specific-issue/specific-issue
 import type { ServiceZone } from "../../entities/service-zone/service-zone.types";
 import SkillFields from "../../features/technician-management/skills/ui/SkillFields";
 import IgnoreListFields from "../../features/technician-management/ignore-list/ui/IgnoreListFields";
+import {
+  buildCreateTechnicianInput,
+  createEmptyNewTechnicianDraft,
+} from "../../features/technician-management/new-technician/model/newTechnician.helpers";
+import type { NewTechnicianDraft } from "../../features/technician-management/new-technician/model/newTechnician.types";
+import { useCreateTechnicianMutation } from "../../features/technician-management/new-technician/model/useCreateTechnicianMutation";
 
 interface NewTechnicianFormProps {
   units: Unit[];
@@ -42,32 +48,6 @@ interface NewTechnicianFormProps {
   zones: ServiceZone[];
 }
 
-const createEmptyTechnicianDraft = (): NewTechnicianDraft => ({
-  profile: {
-    active: true,
-    alias: "",
-    can_service_built_in: false,
-    can_service_stacked_dryer: false,
-    can_service_stacked_washer: false,
-    commercial: false,
-    gas: false,
-    home_zip_code: "",
-    jobs_per_day: "1-9",
-    name: "",
-    notes: "",
-  },
-  zoneIds: [],
-  skills: [],
-  ignoreList: [],
-});
-
-type NewTechnicianDraft = {
-  profile: TechnicianFormState;
-  zoneIds: string[];
-  skills: SkillDraft[];
-  ignoreList: IgnoreItemDraft[];
-};
-
 function NewTechnicianForm({
   units,
   unitsById,
@@ -80,9 +60,11 @@ function NewTechnicianForm({
   zones,
 }: NewTechnicianFormProps) {
   const [newTechnicianDraft, setNewTechnicianDraft] =
-    useState<NewTechnicianDraft>(() => createEmptyTechnicianDraft());
+    useState<NewTechnicianDraft>(() => createEmptyNewTechnicianDraft());
   const [selectedSectionId, setSelectedSectionId] =
     useState<EditSectionId>("profile");
+  const navigate = useNavigate();
+  const createTechnicianMutation = useCreateTechnicianMutation();
 
   // ----- Profile Section Handlers -----
   const toggleActive = () =>
@@ -131,8 +113,7 @@ function NewTechnicianForm({
       ignoreList,
     }));
 
-  // false for now, update when mutation will be connected
-  const isPending = false;
+  const isPending = createTechnicianMutation.isPending;
 
   //Profile is valid, if error object from validate helper has no values
   const isValidProfile = !Object.values(
@@ -143,20 +124,48 @@ function NewTechnicianForm({
     newTechnicianDraft.zoneIds.length > 0 &&
     newTechnicianDraft.skills.length > 0;
 
+  const handleCreateTechnician = () => {
+    if (!canSubmitNewTechnician || isPending) return;
+
+    createTechnicianMutation.mutate(
+      buildCreateTechnicianInput(newTechnicianDraft),
+      {
+        onSuccess: (technician) => {
+          navigate(`/technicians/${technician.id}/edit`, { replace: true });
+        },
+      },
+    );
+  };
+
   return (
     <div className="mx-auto max-w-6xl p-4 md:p-6">
       <section className="flex flex-col gap-4">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <PageHeader
             title="New Technician"
             subtitle="Fill out the sections to create the new technician"
           />
 
-          <button disabled={!canSubmitNewTechnician} className={primaryButton}>
-            Submit Technician
+          <button
+            type="button"
+            disabled={!canSubmitNewTechnician || isPending}
+            className={primaryButton}
+            onClick={handleCreateTechnician}
+          >
+            {isPending ? "Creating..." : "Submit Technician"}
           </button>
         </div>
+
+        {createTechnicianMutation.error && (
+          <p
+            role="alert"
+            className="rounded-xl border border-red-200 bg-red-50/70 px-4 py-3 text-xs font-medium text-red-600 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-400"
+          >
+            Failed to create technician. Check that the name is unique and try
+            again.
+          </p>
+        )}
 
         {/* Sections Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
