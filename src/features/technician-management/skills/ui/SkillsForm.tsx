@@ -3,13 +3,10 @@ import type { BrandGroup } from "../../../../entities/brandGroup/brandGroup.type
 import type { SpecificIssue } from "../../../../entities/specific-issue/specific-issue.types";
 import type { TechnicianSkill } from "../../../../entities/technician-skill-set/technicianSkillSet.types";
 import type { Unit } from "../../../../entities/unit/unit.types";
-import { formStyle } from "../../../../shared/styles/styles";
+import { formWithPaddingStyle } from "../../../../shared/styles/styles";
 import SubmitArea from "../../ui/SubmitArea";
 import SubmitSnackbar from "../../ui/SubmitSnackbar";
-import {
-  createSkillsDraft,
-  createSkillsPatch,
-} from "../model/skills.helpers";
+import { createSkillsDraft, createSkillsPatch } from "../model/skills.helpers";
 import type { SkillDraft } from "../model/skills.types";
 import { useUpdateTechnicianSkillsMutation } from "../model/useUpdateTechnicianSkillsMutation";
 import SkillFields from "./SkillFields";
@@ -42,8 +39,7 @@ function SkillsForm({
   const [skillsDraft, setSkillsDraft] = useState<SkillDraft[]>(initialSkills);
   const [isSavedSnackbarOpen, setIsSavedSnackbarOpen] = useState(false);
 
-  const updateTechnicianSkillsMutation =
-    useUpdateTechnicianSkillsMutation();
+  const updateTechnicianSkillsMutation = useUpdateTechnicianSkillsMutation();
 
   const patch = useMemo(
     () => createSkillsPatch(technicianSkills, skillsDraft),
@@ -78,7 +74,7 @@ function SkillsForm({
   };
 
   return (
-    <form className={`${formStyle} p-2`} onSubmit={handleSubmit} noValidate>
+    <form className={formWithPaddingStyle} onSubmit={handleSubmit} noValidate>
       <SkillFields
         skills={skillsDraft}
         onChange={setSkillsDraft}

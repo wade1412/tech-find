@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import type { ServiceZone } from "../../../../entities/service-zone/service-zone.types";
 import { useUpdateTechnicianServiceZonesMutation } from "../model/useUpdateTechnicianServiceZonesMutation";
 import { buildTechnicianZonesPatch } from "../model/serviceZones.helpers";
-import { formStyle } from "../../../../shared/styles/styles";
+import { formWithPaddingStyle } from "../../../../shared/styles/styles";
 import SubmitArea from "../../ui/SubmitArea";
 import SubmitSnackbar from "../../ui/SubmitSnackbar";
 import ServiceZoneFields from "./ServiceZoneFields";
@@ -62,7 +62,7 @@ function ServiceZonesForm({
   };
 
   return (
-    <form className={`${formStyle} p-2`} onSubmit={handleSubmit} noValidate>
+    <form className={formWithPaddingStyle} onSubmit={handleSubmit} noValidate>
       <ServiceZoneFields
         zones={zones}
         selectedZoneIds={draftZoneIds}

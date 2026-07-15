@@ -120,13 +120,13 @@ function NewTechnicianForm({
   const isValidProfile = !Object.values(
     validateProfileForm(newTechnicianDraft.profile),
   ).some(Boolean);
-  const canSubmitNewTechnician =
+  const canCreateNewTechnician =
     isValidProfile &&
     newTechnicianDraft.zoneIds.length > 0 &&
     newTechnicianDraft.skills.length > 0;
 
   const handleCreateTechnician = () => {
-    if (!canSubmitNewTechnician || isPending) return;
+    if (!canCreateNewTechnician || isPending) return;
 
     createTechnicianMutation.mutate(
       buildCreateTechnicianInput(newTechnicianDraft),
@@ -150,11 +150,11 @@ function NewTechnicianForm({
 
           <button
             type="button"
-            disabled={!canSubmitNewTechnician || isPending}
+            disabled={!canCreateNewTechnician || isPending}
             className={primaryButton}
             onClick={handleCreateTechnician}
           >
-            {isPending ? "Creating..." : "Submit Technician"}
+            {isPending ? "Creating..." : "Create Technician"}
           </button>
         </div>
 

@@ -3,7 +3,7 @@ import type { Brand } from "../../../../entities/brand/brand.types";
 import type { SpecificIssue } from "../../../../entities/specific-issue/specific-issue.types";
 import type { TechnicianIgnoreList } from "../../../../entities/technician-ignore-list/technicianIgnoreList.types";
 import type { Unit } from "../../../../entities/unit/unit.types";
-import { formStyle } from "../../../../shared/styles/styles";
+import { formWithPaddingStyle } from "../../../../shared/styles/styles";
 import SubmitArea from "../../ui/SubmitArea";
 import SubmitSnackbar from "../../ui/SubmitSnackbar";
 import {
@@ -39,8 +39,7 @@ function IgnoreListForm({
     () => technicianIgnoreList.map(createIgnoreItemDraft),
     [technicianIgnoreList],
   );
-  const [itemsDraft, setItemsDraft] =
-    useState<IgnoreItemDraft[]>(initialItems);
+  const [itemsDraft, setItemsDraft] = useState<IgnoreItemDraft[]>(initialItems);
   const [isSavedSnackbarOpen, setIsSavedSnackbarOpen] = useState(false);
 
   const updateTechnicianIgnoreListMutation =
@@ -80,7 +79,7 @@ function IgnoreListForm({
   };
 
   return (
-    <form className={`${formStyle} p-2`} onSubmit={handleSubmit} noValidate>
+    <form className={formWithPaddingStyle} onSubmit={handleSubmit} noValidate>
       <IgnoreListFields
         items={itemsDraft}
         onChange={setItemsDraft}

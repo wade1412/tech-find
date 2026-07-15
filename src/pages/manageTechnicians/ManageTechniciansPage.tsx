@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import ManageTechnicianCard from "../../features/technician-management/ui/ManageTechnicianCard";
 import { useTechniciansQuery } from "../../entities/technician/useTechniciansQuery";
 import PageHeader from "../../shared/ui/PageHeader";
@@ -12,7 +12,12 @@ import {
   technicianListVariants,
 } from "../../shared/styles/motionVariants";
 import ErrorMessage from "../../shared/ui/ErrorMessage";
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
+import {
+  formStyle,
+  noEditValuesStyle,
+  sectionHeaderSubtextStyle,
+} from "../../shared/styles/styles";
 
 function ManageTechniciansPage() {
   const {
@@ -32,7 +37,17 @@ function ManageTechniciansPage() {
   const isError = isTechniciansError || isZoneNamesError;
   const error = techniciansError ?? zoneNamesErrorObj;
 
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const searchTerm = searchParams.get("query") || "";
+
+  const handleInputChange = (value: string) => {
+    if (value) {
+      setSearchParams({ query: value });
+    } else {
+      setSearchParams({});
+    }
+  };
 
   const visibleTechnicians = useMemo(
     () =>
@@ -74,7 +89,7 @@ function ManageTechniciansPage() {
 
   return (
     <div className="mx-auto max-w-6xl p-4 md:p-6">
-      <section className="flex flex-col gap-4">
+      <section className={formStyle}>
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <PageHeader
             title="Manage Technicians"
@@ -112,56 +127,64 @@ function ManageTechniciansPage() {
           className="h-px w-full bg-zinc-200 dark:bg-zinc-800"
         />
 
-        <SearchInput
-          placeholder="Search technicians..."
-          ariaLabel="Search technicians"
-          className="w-full sm:w-72 self-end"
-          value={searchTerm}
-          onValueChange={setSearchTerm}
-        />
+        <div className={`${formStyle} px-2`}>
+          <SearchInput
+            placeholder="Search by name, ZIP, or zone..."
+            ariaLabel="Search technicians"
+            className="w-full sm:w-72 self-end"
+            value={searchTerm}
+            onValueChange={handleInputChange}
+          />
 
-        {/* List */}
-
-        <motion.div
-          className="grid grid-cols-1 md:grid-cols-3 gap-2.5"
-          variants={technicianListVariants}
-          initial="hidden"
-          animate="visible"
-          exit="exit"
-        >
-          <AnimatePresence mode="popLayout">
-            {visibleTechnicians.length > 0 ? (
-              visibleTechnicians.map((technician) => (
-                <motion.div
-                  key={technician.id}
-                  layout
-                  variants={technicianCardVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <ManageTechnicianCard
-                    technician={technician}
-                    zones={zoneNamesByTechnicianId.get(technician.id) || []}
-                  />
-                </motion.div>
-              ))
-            ) : (
-              <motion.p
-                key="empty"
-                layout
-                variants={technicianCardVariants}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                className="col-span-full py-8 text-center text-sm text-zinc-400 dark:text-zinc-500"
-              >
-                No technicians found
-              </motion.p>
-            )}
-          </AnimatePresence>
-        </motion.div>
+          {/* List */}
+          <div>
+            <div className={`${sectionHeaderSubtextStyle} mb-2.5`}>
+              {visibleTechnicians.length === allTechnicians.length
+                ? `${allTechnicians.length} technicians`
+                : `${visibleTechnicians.length} of ${allTechnicians.length} technicians`}
+            </div>
+            <motion.div
+              className="grid grid-cols-1 md:grid-cols-3 gap-2.5"
+              variants={technicianListVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
+              <AnimatePresence mode="popLayout">
+                {visibleTechnicians.length > 0 ? (
+                  visibleTechnicians.map((technician) => (
+                    <motion.div
+                      key={technician.id}
+                      layout
+                      variants={technicianCardVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <ManageTechnicianCard
+                        technician={technician}
+                        zones={zoneNamesByTechnicianId.get(technician.id) || []}
+                      />
+                    </motion.div>
+                  ))
+                ) : (
+                  <motion.p
+                    key="empty"
+                    layout
+                    variants={technicianCardVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    className={`${noEditValuesStyle} col-span-full`}
+                  >
+                    No technicians found. Clear the search and try again
+                  </motion.p>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          </div>
+        </div>
       </section>
     </div>
   );

@@ -7,29 +7,60 @@ interface TechnicianCardProps {
 }
 
 function ManageTechnicianCard({ technician, zones }: TechnicianCardProps) {
+  const isTechnicianInactive = !technician.active;
+
   return (
     <Link
       to={`${technician.id}/edit`}
-      className="group block h-full overflow-hidden rounded-xl border border-zinc-200 bg-white transition-[border-color,background-color] duration-200 hover:border-zinc-300 hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-main-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:border-zinc-800 dark:bg-zinc-900/70 dark:hover:border-zinc-700 dark:hover:bg-zinc-900 dark:focus-visible:ring-offset-zinc-950 "
+      className={`group block h-full overflow-hidden rounded-xl border transition-[border-color,background-color] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-main-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-zinc-950 ${
+        isTechnicianInactive
+          ? "border-zinc-200/80 bg-zinc-50/80 hover:border-zinc-300 hover:bg-zinc-100/70 dark:border-zinc-800/80 dark:bg-zinc-900/40 dark:hover:border-zinc-700 dark:hover:bg-zinc-900/60"
+          : "border-zinc-200 bg-white hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/70 dark:hover:border-zinc-700 dark:hover:bg-zinc-900"
+      }`}
     >
       {/* --- Main Info, visible always --- */}
       <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3 px-4 py-3">
         {/* Avatar dot */}
-        <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors bg-zinc-100 text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300">
+        <span
+          className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors ${
+            isTechnicianInactive
+              ? "bg-zinc-200/70 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-500"
+              : "bg-zinc-100 text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300"
+          }`}
+        >
           {technician.alias.charAt(0).toUpperCase()}
         </span>
 
         {/* Name and area info */}
         <div className="min-w-0">
-          <p className="font-heading text-base font-semibold transition-colors text-zinc-800 dark:text-zinc-100">
+          <p
+            className={`font-heading text-base font-semibold transition-colors ${
+              isTechnicianInactive
+                ? "text-zinc-600 dark:text-zinc-400"
+                : "text-zinc-800 dark:text-zinc-100"
+            }`}
+          >
             {technician.alias}
           </p>
 
-          <div className="mt-0.5 text-xs text-zinc-400 dark:text-zinc-500">
+          <div
+            className={`mt-0.5 text-xs leading-5 ${
+              isTechnicianInactive
+                ? "text-zinc-500/80 dark:text-zinc-500"
+                : "text-zinc-500 dark:text-zinc-400"
+            }`}
+          >
             <p className="truncate">ZIP {technician.home_zip_code}</p>
             <p className="truncate">{zones.join(" - ")}</p>
           </div>
         </div>
+
+        {isTechnicianInactive && (
+          <div className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-zinc-200 bg-white/70 px-2.5 py-1 text-xs font-medium text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900/60 dark:text-zinc-400">
+            <span className="h-1.5 w-1.5 rounded-full bg-zinc-400 dark:bg-zinc-500" />
+            Inactive
+          </div>
+        )}
       </div>
     </Link>
   );

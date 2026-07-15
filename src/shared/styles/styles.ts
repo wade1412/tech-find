@@ -6,6 +6,8 @@ export const headingStyleDefault =
 
 export const formStyle = "flex flex-col gap-4";
 
+export const formWithPaddingStyle = `${formStyle} p-2`;
+
 export const skillGroupTitleStyle =
   "font-heading border-b border-zinc-100 px-4 py-3 text-sm font-semibold text-zinc-800 dark:border-zinc-800 dark:text-zinc-100";
 
@@ -34,3 +36,6 @@ const autocompleteMutedBase =
 export const autocompleteMutedStyle = `${autocompleteMutedBase} text-xs py-[1.2rem]`; // text xs + 1.2rem py matches the 56 pixels height of the active autocomplete
 
 export const noEditValuesStyle = `${autocompleteMutedBase} py-[1.075rem] text-center text-sm`; // text sm + 1.075rem py matches the 56 pixels as well
+
+export const sectionHeaderSubtextStyle =
+  "text-xs text-zinc-500 dark:text-zinc-400";

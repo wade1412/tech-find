@@ -14,7 +14,10 @@ import type {
   ProfileFieldKey,
 } from "../model/profile.types";
 import ProfileAndCapabilitiesFields from "./ProfileAndCapabilitiesFields";
-import { formStyle } from "../../../../shared/styles/styles";
+import {
+  formStyle,
+  formWithPaddingStyle,
+} from "../../../../shared/styles/styles";
 import SubmitArea from "../../ui/SubmitArea";
 import SubmitSnackbar from "../../ui/SubmitSnackbar";
 import TechnicianActiveBar from "./TechnicianActiveBar";
@@ -99,7 +102,7 @@ function ProfileAndCapabilitiesSection({
       />
 
       {/* Fields */}
-      <div className="flex flex-col gap-6 p-2">
+      <div className={formWithPaddingStyle}>
         <ProfileAndCapabilitiesFields
           disabled={isPending}
           formState={formState}
