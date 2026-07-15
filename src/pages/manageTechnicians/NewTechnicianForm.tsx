@@ -13,7 +13,7 @@ import { validateProfileForm } from "../../features/technician-management/profil
 import {
   editSections,
   type EditSectionId,
-} from "../../features/technician-management/model/editSections.constants";
+} from "../../features/technician-management/model/manageTechnicians.constants";
 import EditTechnicianSectionCard from "./EditTechnicianSectionCard";
 import TechnicianActiveBar from "../../features/technician-management/profile-and-capabilities/ui/TechnicianActiveBar";
 import ProfileAndCapabilitiesFields from "../../features/technician-management/profile-and-capabilities/ui/ProfileAndCapabilitiesFields";

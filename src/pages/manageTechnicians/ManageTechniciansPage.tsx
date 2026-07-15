@@ -4,7 +4,7 @@ import { useTechniciansQuery } from "../../entities/technician/useTechniciansQue
 import PageHeader from "../../shared/ui/PageHeader";
 import { useZoneNamesByTechnicianId } from "../../entities/technician-service-zone/useZoneNamesByTechnicianId";
 import SearchInput from "../../shared/ui/SearchInput";
-import { filterTechniciansBySearch } from "../../features/technician-management/model/filterTechniciansBySearch";
+import { filterManageTechnicians } from "../../features/technician-management/model/filterManageTechnicians";
 import { AnimatePresence } from "motion/react";
 import { motion } from "motion/react";
 import {
@@ -16,8 +16,15 @@ import { Link, useSearchParams } from "react-router";
 import {
   formStyle,
   noEditValuesStyle,
+  secondaryButton,
   sectionHeaderSubtextStyle,
 } from "../../shared/styles/styles";
+import SegmentedControl from "../../shared/ui/SegmentedControl";
+import {
+  isManageTechniciansListFilterValue,
+  MANAGE_TECHNICIANS_LIST_FILTER_OPTIONS,
+  type ManageTechniciansListFilterValue,
+} from "../../features/technician-management/model/manageTechnicians.constants";
 
 function ManageTechniciansPage() {
   const {
@@ -40,24 +47,73 @@ function ManageTechniciansPage() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const searchTerm = searchParams.get("query") || "";
+  const filterParam = searchParams.get("filter");
+  const statusFilter = isManageTechniciansListFilterValue(filterParam)
+    ? filterParam
+    : "all";
 
   const handleInputChange = (value: string) => {
-    if (value) {
-      setSearchParams({ query: value });
-    } else {
-      setSearchParams({});
-    }
+    setSearchParams(
+      (prev) => {
+        const nextParams = new URLSearchParams(prev);
+
+        if (value) {
+          nextParams.set("query", value);
+        } else {
+          nextParams.delete("query");
+        }
+
+        return nextParams;
+      },
+      { replace: true },
+    );
+  };
+
+  const handleStatusFilterChange = (
+    value: ManageTechniciansListFilterValue,
+  ) => {
+    setSearchParams(
+      (prev) => {
+        const nextParams = new URLSearchParams(prev);
+
+        if (value === "all") {
+          nextParams.delete("filter");
+        } else {
+          nextParams.set("filter", value);
+        }
+
+        return nextParams;
+      },
+      { replace: true },
+    );
+  };
+
+  const clearFilters = () => {
+    setSearchParams(
+      (prev) => {
+        const nextParams = new URLSearchParams(prev);
+        nextParams.delete("query");
+        nextParams.delete("filter");
+        return nextParams;
+      },
+      { replace: true },
+    );
   };
 
   const visibleTechnicians = useMemo(
     () =>
-      filterTechniciansBySearch(
-        allTechnicians ?? [],
+      filterManageTechnicians({
+        technicians: allTechnicians ?? [],
         searchTerm,
+        status: statusFilter,
         zoneNamesByTechnicianId,
-      ),
-    [allTechnicians, searchTerm, zoneNamesByTechnicianId],
+      }),
+    [allTechnicians, searchTerm, statusFilter, zoneNamesByTechnicianId],
   );
+
+  const hasAppliedFilters =
+    Boolean(searchTerm.trim()) || statusFilter !== "all";
+  const technicianCount = allTechnicians?.length ?? 0;
 
   if (isPending) {
     return (
@@ -116,7 +172,7 @@ function ManageTechniciansPage() {
                 />
               </svg>
 
-              <span className="text-center">Add New Technician</span>
+              <span className="text-center">Create Technician</span>
             </Link>
           </div>
         </div>
@@ -127,21 +183,36 @@ function ManageTechniciansPage() {
           className="h-px w-full bg-zinc-200 dark:bg-zinc-800"
         />
 
+        {/* List Filter and Search */}
         <div className={`${formStyle} px-2`}>
-          <SearchInput
-            placeholder="Search by name, ZIP, or zone..."
-            ariaLabel="Search technicians"
-            className="w-full sm:w-72 self-end"
-            value={searchTerm}
-            onValueChange={handleInputChange}
-          />
+          <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="w-full sm:w-auto sm:min-w-75">
+              <SegmentedControl
+                ariaLabel="Select technicians filter"
+                options={MANAGE_TECHNICIANS_LIST_FILTER_OPTIONS}
+                onChange={handleStatusFilterChange}
+                value={statusFilter}
+              />
+            </div>
+
+            <SearchInput
+              placeholder="Search by name, ZIP, or zone..."
+              ariaLabel="Search technicians"
+              className="w-full sm:w-72 self-end"
+              value={searchTerm}
+              onValueChange={handleInputChange}
+            />
+          </div>
 
           {/* List */}
           <div>
-            <div className={`${sectionHeaderSubtextStyle} mb-2.5`}>
-              {visibleTechnicians.length === allTechnicians.length
-                ? `${allTechnicians.length} technicians`
-                : `${visibleTechnicians.length} of ${allTechnicians.length} technicians`}
+            <div
+              aria-live="polite"
+              className={`${sectionHeaderSubtextStyle} mb-2.5`}
+            >
+              {hasAppliedFilters
+                ? `${visibleTechnicians.length} of ${technicianCount} technicians`
+                : `${technicianCount} technicians`}
             </div>
             <motion.div
               className="grid grid-cols-1 md:grid-cols-3 gap-2.5"
@@ -169,17 +240,26 @@ function ManageTechniciansPage() {
                     </motion.div>
                   ))
                 ) : (
-                  <motion.p
+                  <motion.div
                     key="empty"
                     layout
                     variants={technicianCardVariants}
                     initial="hidden"
                     animate="visible"
                     exit="exit"
-                    className={`${noEditValuesStyle} col-span-full`}
+                    className={`${noEditValuesStyle} col-span-full flex flex-col items-center gap-2`}
                   >
-                    No technicians found. Clear the search and try again
-                  </motion.p>
+                    <p>No technicians match the current filters.</p>
+                    {hasAppliedFilters && (
+                      <button
+                        type="button"
+                        className={secondaryButton}
+                        onClick={clearFilters}
+                      >
+                        Clear filters
+                      </button>
+                    )}
+                  </motion.div>
                 )}
               </AnimatePresence>
             </motion.div>

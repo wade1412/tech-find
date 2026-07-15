@@ -13,7 +13,7 @@ import IgnoreListSection from "../../features/technician-management/ignore-list/
 import {
   editSections,
   type EditSectionId,
-} from "../../features/technician-management/model/editSections.constants";
+} from "../../features/technician-management/model/manageTechnicians.constants";
 import EditTechnicianSkeleton from "../../features/technician-management/ui/EditTechnicianSkeleton";
 import DeleteTechnicianButton from "../../features/technician-management/delete-technician/ui/DeleteTechnicianButton";
 
