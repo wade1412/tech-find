@@ -4,7 +4,7 @@ export const headingStyleWithBottomMargin =
 export const headingStyleDefault =
   "font-heading text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500";
 
-export const formStyle = "flex flex-col gap-6";
+export const formStyle = "flex flex-col gap-4";
 
 export const skillGroupTitleStyle =
   "font-heading border-b border-zinc-100 px-4 py-3 text-sm font-semibold text-zinc-800 dark:border-zinc-800 dark:text-zinc-100";

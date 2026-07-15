@@ -1,6 +1,6 @@
 import { Dialog } from "@mui/material";
 import {
-  destructiveButton,
+  destructiveOutlineButton,
   secondaryButton,
 } from "../../../../shared/styles/styles";
 
@@ -59,7 +59,7 @@ function ClearSkillsDialog({
           </button>
           <button
             type="button"
-            className={destructiveButton}
+            className={destructiveOutlineButton}
             onClick={onConfirm}
           >
             Clear all skills

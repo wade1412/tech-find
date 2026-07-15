@@ -103,16 +103,22 @@ function ManageTechniciansPage() {
 
               <span className="text-center">Add New Technician</span>
             </Link>
-
-            <SearchInput
-              placeholder="Search technicians..."
-              ariaLabel="Search technicians"
-              className="w-full sm:w-72"
-              value={searchTerm}
-              onValueChange={setSearchTerm}
-            />
           </div>
         </div>
+
+        {/* Divider */}
+        <div
+          aria-hidden="true"
+          className="h-px w-full bg-zinc-200 dark:bg-zinc-800"
+        />
+
+        <SearchInput
+          placeholder="Search technicians..."
+          ariaLabel="Search technicians"
+          className="w-full sm:w-72 self-end"
+          value={searchTerm}
+          onValueChange={setSearchTerm}
+        />
 
         {/* List */}
 

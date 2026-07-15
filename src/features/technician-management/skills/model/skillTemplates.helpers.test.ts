@@ -33,6 +33,22 @@ const makeBrandGroup = (
 });
 
 const units = [makeUnit("washer"), makeUnit("dryer")];
+const basicUnitSlugs = [
+  "dishwasher",
+  "dryer",
+  "fridge",
+  "washer",
+  "stove-range",
+  "garbage-disposal",
+];
+const specializedUnitSlugs = [
+  "dryer-vent-line",
+  "ice-maker-standalone",
+  "vent-hood",
+  "built-in-oven",
+  "microwave",
+  "water-heater",
+];
 const brandGroups = [
   makeBrandGroup("standard-group", "standard"),
   makeBrandGroup("high-end-group", "high-end"),
@@ -41,7 +57,7 @@ const standardTemplate = SKILL_TEMPLATES[0];
 const highEndTemplate = SKILL_TEMPLATES[1];
 
 describe("applySkillTemplate", () => {
-  it("adds a brand-group skill for every active unit", () => {
+  it("adds a brand-group skill for every eligible active unit", () => {
     const result = applySkillTemplate(
       [],
       units,
@@ -71,6 +87,49 @@ describe("applySkillTemplate", () => {
       ]),
     );
     expect(new Set(result.skills.map((skill) => skill.key)).size).toBe(2);
+  });
+
+  it("adds every unit from the basic allowlist", () => {
+    const basicUnits = basicUnitSlugs.map((slug) => makeUnit(slug));
+    const result = applySkillTemplate(
+      [],
+      basicUnits,
+      brandGroups,
+      standardTemplate,
+    );
+
+    expect(result.success).toBe(true);
+    if (!result.success) return;
+
+    expect(result.addedCount).toBe(basicUnitSlugs.length);
+    expect(new Set(result.skills.map((skill) => skill.unitId))).toEqual(
+      new Set(basicUnitSlugs),
+    );
+  });
+
+  it("does not add specialized units", () => {
+    const specializedUnits = specializedUnitSlugs.map((slug) =>
+      makeUnit(slug),
+    );
+    const result = applySkillTemplate(
+      [],
+      [...units, ...specializedUnits],
+      brandGroups,
+      standardTemplate,
+    );
+
+    expect(result.success).toBe(true);
+    if (!result.success) return;
+
+    expect(result.skills.map((skill) => skill.unitId)).toEqual([
+      "washer",
+      "dryer",
+    ]);
+    expect(
+      result.skills.some((skill) =>
+        specializedUnitSlugs.includes(skill.unitId),
+      ),
+    ).toBe(false);
   });
 
   it("adds only missing template skills", () => {
@@ -195,20 +254,18 @@ describe("applySkillTemplate", () => {
 
     expect(result).toEqual({
       success: false,
-      error:
-        "The Standard — All Units template is unavailable because its brand group was not found.",
+      error: `The ${standardTemplate.label} template is unavailable because its brand group was not found.`,
     });
     expect(availability).toEqual({
       status: "unavailable",
-      error:
-        "The Standard — All Units template is unavailable because its brand group was not found.",
+      error: `The ${standardTemplate.label} template is unavailable because its brand group was not found.`,
     });
   });
 
-  it("ignores inactive units", () => {
+  it("ignores an inactive unit that belongs to the basic allowlist", () => {
     const result = applySkillTemplate(
       [],
-      [...units, makeUnit("inactive-unit", false)],
+      [makeUnit("washer", false), makeUnit("dryer")],
       brandGroups,
       standardTemplate,
     );
@@ -216,10 +273,25 @@ describe("applySkillTemplate", () => {
     expect(result.success).toBe(true);
     if (!result.success) return;
 
-    expect(result.skills).toHaveLength(2);
-    expect(result.skills.some((skill) => skill.unitId === "inactive-unit")).toBe(
-      false,
+    expect(result.skills).toHaveLength(1);
+    expect(result.skills[0].unitId).toBe("dryer");
+  });
+
+  it("returns a controlled error when no eligible active units exist", () => {
+    const specializedUnits = specializedUnitSlugs.map((slug) =>
+      makeUnit(slug),
     );
+    const result = applySkillTemplate(
+      [],
+      specializedUnits,
+      brandGroups,
+      standardTemplate,
+    );
+
+    expect(result).toEqual({
+      success: false,
+      error: `The ${standardTemplate.label} template is unavailable because there are no eligible active units.`,
+    });
   });
 });
 
@@ -245,6 +317,26 @@ describe("getSkillTemplateAvailability", () => {
     ).toEqual({
       status: "available",
       totalCount: 2,
+      missingCount: 1,
+    });
+  });
+
+  it("counts only eligible active units", () => {
+    const availability = getSkillTemplateAvailability(
+      [],
+      [
+        makeUnit("washer"),
+        makeUnit("dryer", false),
+        makeUnit("microwave"),
+        makeUnit("water-heater"),
+      ],
+      brandGroups,
+      standardTemplate,
+    );
+
+    expect(availability).toEqual({
+      status: "available",
+      totalCount: 1,
       missingCount: 1,
     });
   });

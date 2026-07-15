@@ -14,8 +14,7 @@ const resolveTemplateData = (
   template: SkillTemplateDefinition,
 ) => {
   const brandGroup = brandGroups.find(
-    (group) =>
-      group.active && group.slug === template.brandGroupSlug,
+    (group) => group.active && group.slug === template.brandGroupSlug,
   );
 
   if (!brandGroup) {
@@ -25,16 +24,18 @@ const resolveTemplateData = (
     };
   }
 
-  const activeUnits = units.filter((unit) => unit.active);
+  const relevantUnits = units.filter(
+    (unit) => unit.active && template.includedUnitSlugs.has(unit.slug),
+  );
 
-  if (activeUnits.length === 0) {
+  if (relevantUnits.length === 0) {
     return {
       success: false as const,
-      error: `The ${template.label} template is unavailable because there are no active units.`,
+      error: `The ${template.label} template is unavailable because there are no eligible active units.`,
     };
   }
 
-  return { success: true as const, activeUnits, brandGroup };
+  return { success: true as const, activeUnits: relevantUnits, brandGroup };
 };
 
 const getTemplateSkillIdentity = (unitId: string, brandGroupId: string) =>

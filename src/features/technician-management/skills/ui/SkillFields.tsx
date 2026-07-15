@@ -219,7 +219,7 @@ function SkillFields({
                 type="button"
                 disabled={disabled || skills.length === 0}
                 onClick={() => setIsClearDialogOpen(true)}
-                className="inline-flex cursor-pointer items-center justify-center rounded-xl px-3 py-2 text-xs font-semibold text-red-600 transition-colors hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:text-red-400 dark:hover:bg-red-950/30"
+                className="focus-visible:ring-main-500 inline-flex cursor-pointer items-center justify-center rounded-xl px-4 py-2.5 text-xs font-semibold text-zinc-500 transition-[background-color,color,opacity] enabled:hover:bg-zinc-100 enabled:hover:text-red-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:text-zinc-400 dark:enabled:hover:bg-zinc-800/70 dark:enabled:hover:text-red-400 dark:focus-visible:ring-offset-zinc-950"
               >
                 Clear all ({skills.length})
               </button>
@@ -284,10 +284,11 @@ function SkillFields({
         </>
       )}
 
+      {/* Search and Skills List */}
       <SearchInput
         placeholder="Search skills..."
         ariaLabel="Search skills"
-        className="w-full sm:max-w-sm sm:self-end"
+        className="w-full sm:w-72 sm:self-end"
         value={searchTerm}
         onValueChange={setSearchTerm}
         disabled={disabled || skills.length === 0}
