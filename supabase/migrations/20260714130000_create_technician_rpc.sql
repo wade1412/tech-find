@@ -90,7 +90,7 @@ begin
 
   if v_name = ''
     or char_length(v_name) > 24
-    or v_name !~ '^[A-Za-z[:space:]''`-]+$'
+    or v_name !~ '^[A-Za-z[:space:].''`-]+$'
   then
     raise exception 'Invalid technician profile payload: invalid name'
       using errcode = '22023';

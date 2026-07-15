@@ -19,7 +19,10 @@ const FIELD_LABEL: Partial<Record<keyof TechnicianFormState, string>> = {
 };
 
 const validateName: ValidateProfileInputFunction = (value, propertyName) => {
-  const invalidNameCharsRegex = /[^a-zA-Z\s'\-`]/;
+  const invalidNameCharsRegex =
+    propertyName === "name"
+      ? /[^a-zA-Z\s.'\-`]/
+      : /[^a-zA-Z\s'\-`]/;
 
   const trimmedVal = value.trim();
 
