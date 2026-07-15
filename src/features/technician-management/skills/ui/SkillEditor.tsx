@@ -11,6 +11,7 @@ import EditorError from "../../ui/Editor/EditorError";
 import EditorActions from "../../ui/Editor/EditorActions";
 import EditorPanel from "../../ui/Editor/EditorPanel";
 import { useSpecificIssueOptions } from "../../ui/Editor/useSpecificIssueOptions";
+import SegmentedControl from "../../../../shared/ui/SegmentedControl";
 
 interface EditSkillProps {
   isDisabled: boolean;
@@ -231,32 +232,15 @@ function SkillEditor({
       />
 
       {/* Skill Kind Toggle */}
-      <div
-        role="group"
-        aria-label="Select skill kind"
-        className="flex overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900/60"
-      >
-        {allowedSkillKindOptions.map((kind, index) => (
-          <button
-            key={kind.value}
-            type="button"
-            disabled={!selectedUnitId || isDisabled}
-            onClick={() => handleSkillKindSelect(kind.value)}
-            className={[
-              "flex-1 px-2 py-2.5 text-xs font-semibold transition-colors cursor-pointer focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-main-500 disabled:cursor-not-allowed disabled:opacity-50",
-              index > 0 && "border-l border-zinc-200 dark:border-zinc-800",
-              selectedSkillKind === kind.value
-                ? "bg-main-500 dark:bg-main-400 text-zinc-950"
-                : "text-zinc-500 hover:bg-zinc-50 hover:text-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-800/70 dark:hover:text-zinc-100",
-            ]
-              .filter(Boolean)
-              .join(" ")}
-          >
-            {kind.label}
-          </button>
-        ))}
-      </div>
+      <SegmentedControl
+        ariaLabel="Select skill kind"
+        options={allowedSkillKindOptions}
+        disabled={!selectedUnitId || isDisabled}
+        onChange={handleSkillKindSelect}
+        value={selectedSkillKind}
+      />
 
+      {/* Autocompletes based on TogglValue */}
       {selectedSkillKind === "brandGroup" && (
         <Autocomplete
           disabled={isDisabled}
