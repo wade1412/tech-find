@@ -10,15 +10,12 @@ import ServiceZonesSection from "../../features/technician-management/service-zo
 import ErrorMessage from "../../shared/ui/ErrorMessage";
 import SkillsSection from "../../features/technician-management/skills/ui/SkillsSection";
 import IgnoreListSection from "../../features/technician-management/ignore-list/ui/IgnoreListSection";
-
-const editSections = [
-  { id: "profile", title: "Profile & Capabilities" },
-  { id: "service_zones", title: "Service Zones" },
-  { id: "skills", title: "Skills" },
-  { id: "ignore_list", title: "Ignore List" },
-] as const;
-
-type EditSectionId = (typeof editSections)[number]["id"];
+import {
+  editSections,
+  type EditSectionId,
+} from "../../features/technician-management/model/manageTechnicians.constants";
+import EditTechnicianSkeleton from "../../features/technician-management/ui/EditTechnicianSkeleton";
+import ArchiveTechnicianWithConfirmationButton from "../../features/technician-management/archive-technician/ui/ArchiveTechnicianWithConfirmationButton";
 
 function EditTechnicianPage() {
   const { technicianId } = useParams();
@@ -47,22 +44,9 @@ function EditTechnicianPage() {
     useState<EditSectionId>("profile");
 
   if (isPending) {
-    return (
-      <div className="mx-auto max-w-6xl p-4 md:p-6">
-        <section className="flex flex-col gap-4 p-4 md:p-6">
-          <div className="h-7 w-32 animate-pulse rounded-md bg-zinc-200 dark:bg-zinc-800" />
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-            {[...Array(4)].map((_, i) => (
-              <div
-                key={i}
-                className="h-20 animate-pulse rounded-xl bg-zinc-200 dark:bg-zinc-800"
-              />
-            ))}
-          </div>
-        </section>
-      </div>
-    );
+    return <EditTechnicianSkeleton />;
   }
+
   if (isError) {
     return (
       <div className="mx-auto max-w-6xl p-4 md:p-6">
@@ -82,10 +66,13 @@ function EditTechnicianPage() {
     <div className="mx-auto max-w-6xl p-4 md:p-6">
       <section className="flex flex-col gap-4">
         {/* Header */}
-        <div>
+        <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
           <PageHeader
             title={selectedTechnician?.alias || "Technician Alias"}
             subtitle={subtitle}
+          />
+          <ArchiveTechnicianWithConfirmationButton
+            technician={selectedTechnician}
           />
         </div>
 

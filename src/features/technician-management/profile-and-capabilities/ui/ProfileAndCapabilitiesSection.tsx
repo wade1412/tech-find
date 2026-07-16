@@ -14,11 +14,13 @@ import type {
   ProfileFieldKey,
 } from "../model/profile.types";
 import ProfileAndCapabilitiesFields from "./ProfileAndCapabilitiesFields";
-import ToggleStatus from "./ToggleStatus";
-import { labelStyle } from "../model/profile.styles";
-import { formStyle } from "../../../../shared/styles/styles";
+import {
+  formStyle,
+  formWithPaddingStyle,
+} from "../../../../shared/styles/styles";
 import SubmitArea from "../../ui/SubmitArea";
 import SubmitSnackbar from "../../ui/SubmitSnackbar";
+import TechnicianActiveBar from "./TechnicianActiveBar";
 
 interface ProfileAndCapabilitiesSectionProps {
   technician: Technician;
@@ -92,35 +94,15 @@ function ProfileAndCapabilitiesSection({
 
   return (
     <form className={formStyle} onSubmit={handleSubmit} noValidate>
-      {/* Head - Technician Status */}
-      <section
-        className={`flex flex-col gap-3 rounded-xl border px-4 py-3 transition-colors sm:flex-row sm:items-center sm:justify-between ${formState.active ? "border-zinc-200 bg-zinc-50/60 dark:border-zinc-800 dark:bg-zinc-900/40" : "border-red-200 bg-red-50/60 dark:border-red-900/40 dark:bg-red-950/20"} `}
-      >
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <p className={labelStyle}>Technician status</p>
-
-            <span
-              className={`rounded-lg px-2 py-0.5 text-[11px] font-semibold ${formState.active ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-500" : "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400"} `}
-            >
-              {formState.active ? "Active" : "Inactive"}
-            </span>
-          </div>
-
-          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-            Inactive technicians are excluded from all matching results.
-          </p>
-        </div>
-
-        <ToggleStatus
-          checked={formState.active}
-          onChange={toggleActive}
-          disabled={isPending}
-        />
-      </section>
+      {/* Head - Technician Active Status */}
+      <TechnicianActiveBar
+        isActive={formState.active}
+        isDisabled={isPending}
+        toggleActive={toggleActive}
+      />
 
       {/* Fields */}
-      <div className="flex flex-col gap-6 p-2">
+      <div className={formWithPaddingStyle}>
         <ProfileAndCapabilitiesFields
           disabled={isPending}
           formState={formState}

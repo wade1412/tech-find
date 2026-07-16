@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import TechnicianCard from "./TechnicianCard";
 import TechnicianSkeleton from "./TechnicianSkeleton";
 import { useFilteredTechnicians } from "../../../features/technician-filter/model/useFilteredTechnicians";
@@ -29,6 +29,7 @@ function TechnicianList() {
     id: string;
   } | null>(null);
   const listRef = useRef<HTMLUListElement | null>(null);
+  const [canScrollDown, setCanScrollDown] = useState(false);
   const previousFilterKeyRef = useRef<string | null>(null);
   const filterKey = createTechnicianFilterKey(filter);
   const orderKey = `${filterKey}|${filter.sort}`;
@@ -67,12 +68,37 @@ function TechnicianList() {
   const openTechnicianId =
     openRecord?.filterKey === filterKey ? openRecord.id : null;
 
+  const updateScrollFade = useCallback(() => {
+    const list = listRef.current;
+    if (!list) return;
+
+    const remainingScroll =
+      list.scrollHeight - list.scrollTop - list.clientHeight;
+    setCanScrollDown(remainingScroll > 2);
+  }, []);
+
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list) return;
+
+    const frameId = requestAnimationFrame(updateScrollFade);
+    const observer = new ResizeObserver(updateScrollFade);
+
+    observer.observe(list);
+    Array.from(list.children).forEach((child) => observer.observe(child));
+
+    return () => {
+      cancelAnimationFrame(frameId);
+      observer.disconnect();
+    };
+  }, [openTechnicianId, orderedIds, updateScrollFade]);
+
   if (isPending) return <TechnicianSkeleton />;
 
   if (isError) return <ErrorMessage message={error?.message} />;
 
   return (
-    <div className="flex min-h-0 flex-col gap-2.5 md:max-h-(--filter-panel-height) md:overflow-hidden">
+    <div className="relative flex min-h-0 flex-col gap-2.5 md:h-(--technician-list-height) md:overflow-hidden">
       <div className="flex items-center justify-between">
         <h2 className="font-heading text-sm font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
           Technicians
@@ -94,7 +120,8 @@ function TechnicianList() {
         layout
         values={orderedIds}
         onReorder={handleReorder}
-        className="technician-scroll flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto overscroll-contain px-1"
+        onScroll={updateScrollFade}
+        className="technician-scroll flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto overscroll-contain px-1 md:pb-8"
         variants={technicianListVariants}
         initial="hidden"
         animate="visible"
@@ -148,6 +175,13 @@ function TechnicianList() {
           )}
         </AnimatePresence>
       </Reorder.Group>
+
+      <div
+        aria-hidden="true"
+        className={`pointer-events-none absolute right-3 bottom-0 left-1 h-6 bg-linear-to-t from-zinc-50 via-zinc-50/85 to-transparent backdrop-blur-[1px] transition-opacity duration-200 dark:from-zinc-950 dark:via-zinc-950/85 ${
+          canScrollDown ? "opacity-100" : "opacity-0"
+        }`}
+      />
     </div>
   );
 }

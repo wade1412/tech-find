@@ -1,4 +1,7 @@
+import type { BrandGroup } from "../../../../entities/brandGroup/brandGroup.types";
+import type { SpecificIssue } from "../../../../entities/specific-issue/specific-issue.types";
 import type { TechnicianSkill } from "../../../../entities/technician-skill-set/technicianSkillSet.types";
+import type { Unit } from "../../../../entities/unit/unit.types";
 import type { SkillDraft, SkillsPatch } from "./skills.types";
 
 const createSkillDraft = (skill: TechnicianSkill): SkillDraft => {
@@ -46,6 +49,25 @@ export const createSkillsDraft = (
   technicianSkills: TechnicianSkill[],
 ): SkillDraft[] => technicianSkills.map((skill) => createSkillDraft(skill));
 
+export const skillDraftToInput = (skill: SkillDraft) => {
+  const baseFields = {
+    unit_id: skill.unitId,
+    commercial: false,
+    brand_group_id: null,
+    specific_issue_id: null,
+  };
+
+  if (skill.kind === "brandGroup") {
+    return { ...baseFields, brand_group_id: skill.brandGroupId };
+  }
+
+  if (skill.kind === "specificIssue") {
+    return { ...baseFields, specific_issue_id: skill.specificIssueId };
+  }
+
+  return { ...baseFields, commercial: true };
+};
+
 // Edit with unchanged source Id wont be caught in patch, so Edit has to create new skill draft with sourceId: null and remove the old skill record
 export const createSkillsPatch = (
   initialSkills: TechnicianSkill[],
@@ -59,24 +81,7 @@ export const createSkillsPatch = (
   // Technician Id is added by api function
   const addedSkills = draftSkills
     .filter((skill) => skill.sourceId === null)
-    .map((skill) => {
-      const baseFields = {
-        unit_id: skill.unitId,
-        commercial: false,
-        brand_group_id: null,
-        specific_issue_id: null,
-      };
-
-      if (skill.kind === "brandGroup") {
-        return { ...baseFields, brand_group_id: skill.brandGroupId };
-      }
-
-      if (skill.kind === "specificIssue") {
-        return { ...baseFields, specific_issue_id: skill.specificIssueId };
-      }
-
-      return { ...baseFields, commercial: true };
-    });
+    .map(skillDraftToInput);
 
   const removedSkillIds = Array.from(initialSkillIdsSet).filter(
     (id) => !draftSkillIdsSet.has(id),
@@ -98,4 +103,48 @@ export const getSkillIdentity = (skill: SkillDraft) => {
   }
 
   return `specificIssue:${skill.unitId}:${skill.specificIssueId}`;
+};
+
+const normalize = (value: string) => value.trim().toLowerCase();
+
+const skillKindSearchLabels: Record<SkillDraft["kind"], string> = {
+  commercial: "commercial",
+  brandGroup: "brand group",
+  specificIssue: "specific issue",
+};
+
+export const filterSkillsBySearch = (
+  skills: SkillDraft[],
+  searchTerm: string,
+  unitsById: ReadonlyMap<string, Unit>,
+  brandGroupsById: ReadonlyMap<string, BrandGroup>,
+  specificIssuesById: ReadonlyMap<string, SpecificIssue>,
+) => {
+  const terms = normalize(searchTerm).split(/\s+/).filter(Boolean);
+  if (terms.length === 0) return skills;
+
+  const getSkillSearchableString = (skill: SkillDraft) => {
+    const fields = [
+      unitsById.get(skill.unitId)?.name,
+      skillKindSearchLabels[skill.kind],
+    ];
+
+    if (skill.kind === "brandGroup") {
+      fields.push(brandGroupsById.get(skill.brandGroupId)?.name);
+    }
+
+    if (skill.kind === "specificIssue") {
+      fields.push(specificIssuesById.get(skill.specificIssueId)?.name);
+    }
+
+    return normalize(fields.filter(Boolean).join(" "));
+  };
+
+  const foundSkills = skills.filter((skill) => {
+    const searchableText = getSkillSearchableString(skill);
+
+    return terms.every((term) => searchableText.includes(term));
+  });
+
+  return foundSkills;
 };

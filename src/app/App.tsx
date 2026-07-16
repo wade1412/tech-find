@@ -8,8 +8,21 @@ import NotFoundPage from "../pages/NotFoundPage";
 
 const HomePage = lazy(() => import("../pages/HomePage"));
 const LoginPage = lazy(() => import("../pages/LoginPage"));
+const ForgotPasswordPage = lazy(() => import("../pages/ForgotPasswordPage"));
+const SecureEmailLinkPage = lazy(
+  () => import("../pages/SecureEmailLinkPage"),
+);
+const UpdatePasswordPage = lazy(
+  () => import("../pages/UpdatePasswordPage"),
+);
+const EmailConfirmationPage = lazy(
+  () => import("../pages/EmailConfirmationPage"),
+);
 const ManageTechniciansPage = lazy(
   () => import("../pages/manageTechnicians/ManageTechniciansPage"),
+);
+const NewTechnicianPage = lazy(
+  () => import("../pages/manageTechnicians/NewTechnicianPage"),
 );
 const EditTechnicianPage = lazy(
   () => import("../pages/manageTechnicians/EditTechnicianPage"),
@@ -26,6 +39,38 @@ function App() {
         element={
           <Suspense fallback={<FullPageSpinner />}>
             <LoginPage />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/forgot-password"
+        element={
+          <Suspense fallback={<FullPageSpinner />}>
+            <ForgotPasswordPage />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/secure-email-link"
+        element={
+          <Suspense fallback={<FullPageSpinner />}>
+            <SecureEmailLinkPage />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/update-password"
+        element={
+          <Suspense fallback={<FullPageSpinner />}>
+            <UpdatePasswordPage />
+          </Suspense>
+        }
+      />
+      <Route
+        path="/email-confirmation"
+        element={
+          <Suspense fallback={<FullPageSpinner />}>
+            <EmailConfirmationPage />
           </Suspense>
         }
       />
@@ -49,6 +94,7 @@ function App() {
         >
           <Route index element={<ManageTechniciansPage />} />
           <Route path=":technicianId/edit" element={<EditTechnicianPage />} />
+          <Route path="new" element={<NewTechnicianPage />} />
         </Route>
 
         <Route

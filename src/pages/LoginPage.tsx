@@ -1,4 +1,4 @@
-import { Navigate, useLocation } from "react-router";
+import { Link, Navigate, useLocation } from "react-router";
 import { useAuth } from "../features/auth/model/AuthContext";
 import AuthHeader from "../layouts/AuthHeader";
 import { useState } from "react";
@@ -6,6 +6,7 @@ import { FullPageSpinner } from "../shared/ui/Spinners";
 import { isAppAuthError } from "../features/auth/model/auth.errors";
 import { primaryButton } from "../shared/styles/styles";
 import { AnimatePresence, motion } from "motion/react";
+import { hasPasswordRecoverySession } from "../features/auth/model/auth.recovery";
 
 const labelStyle =
   "flex flex-col text-sm font-medium text-zinc-700 dark:text-zinc-300 gap-1.5";
@@ -17,6 +18,7 @@ function LoginPage() {
     isAuthenticated,
     isLoading,
     isProfileLoading,
+    session,
   } = useAuth();
 
   const location = useLocation();
@@ -35,6 +37,13 @@ function LoginPage() {
   const isAuthPending = isSubmitting || isProfileLoading;
   const isSubmitDisabled =
     isSubmitting || isLoading || isProfileLoading || isAuthenticated;
+  const isPasswordRecovery = Boolean(
+    session && hasPasswordRecoverySession(session.user.id),
+  );
+
+  if (!isLoading && isPasswordRecovery) {
+    return <Navigate to="/update-password" replace />;
+  }
 
   if (!isLoading && !isProfileLoading && isAuthenticated) {
     return <Navigate to={from} replace />;
@@ -136,6 +145,13 @@ function LoginPage() {
               className="focus:border-main-500 focus:ring-main-500/20 dark:focus:border-main-500 mt-1.5 rounded-xl border border-zinc-200 bg-zinc-50/50 px-3.5 py-2 text-zinc-900 transition-[border-color,background-color,box-shadow] outline-none focus:bg-white focus:ring-2 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:bg-zinc-950"
             />
           </label>
+
+          <Link
+            to="/forgot-password"
+            className="-mt-3 text-right text-xs font-semibold text-zinc-500 transition-colors hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100"
+          >
+            Forgot password?
+          </Link>
 
           <AnimatePresence initial={false}>
             {formError && (

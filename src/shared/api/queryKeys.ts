@@ -2,6 +2,7 @@ export const queryKeys = {
   technicians: {
     active: ["technicians", "active"],
     all: ["technicians", "all"],
+    archived: ["technicians", "archived"],
   },
   units: ["units"],
   specificIssues: ["specific-issues"],

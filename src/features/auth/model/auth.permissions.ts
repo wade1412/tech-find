@@ -17,6 +17,8 @@ export interface AuthPermissions {
   canViewAdminPanel: boolean;
 
   canManageTechnicians: boolean;
+  canArchiveTechnicians: boolean;
+  canPurgeTechnicians: boolean;
   canManageUsers: boolean;
   canManageServices: boolean;
 
@@ -25,6 +27,8 @@ export interface AuthPermissions {
 
 export type AdminPermission =
   | "canManageTechnicians"
+  | "canArchiveTechnicians"
+  | "canPurgeTechnicians"
   | "canManageUsers"
   | "canManageServices"
   | "canUseOwnerTools";
@@ -72,6 +76,8 @@ export function getAuthPermissions(
 
     canViewAdminPanel: hasRoleLevelOf(role, "secondary_admin"),
     canManageTechnicians: hasRoleLevelOf(role, "secondary_admin"),
+    canArchiveTechnicians: hasRoleLevelOf(role, "main_admin"),
+    canPurgeTechnicians: role === "owner",
 
     canManageUsers: hasRoleLevelOf(role, "main_admin"),
     canManageServices: hasRoleLevelOf(role, "main_admin"),

@@ -50,6 +50,26 @@ describe("validateProfileForm", () => {
     expect(Object.values(formValidation).filter((v) => v !== null)).toEqual([]);
   });
 
+  it("allows a period in a technician name abbreviation", () => {
+    const formValidation = validateProfileForm({
+      ...validFormState,
+      name: "Harry H.",
+    });
+
+    expect(formValidation.name).toBeNull();
+  });
+
+  it("does not extend period support to aliases", () => {
+    const formValidation = validateProfileForm({
+      ...validFormState,
+      alias: "H.",
+    });
+
+    expect(formValidation.alias).toBe(
+      "Alias cannot contain numbers or special characters",
+    );
+  });
+
   it("returns error on invalid or empty alias or name", () => {
     const invalidFrom = {
       ...validFormState,

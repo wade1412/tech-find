@@ -1,4 +1,4 @@
-import { headingStyleDefault } from "../../../../shared/styles/styles";
+import { ignoreItemHeadingStyle } from "../../../../shared/styles/styles";
 import DeleteButton from "../../../../shared/ui/DeleteButton";
 
 interface IgnoreListCardProps {
@@ -40,7 +40,7 @@ function IgnoreListItemCard({
   return (
     <div className="group flex h-full min-w-0 flex-col gap-3 rounded-xl border border-zinc-200 bg-white px-3 py-3 text-sm transition-[background-color,border-color] hover:border-zinc-300 hover:bg-zinc-50/70 dark:border-zinc-800 dark:bg-zinc-900/60 dark:hover:border-zinc-700 dark:hover:bg-zinc-900 sm:flex-row sm:items-center sm:justify-between">
       <div className="min-w-0 flex-1 space-y-2 pr-1">
-        <p className={headingStyleDefault}>Ignore when</p>
+        <p className={ignoreItemHeadingStyle}>Ignore when</p>
 
         <div className="flex flex-wrap gap-1.5">
           {ignoreChips.map((chip) => (
@@ -51,9 +51,7 @@ function IgnoreListItemCard({
               <span className="font-medium text-zinc-400 dark:text-zinc-500">
                 {chip.label}
               </span>
-              <span className="min-w-0 truncate font-medium">
-                {chip.value}
-              </span>
+              <span className="min-w-0 truncate font-medium">{chip.value}</span>
             </span>
           ))}
         </div>

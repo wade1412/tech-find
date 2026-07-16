@@ -89,6 +89,61 @@ describe("filterTechnicians", () => {
 
     expect(getIds(result)).toEqual(["tech-1"]);
   });
+
+  it("requires both the lift capability and the exact skill for a built-in unit", () => {
+    const wallOven = makeUnit({
+      id: "unit-wall-oven",
+      name: "Wall Oven",
+      slug: "wall-oven",
+      is_built_in: true,
+    });
+
+    const fullyQualified = makeTechnician({
+      id: "tech-qualified",
+      can_service_built_in: true,
+    });
+    const skillOnly = makeTechnician({
+      id: "tech-skill-only",
+      can_service_built_in: false,
+    });
+    const liftOnly = makeTechnician({
+      id: "tech-lift-only",
+      can_service_built_in: true,
+    });
+
+    const params = makeFilterParams({
+      technicians: [fullyQualified, skillOnly, liftOnly],
+      selectedUnits: [wallOven],
+      selectedUnitIds: new Set([wallOven.id]),
+      skillsByTechId: new Map([
+        [
+          fullyQualified.id,
+          [
+            makeSkill({
+              id: "qualified-wall-oven-skill",
+              technician_id: fullyQualified.id,
+              unit_id: wallOven.id,
+            }),
+          ],
+        ],
+        [
+          skillOnly.id,
+          [
+            makeSkill({
+              id: "skill-only-wall-oven-skill",
+              technician_id: skillOnly.id,
+              unit_id: wallOven.id,
+            }),
+          ],
+        ],
+      ]),
+      filter: {
+        unitSlugs: [wallOven.slug],
+      },
+    });
+
+    expect(getIds(filterTechnicians(params))).toEqual([fullyQualified.id]);
+  });
   // Ignore brands on commercial checked
   it("keeps commercial technician when commercial skill exists and brand group is selected", () => {
     const washer = makeUnit({

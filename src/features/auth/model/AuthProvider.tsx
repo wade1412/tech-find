@@ -19,9 +19,19 @@ import {
 } from "./auth.errors";
 import { shouldLoadProfile } from "./auth.session";
 import { validateUserProfile } from "./auth.profile";
+import { useLocation } from "react-router";
+import { shouldBypassProfileResolution } from "./auth.routes";
+import {
+  clearPasswordRecoverySession,
+  hasPasswordRecoverySession,
+} from "./auth.recovery";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
+  const location = useLocation();
+  const shouldBypassProfile = shouldBypassProfileResolution(
+    location.pathname,
+  );
 
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -45,6 +55,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const clearAuthState = useCallback(() => {
     profileRequestIdRef.current += 1;
     resolvingUserIdRef.current = null;
+    clearPasswordRecoverySession();
 
     setSession(null);
     setProfileState(null);
@@ -65,6 +76,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const nextProfileId = nextSession.user.id;
 
       setSession(nextSession);
+
+      if (
+        shouldBypassProfile ||
+        hasPasswordRecoverySession(nextProfileId)
+      ) {
+        profileRequestIdRef.current += 1;
+        resolvingUserIdRef.current = null;
+        setAuthError(null);
+        setIsProfileLoading(false);
+        return;
+      }
 
       // Check if the new profile should be loaded
       if (
@@ -140,7 +162,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
       }
     },
-    [clearAuthState, setProfileState],
+    [clearAuthState, setProfileState, shouldBypassProfile],
   );
 
   const retryProfile = useCallback(async () => {
@@ -209,7 +231,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             return;
           }
 
-          case "SIGNED_IN": {
+          case "SIGNED_IN":
+          case "PASSWORD_RECOVERY": {
             await resolveSession(nextSession);
             return;
           }

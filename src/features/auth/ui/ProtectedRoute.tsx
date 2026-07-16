@@ -1,6 +1,7 @@
 import { Navigate, useLocation } from "react-router";
 import { useAuth } from "../model/AuthContext";
 import { FullPageSpinner } from "../../../shared/ui/Spinners";
+import { hasPasswordRecoverySession } from "../model/auth.recovery";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const {
@@ -13,6 +14,13 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   } = useAuth();
 
   const location = useLocation();
+  const isPasswordRecovery = Boolean(
+    session && hasPasswordRecoverySession(session.user.id),
+  );
+
+  if (!isLoading && isPasswordRecovery) {
+    return <Navigate to="/update-password" replace />;
+  }
 
   if (
     !isAuthenticated &&

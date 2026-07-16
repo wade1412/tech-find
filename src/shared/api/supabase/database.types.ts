@@ -129,7 +129,10 @@ export type Database = {
       technician: {
         Row: {
           active: boolean
+          active_before_archive: boolean | null
           alias: string
+          archived_at: string | null
+          archived_by: string | null
           can_service_built_in: boolean
           can_service_stacked_dryer: boolean
           can_service_stacked_washer: boolean
@@ -143,7 +146,10 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          active_before_archive?: boolean | null
           alias: string
+          archived_at?: string | null
+          archived_by?: string | null
           can_service_built_in: boolean
           can_service_stacked_dryer: boolean
           can_service_stacked_washer: boolean
@@ -157,7 +163,10 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          active_before_archive?: boolean | null
           alias?: string
+          archived_at?: string | null
+          archived_by?: string | null
           can_service_built_in?: boolean
           can_service_stacked_dryer?: boolean
           can_service_stacked_washer?: boolean
@@ -169,7 +178,15 @@ export type Database = {
           name?: string
           notes?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "technician_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "user_profile"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       technician_ignore_list: {
         Row: {
@@ -416,6 +433,43 @@ export type Database = {
       current_user_has_role: {
         Args: { required_role: Database["public"]["Enums"]["app_role"] }
         Returns: boolean
+      }
+      create_technician: {
+        Args: {
+          p_ignore_items?: Json
+          p_profile: Json
+          p_skills: Json
+          p_zone_ids: string[]
+        }
+        Returns: {
+          active: boolean
+          active_before_archive: boolean | null
+          alias: string
+          archived_at: string | null
+          archived_by: string | null
+          can_service_built_in: boolean
+          can_service_stacked_dryer: boolean
+          can_service_stacked_washer: boolean
+          commercial: boolean
+          gas: boolean
+          home_zip_code: string
+          id: string
+          jobs_per_day: string
+          name: string
+          notes: string | null
+        }
+      }
+      archive_technician: {
+        Args: { p_technician_id: string }
+        Returns: string
+      }
+      purge_technician: {
+        Args: { p_technician_id: string }
+        Returns: string
+      }
+      restore_technician: {
+        Args: { p_technician_id: string }
+        Returns: string
       }
       update_technician_ignore_list: {
         Args: {

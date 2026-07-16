@@ -7,6 +7,9 @@ import type { FilterState, FilterTechniciansParams } from "./filter.types";
 export const makeTechnician = (
   overrides: Partial<Technician> = {},
 ): Technician => ({
+  active_before_archive: null,
+  archived_at: null,
+  archived_by: null,
   id: "tech-1",
   name: "Default Name",
   alias: "Default Alias",
