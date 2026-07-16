@@ -3,7 +3,11 @@ import { AnimatePresence, motion } from "motion/react";
 import type { Brand } from "../../../../entities/brand/brand.types";
 import type { SpecificIssue } from "../../../../entities/specific-issue/specific-issue.types";
 import type { Unit } from "../../../../entities/unit/unit.types";
-import { fadePresenceMotionProps } from "../../../../shared/styles/motionVariants";
+import {
+  fadePresenceMotionProps,
+  listItemPresenceMotionProps,
+  softLayoutTransition,
+} from "../../../../shared/styles/motionVariants";
 import { noEditValuesStyle } from "../../../../shared/styles/styles";
 import OpenEditorButton from "../../ui/Editor/OpenEditorButton";
 import SectionHeader from "../../ui/SectionHeader";
@@ -160,49 +164,55 @@ function IgnoreListFields({
         className="h-px w-full bg-zinc-200 dark:bg-zinc-800"
       />
 
-      <AnimatePresence initial={false} mode="wait">
-        {items.length > 0 ? (
-          <motion.div
-            key="ignore-items-container"
-            className="grid grid-cols-1 gap-3 lg:grid-cols-2"
-            {...fadePresenceMotionProps}
-          >
-            {items.map((item) => (
-              <IgnoreListItemCard
+      <motion.div
+        layout
+        className="grid grid-cols-1 gap-3 lg:grid-cols-2"
+        transition={softLayoutTransition}
+      >
+        <AnimatePresence initial={false} mode="popLayout">
+          {items.length > 0 ? (
+            items.map((item) => (
+              <motion.div
+                layout
                 key={item.key}
-                isDisabled={disabled}
-                unitName={
-                  item.unit_id
-                    ? (unitsById.get(item.unit_id)?.name ?? null)
-                    : null
-                }
-                brandName={
-                  item.brand_id
-                    ? (brandsById.get(item.brand_id)?.name ?? null)
-                    : null
-                }
-                issueName={
-                  item.specific_issue_id
-                    ? (specificIssuesById.get(item.specific_issue_id)?.name ??
-                      null)
-                    : null
-                }
-                onEdit={() => openEditItem(item)}
-                onRemove={() => removeItem(item.key)}
-              />
-            ))}
-          </motion.div>
-        ) : (
-          <motion.div
-            key="ignore-items-empty"
-            className={`${noEditValuesStyle} col-span-2`}
-            {...fadePresenceMotionProps}
-          >
-            No ignore items for this technician. Use "Add Ignore Item" to add
-            one.
-          </motion.div>
-        )}
-      </AnimatePresence>
+                className="h-full"
+                {...listItemPresenceMotionProps}
+              >
+                <IgnoreListItemCard
+                  isDisabled={disabled}
+                  unitName={
+                    item.unit_id
+                      ? (unitsById.get(item.unit_id)?.name ?? null)
+                      : null
+                  }
+                  brandName={
+                    item.brand_id
+                      ? (brandsById.get(item.brand_id)?.name ?? null)
+                      : null
+                  }
+                  issueName={
+                    item.specific_issue_id
+                      ? (specificIssuesById.get(item.specific_issue_id)?.name ??
+                        null)
+                      : null
+                  }
+                  onEdit={() => openEditItem(item)}
+                  onRemove={() => removeItem(item.key)}
+                />
+              </motion.div>
+            ))
+          ) : (
+            <motion.div
+              key="ignore-items-empty"
+              className={`${noEditValuesStyle} col-span-2`}
+              {...fadePresenceMotionProps}
+            >
+              No ignore items for this technician. Use "Add Ignore Item" to
+              add one.
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </>
   );
 }

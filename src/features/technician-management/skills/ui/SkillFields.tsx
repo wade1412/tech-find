@@ -3,7 +3,11 @@ import { AnimatePresence, motion } from "motion/react";
 import type { BrandGroup } from "../../../../entities/brandGroup/brandGroup.types";
 import type { SpecificIssue } from "../../../../entities/specific-issue/specific-issue.types";
 import type { Unit } from "../../../../entities/unit/unit.types";
-import { fadePresenceMotionProps } from "../../../../shared/styles/motionVariants";
+import {
+  fadePresenceMotionProps,
+  listItemPresenceMotionProps,
+  softLayoutTransition,
+} from "../../../../shared/styles/motionVariants";
 import { noEditValuesStyle } from "../../../../shared/styles/styles";
 import OpenEditorButton from "../../ui/Editor/OpenEditorButton";
 import SectionHeader from "../../ui/SectionHeader";
@@ -294,40 +298,45 @@ function SkillFields({
         disabled={disabled || skills.length === 0}
       />
 
-      <AnimatePresence initial={false} mode="wait">
-        {visibleSkills.length > 0 ? (
-          <motion.div
-            key="skills-container"
-            className="columns-1 gap-3 md:columns-2"
-            {...fadePresenceMotionProps}
-          >
-            {Array.from(skillsByUnitId.entries()).map(
+      <motion.div
+        layout
+        className="grid grid-cols-1 items-start gap-3 md:grid-cols-2"
+        transition={softLayoutTransition}
+      >
+        <AnimatePresence initial={false} mode="popLayout">
+          {visibleSkills.length > 0 ? (
+            Array.from(skillsByUnitId.entries()).map(
               ([unitId, unitSkills]) => (
-                <SkillGroup
+                <motion.div
+                  layout="position"
                   key={unitId}
-                  isDisabled={disabled}
-                  unitName={unitsById.get(unitId)?.name}
-                  skillDraftsForUnit={unitSkills}
-                  brandGroupById={brandGroupById}
-                  specificIssuesById={specificIssuesById}
-                  onEditSkill={openEditSkill}
-                  onRemoveSkill={removeSkill}
-                />
+                  {...listItemPresenceMotionProps}
+                >
+                  <SkillGroup
+                    isDisabled={disabled}
+                    unitName={unitsById.get(unitId)?.name}
+                    skillDraftsForUnit={unitSkills}
+                    brandGroupById={brandGroupById}
+                    specificIssuesById={specificIssuesById}
+                    onEditSkill={openEditSkill}
+                    onRemoveSkill={removeSkill}
+                  />
+                </motion.div>
               ),
-            )}
-          </motion.div>
-        ) : (
-          <motion.div
-            key="skills-empty"
-            className={noEditValuesStyle}
-            {...fadePresenceMotionProps}
-          >
-            {searchTerm.trim().length > 0
-              ? `No skills match your search.`
-              : `No skills for this technician. Use "Add Skill" to add one.`}
-          </motion.div>
-        )}
-      </AnimatePresence>
+            )
+          ) : (
+            <motion.div
+              key="skills-empty"
+              className={noEditValuesStyle}
+              {...fadePresenceMotionProps}
+            >
+              {searchTerm.trim().length > 0
+                ? `No skills match your search.`
+                : `No skills for this technician. Use "Add Skill" to add one.`}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
 
       {allowClearAll && (
         <ClearSkillsDialog

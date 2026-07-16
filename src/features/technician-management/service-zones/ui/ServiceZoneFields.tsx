@@ -5,6 +5,7 @@ import { selectStyle } from "../../../../shared/styles/muiSelectStyles";
 import { AnimatePresence, motion } from "motion/react";
 import {
   fadePresenceMotionProps,
+  listItemPresenceMotionProps,
   softLayoutTransition,
 } from "../../../../shared/styles/motionVariants";
 import { noEditValuesStyle } from "../../../../shared/styles/styles";
@@ -114,17 +115,15 @@ function ServiceZoneFields({
 
         {/* Zone Chips */}
         <motion.div layout transition={softLayoutTransition}>
-          <AnimatePresence initial={false} mode="wait">
-            {selectedZones.length > 0 ? (
-              <motion.div
-                key="zones-chips-container"
-                className="flex flex-wrap gap-2"
-                {...fadePresenceMotionProps}
-              >
-                {selectedZones.map((zone) => (
-                  <div
+          <div className="flex flex-wrap gap-2">
+            <AnimatePresence initial={false} mode="popLayout">
+              {selectedZones.length > 0 ? (
+                selectedZones.map((zone) => (
+                  <motion.div
+                    layout
                     key={zone.id}
                     className="inline-flex max-w-full items-center gap-3 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-sm shadow-sm dark:border-zinc-700/70 dark:bg-zinc-800/60"
+                    {...listItemPresenceMotionProps}
                   >
                     <span className="max-w-40 truncate font-medium text-zinc-800 dark:text-zinc-100">
                       {zone.name}
@@ -137,19 +136,20 @@ function ServiceZoneFields({
                         handleZoneDelete(zone.id);
                       }}
                     />
-                  </div>
-                ))}
-              </motion.div>
-            ) : (
-              <motion.div
-                key="zones-empty"
-                className={noEditValuesStyle}
-                {...fadePresenceMotionProps}
-              >
-                No zones assigned. Use the selector to add one.
-              </motion.div>
-            )}
-          </AnimatePresence>
+                  </motion.div>
+                ))
+              ) : (
+                <motion.div
+                  key="zones-empty"
+                  layout
+                  className={`${noEditValuesStyle} w-full`}
+                  {...fadePresenceMotionProps}
+                >
+                  No zones assigned. Use the selector to add one.
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </motion.div>
       </div>
     </div>

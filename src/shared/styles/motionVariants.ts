@@ -11,6 +11,13 @@ export const fadePresenceMotionProps = {
   transition: { duration: 0.16, ease: "easeOut" },
 } as const;
 
+export const listItemPresenceMotionProps = {
+  initial: { opacity: 0, scale: 0.98, y: -4 },
+  animate: { opacity: 1, scale: 1, y: 0 },
+  exit: { opacity: 0, scale: 0.98, y: -4 },
+  transition: { duration: 0.16, ease: "easeOut" },
+} as const;
+
 export const heightRevealMotionProps = {
   initial: { height: 0, opacity: 0 },
   animate: { height: "auto", opacity: 1 },
