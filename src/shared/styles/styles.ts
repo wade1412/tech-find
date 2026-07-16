@@ -1,15 +1,18 @@
-export const headingStyleWithBottomMargin =
-  "font-heading mb-3 text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500";
+const headingStyleBase =
+  "font-heading text-xs font-semibold uppercase tracking-widest";
 
-export const headingStyleDefault =
-  "font-heading text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500";
+export const headingStyleDefault = `${headingStyleBase}  text-zinc-400 dark:text-zinc-500`;
+
+export const headingStyleWithBottomMargin = `${headingStyleDefault} mb-3`;
+
+export const ignoreItemHeadingStyle = `${headingStyleBase} text-main-500/80 dark:main-400/85`;
 
 export const formStyle = "flex flex-col gap-4";
 
 export const formWithPaddingStyle = `${formStyle} p-2`;
 
 export const skillGroupTitleStyle =
-  "font-heading border-b border-zinc-100 px-4 py-3 text-sm font-semibold text-zinc-800 dark:border-zinc-800 dark:text-zinc-100";
+  "font-heading border-b border-zinc-100 px-5 py-3 text-sm font-bold text-zinc-800 dark:text-zinc-950 dark:border-zinc-800 bg-main-500/80 dark:bg-main-400/85 rounded-t-xl";
 
 export const manageTechnicianActionButtonBaseStyle =
   "inline-flex w-full min-w-44 cursor-pointer items-center justify-center gap-1.5 rounded-xl border bg-white px-4 py-2.5 text-xs font-semibold text-zinc-600 transition-[background-color,border-color,color,opacity,transform] focus:outline-none focus-visible:ring-2 focus-visible:ring-main-500 focus-visible:ring-offset-2 active:scale-[0.98]  dark:focus-visible:ring-offset-zinc-950 sm:w-46";

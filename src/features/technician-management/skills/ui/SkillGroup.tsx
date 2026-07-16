@@ -34,7 +34,7 @@ function SkillGroup({
 
       <motion.div
         layout
-        className="flex flex-col gap-1.5 divide-y divide-zinc-100 p-2 dark:divide-zinc-800"
+        className="flex flex-col gap-1.5 divide-y divide-zinc-300 p-2 dark:divide-zinc-800"
         transition={softLayoutTransition}
       >
         <AnimatePresence initial={false} mode="popLayout">
