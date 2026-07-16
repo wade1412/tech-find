@@ -129,7 +129,10 @@ export type Database = {
       technician: {
         Row: {
           active: boolean
+          active_before_archive: boolean | null
           alias: string
+          archived_at: string | null
+          archived_by: string | null
           can_service_built_in: boolean
           can_service_stacked_dryer: boolean
           can_service_stacked_washer: boolean
@@ -143,7 +146,10 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          active_before_archive?: boolean | null
           alias: string
+          archived_at?: string | null
+          archived_by?: string | null
           can_service_built_in: boolean
           can_service_stacked_dryer: boolean
           can_service_stacked_washer: boolean
@@ -157,7 +163,10 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          active_before_archive?: boolean | null
           alias?: string
+          archived_at?: string | null
+          archived_by?: string | null
           can_service_built_in?: boolean
           can_service_stacked_dryer?: boolean
           can_service_stacked_washer?: boolean
@@ -169,7 +178,15 @@ export type Database = {
           name?: string
           notes?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "technician_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "user_profile"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       technician_ignore_list: {
         Row: {
@@ -426,7 +443,10 @@ export type Database = {
         }
         Returns: {
           active: boolean
+          active_before_archive: boolean | null
           alias: string
+          archived_at: string | null
+          archived_by: string | null
           can_service_built_in: boolean
           can_service_stacked_dryer: boolean
           can_service_stacked_washer: boolean
@@ -439,7 +459,15 @@ export type Database = {
           notes: string | null
         }
       }
-      delete_technician: {
+      archive_technician: {
+        Args: { p_technician_id: string }
+        Returns: string
+      }
+      purge_technician: {
+        Args: { p_technician_id: string }
+        Returns: string
+      }
+      restore_technician: {
         Args: { p_technician_id: string }
         Returns: string
       }
