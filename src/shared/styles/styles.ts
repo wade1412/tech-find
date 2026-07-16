@@ -11,8 +11,11 @@ export const formWithPaddingStyle = `${formStyle} p-2`;
 export const skillGroupTitleStyle =
   "font-heading border-b border-zinc-100 px-4 py-3 text-sm font-semibold text-zinc-800 dark:border-zinc-800 dark:text-zinc-100";
 
-export const manageTechnicianActionButtonStyle =
-  "inline-flex w-full min-w-44 cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-xs font-semibold text-zinc-600 transition-[background-color,border-color,color,opacity,transform] hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-main-500 focus-visible:ring-offset-2 active:scale-[0.98] dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-zinc-400 dark:hover:border-zinc-700 dark:hover:bg-zinc-900 dark:hover:text-zinc-100 dark:focus-visible:ring-offset-zinc-950 sm:w-46";
+export const manageTechnicianActionButtonBaseStyle =
+  "inline-flex w-full min-w-44 cursor-pointer items-center justify-center gap-1.5 rounded-xl border bg-white px-4 py-2.5 text-xs font-semibold text-zinc-600 transition-[background-color,border-color,color,opacity,transform] focus:outline-none focus-visible:ring-2 focus-visible:ring-main-500 focus-visible:ring-offset-2 active:scale-[0.98]  dark:focus-visible:ring-offset-zinc-950 sm:w-46";
+
+export const archivedTechniciansButtonStyle = `${manageTechnicianActionButtonBaseStyle} border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-zinc-400 dark:hover:border-zinc-700 dark:hover:bg-zinc-900 dark:hover:text-zinc-100`;
+export const createNewTechnicianButtonStyle = `${manageTechnicianActionButtonBaseStyle} border-zinc-200 hover:bg-zinc-50 hover:border-main-500 hover:text-main-500 dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-zinc-400 dark:hover:border-main-400 dark:hover:bg-zinc-900 dark:hover:text-main-400`;
 
 export const primaryButton =
   "bg-main-500 enabled:hover:bg-main-400 focus-visible:ring-main-500 inline-flex cursor-pointer items-center justify-center rounded-xl px-4 py-2.5 text-xs font-semibold text-zinc-950 transition-[background-color,opacity] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:focus-visible:ring-offset-zinc-950";

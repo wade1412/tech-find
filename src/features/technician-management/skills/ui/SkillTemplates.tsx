@@ -40,13 +40,13 @@ function SkillTemplates({
   );
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-4">
       <SectionHeader
         label="Skill Templates"
         subtext="Add a brand group skill for every active unit"
       />
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2.5">
         {templates.map((template) => {
           const availability = availabilityById.get(template.id);
           const isUnavailable = availability?.status !== "available";

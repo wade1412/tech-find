@@ -142,7 +142,7 @@ function NewTechnicianForm({
     <div className="mx-auto max-w-6xl p-4 md:p-6">
       <section className="flex flex-col gap-4">
         {/* Header */}
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <PageHeader
             title="New Technician"
             subtitle="Fill out the sections to create the new technician"
@@ -169,7 +169,7 @@ function NewTechnicianForm({
         )}
 
         {/* Sections Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
+        <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4">
           {editSections.map((section) => (
             <EditTechnicianSectionCard
               key={section.id}

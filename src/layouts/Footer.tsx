@@ -1,6 +1,9 @@
 function Footer() {
   return (
-    <footer className="border-t border-zinc-200/80 dark:border-zinc-800">
+    <footer
+      data-app-footer
+      className="border-t border-zinc-200/80 dark:border-zinc-800"
+    >
       <div className="mx-auto flex max-w-6xl flex-col gap-1.5 px-4 py-3 text-[11px] leading-5 text-zinc-400 sm:flex-row sm:items-center sm:justify-between md:px-6">
         <p>
           TechFind © 2026 · Project by{" "}

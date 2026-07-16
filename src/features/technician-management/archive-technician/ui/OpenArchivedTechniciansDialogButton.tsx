@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuthPermissions } from "../../../auth/model/useAuthPermissions";
 import ManageArchivedTechniciansDialog from "./ManageArchivedTechniciansDialog";
-import { manageTechnicianActionButtonStyle } from "../../../../shared/styles/styles";
+import { archivedTechniciansButtonStyle } from "../../../../shared/styles/styles";
 
 function OpenArchivedTechniciansDialogButton() {
   const { canArchiveTechnicians } = useAuthPermissions();
@@ -13,7 +13,7 @@ function OpenArchivedTechniciansDialogButton() {
     <>
       <button
         type="button"
-        className={manageTechnicianActionButtonStyle}
+        className={archivedTechniciansButtonStyle}
         onClick={() => setIsOpen(true)}
         aria-haspopup="dialog"
       >

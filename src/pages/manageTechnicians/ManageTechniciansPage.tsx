@@ -14,9 +14,9 @@ import {
 import ErrorMessage from "../../shared/ui/ErrorMessage";
 import { Link, useSearchParams } from "react-router";
 import {
+  createNewTechnicianButtonStyle,
   formStyle,
   ghostButton,
-  manageTechnicianActionButtonStyle,
   noEditValuesStyle,
   sectionHeaderSubtextStyle,
 } from "../../shared/styles/styles";
@@ -126,7 +126,7 @@ function ManageTechniciansPage() {
               <div className="h-6 w-44 animate-pulse rounded-md bg-zinc-200 dark:bg-zinc-800" />
               <div className="h-4 w-64 animate-pulse rounded-md bg-zinc-200 dark:bg-zinc-800" />
             </div>
-            <div className="h-10 w-full animate-pulse rounded-xl bg-zinc-200 dark:bg-zinc-800 md:w-72" />
+            <div className="h-10 w-full animate-pulse rounded-xl bg-zinc-200 md:w-72 dark:bg-zinc-800" />
           </div>
           <div className="grid grid-cols-1 gap-2.5 md:grid-cols-3">
             {[...Array(6)].map((_, i) => (
@@ -156,7 +156,7 @@ function ManageTechniciansPage() {
 
           <div className="flex w-full flex-col gap-2 sm:flex-row md:w-auto md:items-center">
             <OpenArchivedTechniciansDialogButton />
-            <Link to="new" className={manageTechnicianActionButtonStyle}>
+            <Link to="new" className={createNewTechnicianButtonStyle}>
               <svg
                 fill="none"
                 className="h-3.5 w-3.5"
@@ -215,7 +215,7 @@ function ManageTechniciansPage() {
                 : `${technicianCount} technicians`}
             </div>
             <motion.div
-              className="grid grid-cols-1 md:grid-cols-3 gap-2.5"
+              className="grid grid-cols-1 gap-2.5 md:grid-cols-3"
               variants={technicianListVariants}
               initial="hidden"
               animate="visible"

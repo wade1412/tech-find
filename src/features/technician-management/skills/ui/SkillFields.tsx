@@ -305,29 +305,27 @@ function SkillFields({
       >
         <AnimatePresence initial={false} mode="popLayout">
           {visibleSkills.length > 0 ? (
-            Array.from(skillsByUnitId.entries()).map(
-              ([unitId, unitSkills]) => (
-                <motion.div
-                  layout="position"
-                  key={unitId}
-                  {...listItemPresenceMotionProps}
-                >
-                  <SkillGroup
-                    isDisabled={disabled}
-                    unitName={unitsById.get(unitId)?.name}
-                    skillDraftsForUnit={unitSkills}
-                    brandGroupById={brandGroupById}
-                    specificIssuesById={specificIssuesById}
-                    onEditSkill={openEditSkill}
-                    onRemoveSkill={removeSkill}
-                  />
-                </motion.div>
-              ),
-            )
+            Array.from(skillsByUnitId.entries()).map(([unitId, unitSkills]) => (
+              <motion.div
+                layout="position"
+                key={unitId}
+                {...listItemPresenceMotionProps}
+              >
+                <SkillGroup
+                  isDisabled={disabled}
+                  unitName={unitsById.get(unitId)?.name}
+                  skillDraftsForUnit={unitSkills}
+                  brandGroupById={brandGroupById}
+                  specificIssuesById={specificIssuesById}
+                  onEditSkill={openEditSkill}
+                  onRemoveSkill={removeSkill}
+                />
+              </motion.div>
+            ))
           ) : (
             <motion.div
               key="skills-empty"
-              className={noEditValuesStyle}
+              className={`${noEditValuesStyle} col-span-full`}
               {...fadePresenceMotionProps}
             >
               {searchTerm.trim().length > 0
