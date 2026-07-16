@@ -15,8 +15,9 @@ import ErrorMessage from "../../shared/ui/ErrorMessage";
 import { Link, useSearchParams } from "react-router";
 import {
   formStyle,
+  ghostButton,
+  manageTechnicianActionButtonStyle,
   noEditValuesStyle,
-  secondaryButton,
   sectionHeaderSubtextStyle,
 } from "../../shared/styles/styles";
 import SegmentedControl from "../../shared/ui/SegmentedControl";
@@ -25,6 +26,7 @@ import {
   MANAGE_TECHNICIANS_LIST_FILTER_OPTIONS,
   type ManageTechniciansListFilterValue,
 } from "../../features/technician-management/model/manageTechnicians.constants";
+import OpenArchivedTechniciansDialogButton from "../../features/technician-management/archive-technician/ui/OpenArchivedTechniciansDialogButton";
 
 function ManageTechniciansPage() {
   const {
@@ -153,10 +155,8 @@ function ManageTechniciansPage() {
           />
 
           <div className="flex w-full flex-col gap-2 sm:flex-row md:w-auto md:items-center">
-            <Link
-              to="new"
-              className="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-xs font-semibold text-zinc-600 transition-[background-color,border-color,color,opacity,transform] hover:border-main-400 hover:bg-zinc-50 hover:text-main-500 focus-visible:ring-2 focus-visible:ring-main-500 focus-visible:ring-offset-2 focus:outline-none active:scale-[0.98] dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-zinc-400 dark:hover:border-main-400 dark:hover:bg-zinc-900 dark:hover:text-main-400"
-            >
+            <OpenArchivedTechniciansDialogButton />
+            <Link to="new" className={manageTechnicianActionButtonStyle}>
               <svg
                 fill="none"
                 className="h-3.5 w-3.5"
@@ -198,7 +198,7 @@ function ManageTechniciansPage() {
             <SearchInput
               placeholder="Search by name, ZIP, or zone..."
               ariaLabel="Search technicians"
-              className="w-full sm:w-72 self-end"
+              className="w-full sm:w-72"
               value={searchTerm}
               onValueChange={handleInputChange}
             />
@@ -253,7 +253,7 @@ function ManageTechniciansPage() {
                     {hasAppliedFilters && (
                       <button
                         type="button"
-                        className={secondaryButton}
+                        className={ghostButton}
                         onClick={clearFilters}
                       >
                         Clear filters
