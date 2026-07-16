@@ -15,7 +15,7 @@ import {
   type EditSectionId,
 } from "../../features/technician-management/model/manageTechnicians.constants";
 import EditTechnicianSkeleton from "../../features/technician-management/ui/EditTechnicianSkeleton";
-import DeleteTechnicianButton from "../../features/technician-management/delete-technician/ui/DeleteTechnicianButton";
+import ArchiveTechnicianWithConfirmationButton from "../../features/technician-management/archive-technician/ui/ArchiveTechnicianWithConfirmationButton";
 
 function EditTechnicianPage() {
   const { technicianId } = useParams();
@@ -71,7 +71,9 @@ function EditTechnicianPage() {
             title={selectedTechnician?.alias || "Technician Alias"}
             subtitle={subtitle}
           />
-          <DeleteTechnicianButton technician={selectedTechnician} />
+          <ArchiveTechnicianWithConfirmationButton
+            technician={selectedTechnician}
+          />
         </div>
 
         {/* Sections Cards */}
