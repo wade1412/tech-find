@@ -26,6 +26,11 @@ export const heightRevealMotionProps = {
   style: { overflow: "hidden" },
 } as const;
 
+export const filtersRevealMotionProps = {
+  ...heightRevealMotionProps,
+  transition: { duration: 0.28, ease: "easeOut" },
+} as const;
+
 export const technicianListVariants: Variants = {
   hidden: {},
   visible: {
