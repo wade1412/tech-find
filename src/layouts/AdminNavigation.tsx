@@ -1,24 +1,22 @@
 import type { AuthPermissions } from "../features/auth/model/auth.permissions";
-import { getAdminNavigationLinksFromPermissions } from "./model/adminNavitagion";
+import { getAdminNavigationLinksFromPermissions } from "./model/adminNavigation";
 import { useMediaQuery } from "react-responsive";
-import { DESKTOP_BREAKPOINT } from "../shared/model/responsive.constants";
+import { ADMIN_NAVIGATION_BREAKPOINT } from "../shared/model/responsive.constants";
 import MobileAdminNavigationDrawer from "./MobileAdminNavigationDrawer";
 import DesktopAdminNavigation from "./DesktopAdminNavigation";
 
 function AdminNavigation({ permissions }: { permissions: AuthPermissions }) {
-  const panelLinks = getAdminNavigationLinksFromPermissions(permissions);
+  const links = getAdminNavigationLinksFromPermissions(permissions);
   const isDesktopMode = useMediaQuery({
-    query: `(min-width: ${DESKTOP_BREAKPOINT})`,
+    query: `(min-width: ${ADMIN_NAVIGATION_BREAKPOINT})`,
   });
 
-  return (
-    <>
-      {isDesktopMode ? (
-        <DesktopAdminNavigation panelLinks={panelLinks} />
-      ) : (
-        <MobileAdminNavigationDrawer panelLinks={panelLinks} />
-      )}
-    </>
+  if (links.length === 0) return null;
+
+  return isDesktopMode ? (
+    <DesktopAdminNavigation links={links} />
+  ) : (
+    <MobileAdminNavigationDrawer links={links} />
   );
 }
 
