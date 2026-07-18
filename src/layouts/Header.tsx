@@ -6,7 +6,7 @@ import ThemeToggle from "../features/theme/ThemeToggle";
 import { useAuth } from "../features/auth/model/AuthContext";
 import { useState } from "react";
 import { useAuthPermissions } from "../features/auth/model/useAuthPermissions";
-import AdminPanel from "./AdminPanel";
+import AdminNavigation from "./AdminNavigation";
 import type { AppRole } from "../features/auth/model/auth.permissions";
 import { destructiveGhostButton } from "../shared/styles/styles";
 
@@ -76,7 +76,7 @@ function Header() {
 
         {/* Admin Panel: Rendered only with permissions */}
         {permissions.canViewAdminPanel && (
-          <AdminPanel permissions={permissions} />
+          <AdminNavigation permissions={permissions} />
         )}
 
         {/* Right: Action Panel */}

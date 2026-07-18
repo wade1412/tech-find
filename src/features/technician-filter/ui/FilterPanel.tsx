@@ -1,6 +1,6 @@
 import { useTechnicianFilters } from "../model/useTechnicianFilters";
 import { useMediaQuery } from "react-responsive";
-import { TWO_COLUMN_LAYOUT_BREAKPOINT } from "../../../shared/model/responsive.constants";
+import { DESKTOP_BREAKPOINT } from "../../../shared/model/responsive.constants";
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { filtersRevealMotionProps } from "../../../shared/styles/motionVariants";
@@ -17,7 +17,7 @@ function FilterPanel() {
   const { filter, resetFilters } = useTechnicianFilters();
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const isDesktopMode = useMediaQuery({
-    query: `(min-width: ${TWO_COLUMN_LAYOUT_BREAKPOINT})`,
+    query: `(min-width: ${DESKTOP_BREAKPOINT})`,
   });
 
   const activeFilterGroupsCount = [

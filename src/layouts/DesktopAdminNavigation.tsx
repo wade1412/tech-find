@@ -1,30 +1,13 @@
 import { NavLink } from "react-router";
-import type { AuthPermissions } from "../features/auth/model/auth.permissions";
+import type { PanelLink } from "./model/adminNavitagion";
 
-function AdminPanel({ permissions }: { permissions: AuthPermissions }) {
-  const panelLinks = [
-    {
-      hasPermission: permissions.canManageTechnicians,
-      linkTo: "/technicians",
-      label: "Technicians",
-    },
-    {
-      hasPermission: permissions.canManageUsers,
-      linkTo: "/users",
-      label: "Users",
-    },
-    {
-      hasPermission: permissions.canManageServices,
-      linkTo: "/services",
-      label: "Services",
-    },
-    {
-      hasPermission: permissions.canUseOwnerTools,
-      linkTo: "/owner",
-      label: "Owner Tools",
-    },
-  ];
+interface DesktopAdminNavigationDrawerProps {
+  panelLinks: PanelLink[];
+}
 
+function DesktopAdminNavigation({
+  panelLinks,
+}: DesktopAdminNavigationDrawerProps) {
   return (
     <div className="flex gap-2">
       {panelLinks.map(({ hasPermission, linkTo, label }) => {
@@ -51,4 +34,4 @@ function AdminPanel({ permissions }: { permissions: AuthPermissions }) {
   );
 }
 
-export default AdminPanel;
+export default DesktopAdminNavigation;
