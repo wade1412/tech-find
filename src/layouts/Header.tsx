@@ -69,9 +69,9 @@ function Header() {
             aria-hidden="true"
             className="h-10 w-10 transition-transform duration-200 group-hover:scale-105"
           />
-          <h2 className="font-heading text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+          <span className="sr-only font-heading text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 sm:not-sr-only">
             TechFind
-          </h2>
+          </span>
         </Link>
 
         {/* Admin Panel: Rendered only with permissions */}
@@ -80,11 +80,11 @@ function Header() {
         )}
 
         {/* Right: Action Panel */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           <ThemeToggle />
 
           {/* Vertical Divider */}
-          <div className="h-6 w-px bg-zinc-200 dark:bg-zinc-700" />
+          <div className="hidden h-6 w-px bg-zinc-200 dark:bg-zinc-700 sm:block" />
 
           {/* User Profile */}
           <div className="hidden flex-col items-end gap-1 sm:flex">

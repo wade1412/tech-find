@@ -1,45 +1,121 @@
 import { Drawer } from "@mui/material";
-import type { PanelLink } from "./model/adminNavitagion";
-import { useState } from "react";
-import { NavLink } from "react-router";
+import type { AdminNavigationLink } from "./model/adminNavigation";
+import { useRef, useState } from "react";
+import AdminNavigationLinks from "./AdminNavigationLinks";
 
 interface MobileAdminNavigationDrawerProps {
-  panelLinks: PanelLink[];
+  links: AdminNavigationLink[];
 }
 
 function MobileAdminNavigationDrawer({
-  panelLinks,
+  links,
 }: MobileAdminNavigationDrawerProps) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const triggerButtonRef = useRef<HTMLButtonElement>(null);
 
-  const toggleDrawerOpen = () => setIsDrawerOpen((prev) => !prev);
+  const openDrawer = () => {
+    triggerButtonRef.current?.blur();
+    setIsDrawerOpen(true);
+  };
+  const closeDrawer = () => setIsDrawerOpen(false);
 
   return (
-    <div>
-      <button onClick={toggleDrawerOpen}>Open</button>
-      <Drawer anchor="right" open={isDrawerOpen} onClose={toggleDrawerOpen}>
-        {panelLinks.map(({ hasPermission, linkTo, label }) => {
-          if (!hasPermission) return null;
+    <>
+      <button
+        ref={triggerButtonRef}
+        type="button"
+        onClick={openDrawer}
+        aria-label="Open admin navigation"
+        aria-expanded={isDrawerOpen}
+        aria-controls={isDrawerOpen ? "mobile-admin-navigation" : undefined}
+        className="inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-600 transition-[background-color,border-color,color,transform] hover:border-zinc-300 hover:bg-zinc-100 hover:text-zinc-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-main-500 focus-visible:ring-offset-2 active:scale-95 dark:border-zinc-800 dark:bg-zinc-900/70 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-50 dark:focus-visible:ring-offset-zinc-950"
+      >
+        <svg
+          aria-hidden="true"
+          className="h-5 w-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M4 7h16M4 12h16M4 17h16"
+          />
+        </svg>
+      </button>
 
-          return (
-            <NavLink
-              to={linkTo}
-              key={linkTo}
-              className={({
-                isActive,
-              }) => `active:scale-95 cursor-pointer rounded-lg px-2.5 py-1 text-sm transition-all duration-150 border-2
-                ${
-                  isActive
-                    ? "border-main-500/40 bg-main-500/10 text-main-500"
-                    : "border-transparent bg-white text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:bg-transparent dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
-                }`}
+      <Drawer
+        anchor="right"
+        open={isDrawerOpen}
+        onClose={closeDrawer}
+        slotProps={{
+          transition: {
+            onExited: () => triggerButtonRef.current?.focus(),
+          },
+          paper: {
+            id: "mobile-admin-navigation",
+            role: "dialog",
+            "aria-modal": true,
+            "aria-labelledby": "mobile-admin-navigation-title",
+            className: "text-zinc-950 dark:text-zinc-50",
+            sx: {
+              width: "min(20rem, calc(100vw - 1rem))",
+              borderLeft: 1,
+              borderColor: "divider",
+            },
+          },
+        }}
+      >
+        <div className="flex min-h-full flex-col">
+          <div className="flex items-start justify-between border-b border-zinc-200 px-5 py-4 dark:border-zinc-800">
+            <div>
+              <h2
+                id="mobile-admin-navigation-title"
+                className="font-heading text-base font-semibold text-zinc-900 dark:text-zinc-50"
+              >
+                Admin panel
+              </h2>
+              <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                Management tools available to your role
+              </p>
+            </div>
+
+            <button
+              autoFocus
+              type="button"
+              onClick={closeDrawer}
+              aria-label="Close admin navigation"
+              className="-mr-2 inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-main-500 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-50"
             >
-              {label}
-            </NavLink>
-          );
-        })}
+              <svg
+                aria-hidden="true"
+                className="h-5 w-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18 18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <nav aria-label="Admin navigation" className="flex-1 p-4">
+            <AdminNavigationLinks
+              links={links}
+              variant="mobile"
+              onNavigate={closeDrawer}
+            />
+          </nav>
+        </div>
       </Drawer>
-    </div>
+    </>
   );
 }
 
