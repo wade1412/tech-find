@@ -9,6 +9,8 @@ import { useAuthPermissions } from "../features/auth/model/useAuthPermissions";
 import AdminNavigation from "./AdminNavigation";
 import type { AppRole } from "../features/auth/model/auth.permissions";
 import { destructiveGhostButton } from "../shared/styles/styles";
+import { useMediaQuery } from "react-responsive";
+import { ADMIN_NAVIGATION_BREAKPOINT } from "../shared/model/responsive.constants";
 
 const roleLabelMap: Record<AppRole, string> = {
   user: "User",
@@ -26,6 +28,52 @@ const roleStyles = {
   owner: "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400",
 };
 
+interface UserIdentityProps {
+  workName: string;
+  realName: string;
+  role: AppRole;
+  roleLabel: string;
+  variant: "desktop" | "mobile";
+}
+
+function UserIdentity({
+  workName,
+  realName,
+  role,
+  roleLabel,
+  variant,
+}: UserIdentityProps) {
+  const isMobile = variant === "mobile";
+
+  return (
+    <div
+      className={`flex min-w-0 flex-col gap-1 ${isMobile ? "items-center text-center" : "items-end"}`}
+    >
+      <div
+        className={`flex min-w-0 flex-col gap-px ${isMobile ? "items-center" : "items-end"}`}
+      >
+        <span className="max-w-full truncate text-sm leading-none font-semibold text-zinc-900 dark:text-zinc-100">
+          {workName}
+        </span>
+
+        {realName && (
+          <span
+            className={`max-w-full truncate text-[11px] font-medium text-zinc-400 dark:text-zinc-500 ${isMobile ? "hidden min-[30rem]:block" : "max-w-37.5"}`}
+          >
+            {realName}
+          </span>
+        )}
+      </div>
+
+      <span
+        className={`inline-flex max-w-full items-center truncate rounded-md px-1.5 py-0.5 text-[10px] font-medium tracking-wide uppercase ${roleStyles[role]}`}
+      >
+        {roleLabel}
+      </span>
+    </div>
+  );
+}
+
 function Header() {
   const { theme } = useTheme();
   const logoSource = theme === "dark" ? logoDark : logoLight;
@@ -35,11 +83,16 @@ function Header() {
   const { profile, signOut } = useAuth();
   const permissions = useAuthPermissions();
   const navigate = useNavigate();
+  const isDesktopHeader = useMediaQuery({
+    query: `(min-width: ${ADMIN_NAVIGATION_BREAKPOINT})`,
+  });
 
   const workName =
     profile?.alias || profile?.full_name || profile?.email || "User";
   const realName =
-    profile?.full_name !== profile?.alias ? profile?.full_name : "";
+    profile?.full_name && profile.full_name !== profile.alias
+      ? profile.full_name
+      : "";
   const role = permissions.role || "user";
   const roleLabel = roleLabelMap[role];
 
@@ -60,7 +113,9 @@ function Header() {
 
   return (
     <header className="sticky top-0 z-10 border-b border-zinc-200 bg-zinc-50/80 backdrop-blur-sm transition-colors dark:border-zinc-800 dark:bg-zinc-950/80">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:px-6">
+      <div
+        className={`mx-auto max-w-6xl items-center px-4 py-3 md:px-6 ${isDesktopHeader ? "flex justify-between" : "grid grid-cols-[auto_minmax(0,1fr)_auto_auto] gap-2"}`}
+      >
         {/* Left: Logo And Name */}
         <Link to="/" className="group flex items-center gap-2.5">
           <img
@@ -74,49 +129,65 @@ function Header() {
           </span>
         </Link>
 
-        {/* Admin Panel: Rendered only with permissions */}
-        {permissions.canViewAdminPanel && (
-          <AdminNavigation permissions={permissions} />
-        )}
+        {isDesktopHeader ? (
+          <>
+            {permissions.canViewAdminPanel && (
+              <AdminNavigation
+                permissions={permissions}
+                variant="desktop"
+              />
+            )}
 
-        {/* Right: Action Panel */}
-        <div className="flex items-center gap-2 sm:gap-4">
-          <ThemeToggle />
-
-          {/* Vertical Divider */}
-          <div className="hidden h-6 w-px bg-zinc-200 dark:bg-zinc-700 sm:block" />
-
-          {/* User Profile */}
-          <div className="hidden flex-col items-end gap-1 sm:flex">
-            <div className="flex flex-col gap-px items-end">
-              <span className="text-sm leading-none font-semibold text-zinc-900 dark:text-zinc-100">
-                {workName}
-              </span>
-
-              {realName && (
-                <span className="max-w-37.5 truncate text-[11px] font-medium text-zinc-400 dark:text-zinc-500">
-                  {realName}
-                </span>
-              )}
+            <div className="flex items-center gap-4">
+              <ThemeToggle />
+              <div className="h-6 w-px bg-zinc-200 dark:bg-zinc-700" />
+              <UserIdentity
+                workName={workName}
+                realName={realName}
+                role={role}
+                roleLabel={roleLabel}
+                variant="desktop"
+              />
+              <button
+                type="button"
+                disabled={isSigningOut}
+                onClick={handleSignOut}
+                className={destructiveGhostButton}
+              >
+                {isSigningOut ? "Signing out..." : "Sign out"}
+              </button>
             </div>
+          </>
+        ) : (
+          <>
+            <UserIdentity
+              workName={workName}
+              realName={realName}
+              role={role}
+              roleLabel={roleLabel}
+              variant="mobile"
+            />
+            <ThemeToggle />
 
-            <span
-              className={`inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-medium tracking-wide uppercase ${roleStyles[role]}`}
-            >
-              {roleLabel}
-            </span>
-          </div>
-
-          {/* Sign Out Button */}
-          <button
-            type="button"
-            disabled={isSigningOut}
-            onClick={handleSignOut}
-            className={destructiveGhostButton}
-          >
-            {isSigningOut ? "Signing out..." : "Sign out"}
-          </button>
-        </div>
+            {permissions.canViewAdminPanel ? (
+              <AdminNavigation
+                permissions={permissions}
+                variant="mobile"
+                isSigningOut={isSigningOut}
+                onSignOut={handleSignOut}
+              />
+            ) : (
+              <button
+                type="button"
+                disabled={isSigningOut}
+                onClick={handleSignOut}
+                className={`${destructiveGhostButton} px-2 sm:px-4`}
+              >
+                {isSigningOut ? "Signing out..." : "Sign out"}
+              </button>
+            )}
+          </>
+        )}
       </div>
     </header>
   );

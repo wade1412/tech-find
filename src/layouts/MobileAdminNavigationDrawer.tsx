@@ -2,13 +2,18 @@ import { Drawer } from "@mui/material";
 import type { AdminNavigationLink } from "./model/adminNavigation";
 import { useRef, useState } from "react";
 import AdminNavigationLinks from "./AdminNavigationLinks";
+import { destructiveGhostButton } from "../shared/styles/styles";
 
 interface MobileAdminNavigationDrawerProps {
   links: AdminNavigationLink[];
+  isSigningOut: boolean;
+  onSignOut: () => void;
 }
 
 function MobileAdminNavigationDrawer({
   links,
+  isSigningOut,
+  onSignOut,
 }: MobileAdminNavigationDrawerProps) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const triggerButtonRef = useRef<HTMLButtonElement>(null);
@@ -113,6 +118,31 @@ function MobileAdminNavigationDrawer({
               onNavigate={closeDrawer}
             />
           </nav>
+
+          <div className="border-t border-zinc-200 p-4 dark:border-zinc-800">
+            <button
+              type="button"
+              disabled={isSigningOut}
+              onClick={onSignOut}
+              className={`${destructiveGhostButton} min-h-11 w-full justify-start gap-2 px-3`}
+            >
+              <svg
+                aria-hidden="true"
+                className="h-4 w-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M10 17l5-5-5-5M15 12H3m9-8h6a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"
+                />
+              </svg>
+              {isSigningOut ? "Signing out..." : "Sign out"}
+            </button>
+          </div>
         </div>
       </Drawer>
     </>

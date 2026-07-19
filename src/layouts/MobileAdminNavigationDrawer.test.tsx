@@ -1,7 +1,7 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import MobileAdminNavigationDrawer from "./MobileAdminNavigationDrawer";
 
 const links = [
@@ -9,13 +9,19 @@ const links = [
   { to: "/users", label: "Users" },
 ];
 
+afterEach(cleanup);
+
 describe("MobileAdminNavigationDrawer", () => {
   it("opens accessibly and closes after navigation", async () => {
     const user = userEvent.setup();
 
     render(
       <MemoryRouter initialEntries={["/technicians"]}>
-        <MobileAdminNavigationDrawer links={links} />
+        <MobileAdminNavigationDrawer
+          links={links}
+          isSigningOut={false}
+          onSignOut={vi.fn()}
+        />
       </MemoryRouter>,
     );
 
@@ -51,5 +57,27 @@ describe("MobileAdminNavigationDrawer", () => {
     });
     expect(openButton.getAttribute("aria-expanded")).toBe("false");
     expect(openButton).toBe(document.activeElement);
+  });
+
+  it("exposes sign out as a separate drawer action", async () => {
+    const user = userEvent.setup();
+    const onSignOut = vi.fn();
+
+    render(
+      <MemoryRouter>
+        <MobileAdminNavigationDrawer
+          links={links}
+          isSigningOut={false}
+          onSignOut={onSignOut}
+        />
+      </MemoryRouter>,
+    );
+
+    await user.click(
+      screen.getByRole("button", { name: "Open admin navigation" }),
+    );
+    await user.click(screen.getByRole("button", { name: "Sign out" }));
+
+    expect(onSignOut).toHaveBeenCalledOnce();
   });
 });
