@@ -7,72 +7,10 @@ import { useAuth } from "../features/auth/model/AuthContext";
 import { useState } from "react";
 import { useAuthPermissions } from "../features/auth/model/useAuthPermissions";
 import AdminNavigation from "./AdminNavigation";
-import type { AppRole } from "../features/auth/model/auth.permissions";
 import { destructiveGhostButton } from "../shared/styles/styles";
 import { useMediaQuery } from "react-responsive";
 import { ADMIN_NAVIGATION_BREAKPOINT } from "../shared/model/responsive.constants";
-
-const roleLabelMap: Record<AppRole, string> = {
-  user: "User",
-  secondary_admin: "Secondary Admin",
-  main_admin: "Main Admin",
-  owner: "Owner",
-};
-
-const roleStyles = {
-  user: "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300",
-  secondary_admin:
-    "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400",
-  main_admin:
-    "bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-400",
-  owner: "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400",
-};
-
-interface UserIdentityProps {
-  workName: string;
-  realName: string;
-  role: AppRole;
-  roleLabel: string;
-  variant: "desktop" | "mobile";
-}
-
-function UserIdentity({
-  workName,
-  realName,
-  role,
-  roleLabel,
-  variant,
-}: UserIdentityProps) {
-  const isMobile = variant === "mobile";
-
-  return (
-    <div
-      className={`flex min-w-0 flex-col gap-1 ${isMobile ? "items-center text-center" : "items-end"}`}
-    >
-      <div
-        className={`flex min-w-0 flex-col gap-px ${isMobile ? "items-center" : "items-end"}`}
-      >
-        <span className="max-w-full truncate text-sm leading-none font-semibold text-zinc-900 dark:text-zinc-100">
-          {workName}
-        </span>
-
-        {realName && (
-          <span
-            className={`max-w-full truncate text-[11px] font-medium text-zinc-400 dark:text-zinc-500 ${isMobile ? "hidden min-[30rem]:block" : "max-w-37.5"}`}
-          >
-            {realName}
-          </span>
-        )}
-      </div>
-
-      <span
-        className={`inline-flex max-w-full items-center truncate rounded-md px-1.5 py-0.5 text-[10px] font-medium tracking-wide uppercase ${roleStyles[role]}`}
-      >
-        {roleLabel}
-      </span>
-    </div>
-  );
-}
+import UserIdentity from "../entities/user/ui/UserIdentity";
 
 function Header() {
   const { theme } = useTheme();
@@ -87,14 +25,12 @@ function Header() {
     query: `(min-width: ${ADMIN_NAVIGATION_BREAKPOINT})`,
   });
 
-  const workName =
-    profile?.alias || profile?.full_name || profile?.email || "User";
+  const workName = profile?.alias || "User";
   const realName =
     profile?.full_name && profile.full_name !== profile.alias
       ? profile.full_name
       : "";
   const role = permissions.role || "user";
-  const roleLabel = roleLabelMap[role];
 
   const handleSignOut = async () => {
     if (isSigningOut) return;
@@ -132,10 +68,7 @@ function Header() {
         {isDesktopHeader ? (
           <>
             {permissions.canViewAdminPanel && (
-              <AdminNavigation
-                permissions={permissions}
-                variant="desktop"
-              />
+              <AdminNavigation permissions={permissions} variant="desktop" />
             )}
 
             <div className="flex items-center gap-4">
@@ -145,7 +78,6 @@ function Header() {
                 workName={workName}
                 realName={realName}
                 role={role}
-                roleLabel={roleLabel}
                 variant="desktop"
               />
               <button
@@ -164,7 +96,6 @@ function Header() {
               workName={workName}
               realName={realName}
               role={role}
-              roleLabel={roleLabel}
               variant="mobile"
             />
             <ThemeToggle />

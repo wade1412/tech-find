@@ -1,18 +1,18 @@
 import { useMemo } from "react";
-import ManageTechnicianCard from "../../features/technician-management/ui/ManageTechnicianCard";
-import { useTechniciansQuery } from "../../entities/technician/useTechniciansQuery";
-import PageHeader from "../../shared/ui/PageHeader";
-import { useZoneNamesByTechnicianId } from "../../entities/technician-service-zone/useZoneNamesByTechnicianId";
-import SearchInput from "../../shared/ui/SearchInput";
-import { filterManageTechnicians } from "../../features/technician-management/model/filterManageTechnicians";
-import { AnimatePresence } from "motion/react";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
+import { Link, useSearchParams } from "react-router";
+import { useUsersQuery } from "../../entities/user/useUsersQuery";
+import {
+  isUserStatusFilterValue,
+  USER_STATUS_FILTER_OPTIONS,
+  type UserStatusFilterValue,
+} from "../../features/user-management/model/userListFilters.constants";
+import { filterUsers } from "../../features/user-management/model/filterUsers";
+import ManageUserCard from "../../features/user-management/ui/ManageUserCard";
 import {
   managementListItemVariants,
   managementListVariants,
 } from "../../shared/styles/motionVariants";
-import ErrorMessage from "../../shared/ui/ErrorMessage";
-import { Link, useSearchParams } from "react-router";
 import {
   buttonContainerStyle,
   centeredContainerStyle,
@@ -24,45 +24,30 @@ import {
   pageTitleWithButtonsContainerStyle,
   sectionHeaderSubtextStyle,
 } from "../../shared/styles/styles";
-import SegmentedControl from "../../shared/ui/SegmentedControl";
-import {
-  isManageTechniciansListFilterValue,
-  MANAGE_TECHNICIANS_LIST_FILTER_OPTIONS,
-  type ManageTechniciansListFilterValue,
-} from "../../features/technician-management/model/manageTechnicians.constants";
-import OpenArchivedTechniciansDialogButton from "../../features/technician-management/archive-technician/ui/OpenArchivedTechniciansDialogButton";
+import ErrorMessage from "../../shared/ui/ErrorMessage";
 import ManagementListSkeleton from "../../shared/ui/ManagementListSkeleton";
+import PageHeader from "../../shared/ui/PageHeader";
+import SearchInput from "../../shared/ui/SearchInput";
+import SegmentedControl from "../../shared/ui/SegmentedControl";
 
-function ManageTechniciansPage() {
-  const {
-    data: allTechnicians,
-    isPending: isTechniciansPending,
-    isError: isTechniciansError,
-    error: techniciansError,
-  } = useTechniciansQuery("all");
-  const {
-    zoneNamesByTechnicianId,
-    isPending: isZoneNamesPending,
-    isError: isZoneNamesError,
-    error: zoneNamesErrorObj,
-  } = useZoneNamesByTechnicianId();
+function formatUserCount(count: number) {
+  return `${count} ${count === 1 ? "user" : "users"}`;
+}
 
-  const isPending = isTechniciansPending || isZoneNamesPending;
-  const isError = isTechniciansError || isZoneNamesError;
-  const error = techniciansError ?? zoneNamesErrorObj;
-
+function ManageUsersPage() {
+  const { data: users, isPending, isError, error } = useUsersQuery();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const searchTerm = searchParams.get("query") || "";
   const filterParam = searchParams.get("filter");
-  const statusFilter = isManageTechniciansListFilterValue(filterParam)
+  const statusFilter = isUserStatusFilterValue(filterParam)
     ? filterParam
     : "all";
+  const searchTerm = searchParams.get("query") || "";
 
   const handleInputChange = (value: string) => {
     setSearchParams(
-      (prev) => {
-        const nextParams = new URLSearchParams(prev);
+      (previousParams) => {
+        const nextParams = new URLSearchParams(previousParams);
 
         if (value) {
           nextParams.set("query", value);
@@ -76,12 +61,10 @@ function ManageTechniciansPage() {
     );
   };
 
-  const handleStatusFilterChange = (
-    value: ManageTechniciansListFilterValue,
-  ) => {
+  const handleStatusFilterChange = (value: UserStatusFilterValue) => {
     setSearchParams(
-      (prev) => {
-        const nextParams = new URLSearchParams(prev);
+      (previousParams) => {
+        const nextParams = new URLSearchParams(previousParams);
 
         if (value === "all") {
           nextParams.delete("filter");
@@ -97,8 +80,8 @@ function ManageTechniciansPage() {
 
   const clearFilters = () => {
     setSearchParams(
-      (prev) => {
-        const nextParams = new URLSearchParams(prev);
+      (previousParams) => {
+        const nextParams = new URLSearchParams(previousParams);
         nextParams.delete("query");
         nextParams.delete("filter");
         return nextParams;
@@ -107,20 +90,17 @@ function ManageTechniciansPage() {
     );
   };
 
-  const visibleTechnicians = useMemo(
-    () =>
-      filterManageTechnicians({
-        technicians: allTechnicians ?? [],
-        searchTerm,
-        status: statusFilter,
-        zoneNamesByTechnicianId,
-      }),
-    [allTechnicians, searchTerm, statusFilter, zoneNamesByTechnicianId],
+  const visibleUsers = useMemo(
+    () => filterUsers({ users: users ?? [], searchTerm, status: statusFilter }),
+    [users, searchTerm, statusFilter],
   );
 
   const hasAppliedFilters =
     Boolean(searchTerm.trim()) || statusFilter !== "all";
-  const technicianCount = allTechnicians?.length ?? 0;
+  const usersCount = users?.length ?? 0;
+  const resultCountLabel = hasAppliedFilters
+    ? `${visibleUsers.length} of ${formatUserCount(usersCount)}`
+    : formatUserCount(usersCount);
 
   if (isPending) {
     return <ManagementListSkeleton />;
@@ -139,93 +119,79 @@ function ManageTechniciansPage() {
       <section className={formStyle}>
         <div className={pageTitleWithButtonsContainerStyle}>
           <PageHeader
-            title="Manage Technicians"
-            subtitle="Select a technician to edit the data"
+            title="Manage Users"
+            subtitle="Select a user to edit their profile and role"
           />
 
           <div className={buttonContainerStyle}>
-            <OpenArchivedTechniciansDialogButton />
             <Link to="new" className={createManagementItemButtonStyle}>
               <svg
-                fill="none"
+                aria-hidden="true"
                 className="h-3.5 w-3.5"
                 viewBox="0 0 24 24"
+                fill="none"
                 stroke="currentColor"
                 strokeWidth={2.5}
-                aria-hidden="true"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 4.5v15m7.5-7.5h-15"
-                />
+                <path strokeLinecap="round" d="M12 4.5v15m7.5-7.5h-15" />
               </svg>
-
-              <span className="text-center">Create Technician</span>
+              <span>Create User</span>
             </Link>
           </div>
         </div>
 
-        {/* Divider */}
         <div
           aria-hidden="true"
           className="h-px w-full bg-zinc-200 dark:bg-zinc-800"
         />
 
-        {/* List Filter and Search */}
         <div className={`${formStyle} px-2`}>
           <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
             <div className="w-full sm:w-auto sm:min-w-75">
               <SegmentedControl
-                ariaLabel="Select technicians filter"
-                options={MANAGE_TECHNICIANS_LIST_FILTER_OPTIONS}
+                ariaLabel="Filter users by status"
+                options={USER_STATUS_FILTER_OPTIONS}
                 onChange={handleStatusFilterChange}
                 value={statusFilter}
               />
             </div>
 
             <SearchInput
-              placeholder="Search by name, ZIP, or zone..."
-              ariaLabel="Search technicians"
+              placeholder="Search by name, email, or role..."
+              ariaLabel="Search users"
               className="w-full sm:w-72"
               value={searchTerm}
               onValueChange={handleInputChange}
             />
           </div>
 
-          {/* List */}
           <div>
-            <div
+            <p
               aria-live="polite"
               className={`${sectionHeaderSubtextStyle} mb-2.5`}
             >
-              {hasAppliedFilters
-                ? `${visibleTechnicians.length} of ${technicianCount} technicians`
-                : `${technicianCount} technicians`}
-            </div>
+              {resultCountLabel}
+            </p>
+
             <motion.div
               className={manageListGridStyle}
               variants={managementListVariants}
               initial="hidden"
               animate="visible"
-              exit="exit"
             >
               <AnimatePresence mode="popLayout">
-                {visibleTechnicians.length > 0 ? (
-                  visibleTechnicians.map((technician) => (
+                {visibleUsers.length > 0 ? (
+                  visibleUsers.map((user) => (
                     <motion.div
-                      key={technician.id}
+                      key={user.id}
                       layout
                       variants={managementListItemVariants}
                       initial="hidden"
                       animate="visible"
                       exit="exit"
-                      whileTap={{ scale: 0.95 }}
+                      whileTap={{ scale: 0.98 }}
                     >
-                      <ManageTechnicianCard
-                        technician={technician}
-                        zones={zoneNamesByTechnicianId.get(technician.id) || []}
-                      />
+                      <ManageUserCard user={user} />
                     </motion.div>
                   ))
                 ) : (
@@ -238,7 +204,11 @@ function ManageTechniciansPage() {
                     exit="exit"
                     className={`${noEditValuesStyle} col-span-full flex flex-col items-center gap-2`}
                   >
-                    <p>No technicians match the current filters.</p>
+                    <p>
+                      {hasAppliedFilters
+                        ? "No users match the current filters."
+                        : "No users have been created yet."}
+                    </p>
                     {hasAppliedFilters && (
                       <button
                         type="button"
@@ -259,4 +229,4 @@ function ManageTechniciansPage() {
   );
 }
 
-export default ManageTechniciansPage;
+export default ManageUsersPage;
