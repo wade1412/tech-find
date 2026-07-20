@@ -6,18 +6,19 @@ import AuthenticatedLayout from "../layouts/AuthenticatedLayout";
 import PermissionRoute from "../features/auth/ui/PermissionRoute";
 import NotFoundPage from "../pages/NotFoundPage";
 
-const HomePage = lazy(() => import("../pages/HomePage"));
+//Login and related
 const LoginPage = lazy(() => import("../pages/LoginPage"));
 const ForgotPasswordPage = lazy(() => import("../pages/ForgotPasswordPage"));
-const SecureEmailLinkPage = lazy(
-  () => import("../pages/SecureEmailLinkPage"),
-);
-const UpdatePasswordPage = lazy(
-  () => import("../pages/UpdatePasswordPage"),
-);
+const SecureEmailLinkPage = lazy(() => import("../pages/SecureEmailLinkPage"));
+const UpdatePasswordPage = lazy(() => import("../pages/UpdatePasswordPage"));
 const EmailConfirmationPage = lazy(
   () => import("../pages/EmailConfirmationPage"),
 );
+
+//Home
+const HomePage = lazy(() => import("../pages/HomePage"));
+
+//Technicians
 const ManageTechniciansPage = lazy(
   () => import("../pages/manageTechnicians/ManageTechniciansPage"),
 );
@@ -27,8 +28,19 @@ const NewTechnicianPage = lazy(
 const EditTechnicianPage = lazy(
   () => import("../pages/manageTechnicians/EditTechnicianPage"),
 );
+
+// Users
+const ManageUsersPage = lazy(
+  () => import("../pages/manageUsers/ManageUsersPage"),
+);
+const EditUserPage = lazy(
+  () => import("../pages/manageUsers/EditUserPage"),
+);
+const NewUserPage = lazy(
+  () => import("../pages/manageUsers/NewUserPage"),
+);
+
 const ManageServicesPage = lazy(() => import("../pages/ManageServicesPage"));
-const ManageUsersPage = lazy(() => import("../pages/ManageUsersPage"));
 const OwnerToolsPage = lazy(() => import("../pages/OwnerToolsPage"));
 
 function App() {
@@ -109,10 +121,14 @@ function App() {
           path="users"
           element={
             <PermissionRoute permission="canManageUsers">
-              <ManageUsersPage />
+              <Outlet />
             </PermissionRoute>
           }
-        />
+        >
+          <Route index element={<ManageUsersPage />} />
+          <Route path=":userId/edit" element={<EditUserPage />} />
+          <Route path="new" element={<NewUserPage />} />
+        </Route>
         <Route
           path="owner"
           element={
