@@ -1,4 +1,7 @@
 import type { UserProfile } from "./auth.types";
+import type { AppRole } from "../../../entities/user/user.types";
+
+export type { AppRole } from "../../../entities/user/user.types";
 
 export const ROLE_LEVEL = {
   user: 0,
@@ -6,8 +9,6 @@ export const ROLE_LEVEL = {
   main_admin: 2,
   owner: 3,
 };
-
-export type AppRole = keyof typeof ROLE_LEVEL;
 
 export interface AuthPermissions {
   role: AppRole | null;
