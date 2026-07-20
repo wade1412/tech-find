@@ -12,4 +12,5 @@ export const queryKeys = {
   technicianIgnoreList: ["technician_ignore_list"],
   serviceZone: ["service_zone"],
   technicianServiceZone: ["technician_service_zone"],
+  users: ["users"],
 } as const;
