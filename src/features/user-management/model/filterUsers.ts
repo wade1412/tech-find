@@ -1,11 +1,11 @@
 import type { User } from "../../../entities/user/user.types";
 import { normalizeSearchText } from "../../../shared/model/helpers";
-import type { ManageUsersListFilterValue } from "./manageUsers.constants";
+import type { UserStatusFilterValue } from "./userListFilters.constants";
 
 type FilterUsersParams = {
   users: User[];
   searchTerm: string;
-  status: ManageUsersListFilterValue;
+  status: UserStatusFilterValue;
 };
 
 export const filterUsers = ({
@@ -26,11 +26,9 @@ export const filterUsers = ({
     const searchableText = normalizeSearchText(
       [
         user.alias,
-        user.created_at,
         user.email,
         user.full_name,
         user.role,
-        user.updated_at,
       ].join(" "),
     );
 
