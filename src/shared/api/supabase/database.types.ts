@@ -387,30 +387,30 @@ export type Database = {
       user_profile: {
         Row: {
           active: boolean
-          alias: string | null
+          alias: string
           created_at: string
           email: string
-          full_name: string | null
+          full_name: string
           id: string
           role: Database["public"]["Enums"]["app_role"]
           updated_at: string
         }
         Insert: {
           active?: boolean
-          alias?: string | null
+          alias: string
           created_at?: string
           email: string
-          full_name?: string | null
+          full_name: string
           id: string
           role?: Database["public"]["Enums"]["app_role"]
           updated_at?: string
         }
         Update: {
           active?: boolean
-          alias?: string | null
+          alias?: string
           created_at?: string
           email?: string
-          full_name?: string | null
+          full_name?: string
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           updated_at?: string
