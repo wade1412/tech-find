@@ -14,10 +14,14 @@ import {
 import ErrorMessage from "../../shared/ui/ErrorMessage";
 import { Link, useSearchParams } from "react-router";
 import {
+  buttonContainerStyle,
+  centeredContainerStyle,
   createNewTechnicianButtonStyle,
   formStyle,
   ghostButton,
+  manageListGridStyle,
   noEditValuesStyle,
+  pageTitleWithButtonsContainerStyle,
   sectionHeaderSubtextStyle,
 } from "../../shared/styles/styles";
 import SegmentedControl from "../../shared/ui/SegmentedControl";
@@ -119,7 +123,7 @@ function ManageTechniciansPage() {
 
   if (isPending) {
     return (
-      <div className="mx-auto max-w-6xl p-4 md:p-6">
+      <div className={centeredContainerStyle}>
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div className="flex flex-col gap-2">
@@ -142,19 +146,23 @@ function ManageTechniciansPage() {
   }
 
   if (isError) {
-    return <ErrorMessage message={error?.message} />;
+    return (
+      <div className={centeredContainerStyle}>
+        <ErrorMessage message={error?.message} />
+      </div>
+    );
   }
 
   return (
-    <div className="mx-auto max-w-6xl p-4 md:p-6">
+    <div className={centeredContainerStyle}>
       <section className={formStyle}>
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div className={pageTitleWithButtonsContainerStyle}>
           <PageHeader
             title="Manage Technicians"
             subtitle="Select a technician to edit the data"
           />
 
-          <div className="flex w-full flex-col gap-2 sm:flex-row md:w-auto md:items-center">
+          <div className={buttonContainerStyle}>
             <OpenArchivedTechniciansDialogButton />
             <Link to="new" className={createNewTechnicianButtonStyle}>
               <svg
@@ -215,7 +223,7 @@ function ManageTechniciansPage() {
                 : `${technicianCount} technicians`}
             </div>
             <motion.div
-              className="grid grid-cols-1 gap-2.5 md:grid-cols-3"
+              className={manageListGridStyle}
               variants={technicianListVariants}
               initial="hidden"
               animate="visible"

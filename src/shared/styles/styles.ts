@@ -48,3 +48,13 @@ export const noEditValuesStyle = `${autocompleteMutedBase} py-[1.075rem] text-ce
 
 export const sectionHeaderSubtextStyle =
   "text-xs text-zinc-500 dark:text-zinc-400";
+
+export const manageListGridStyle = "grid grid-cols-1 gap-2.5 md:grid-cols-3";
+
+export const centeredContainerStyle = "mx-auto max-w-6xl p-4 md:p-6";
+
+export const buttonContainerStyle =
+  "flex w-full flex-col gap-2 sm:flex-row md:w-auto md:items-center";
+
+export const pageTitleWithButtonsContainerStyle =
+  "flex flex-col gap-3 md:flex-row md:items-center md:justify-between";

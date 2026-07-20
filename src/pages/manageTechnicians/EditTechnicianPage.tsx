@@ -16,6 +16,7 @@ import {
 } from "../../features/technician-management/model/manageTechnicians.constants";
 import EditTechnicianSkeleton from "../../features/technician-management/ui/EditTechnicianSkeleton";
 import ArchiveTechnicianWithConfirmationButton from "../../features/technician-management/archive-technician/ui/ArchiveTechnicianWithConfirmationButton";
+import { centeredContainerStyle } from "../../shared/styles/styles";
 
 function EditTechnicianPage() {
   const { technicianId } = useParams();
@@ -49,7 +50,7 @@ function EditTechnicianPage() {
 
   if (isError) {
     return (
-      <div className="mx-auto max-w-6xl p-4 md:p-6">
+      <div className={centeredContainerStyle}>
         <ErrorMessage message={error?.message} />
       </div>
     );
@@ -63,7 +64,7 @@ function EditTechnicianPage() {
   const subtitle = `ZIP ${selectedTechnician.home_zip_code} · ${zoneNames.join(" - ")}`;
 
   return (
-    <div className="mx-auto max-w-6xl p-4 md:p-6">
+    <div className={centeredContainerStyle}>
       <section className="flex flex-col gap-4">
         {/* Header */}
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
