@@ -13,7 +13,8 @@ const USER_SELECT = `active,
 export const getAllUsers = async (): Promise<User[]> => {
   const { data, error } = await supabase
     .from("user_profile")
-    .select(USER_SELECT);
+    .select(USER_SELECT)
+    .order("alias", { ascending: true });
 
   if (error) throw error;
 
