@@ -1,4 +1,5 @@
 import type { Technician } from "../../../entities/technician/technician.types";
+import { normalizeSearchText } from "../../../shared/model/helpers";
 import type { ManageTechniciansListFilterValue } from "./manageTechnicians.constants";
 
 type FilterManageTechniciansParams = {
@@ -7,13 +8,6 @@ type FilterManageTechniciansParams = {
   status: ManageTechniciansListFilterValue;
   zoneNamesByTechnicianId: ReadonlyMap<string, string[]>;
 };
-
-const normalizeSearchText = (value: string) =>
-  value
-    .toLowerCase()
-    .replace(/[\p{P}\p{S}]+/gu, " ")
-    .trim()
-    .replace(/\s+/g, " ");
 
 export const filterManageTechnicians = ({
   technicians,
@@ -31,8 +25,7 @@ export const filterManageTechnicians = ({
     if (!matchesStatus) return false;
     if (terms.length === 0) return true;
 
-    const technicianZones =
-      zoneNamesByTechnicianId.get(technician.id) ?? [];
+    const technicianZones = zoneNamesByTechnicianId.get(technician.id) ?? [];
     const searchableText = normalizeSearchText(
       [
         technician.alias,
