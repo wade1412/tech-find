@@ -18,9 +18,9 @@ import {
   formStyle,
   formWithPaddingStyle,
 } from "../../../../shared/styles/styles";
-import SubmitArea from "../../ui/SubmitArea";
-import SubmitSnackbar from "../../ui/SubmitSnackbar";
-import TechnicianActiveBar from "./TechnicianActiveBar";
+import FormSubmitArea from "../../../../shared/ui/FormSubmitArea";
+import SaveSuccessSnackbar from "../../../../shared/ui/SaveSuccessSnackbar";
+import ActiveStatusBar from "../../../../shared/ui/ActiveStatusBar";
 
 interface ProfileAndCapabilitiesSectionProps {
   technician: Technician;
@@ -42,8 +42,8 @@ function ProfileAndCapabilitiesSection({
     return { min: min, max: max ?? min };
   }, [formState.jobs_per_day]);
 
-  const toggleActive = () =>
-    setFormState((prev) => ({ ...prev, active: !prev.active }));
+  const setActive = (active: boolean) =>
+    setFormState((prev) => ({ ...prev, active }));
 
   const onProfileFieldChange = (key: ProfileFieldKey, newValue: string) => {
     setFormState((prev) => ({ ...prev, [key]: newValue }));
@@ -95,10 +95,13 @@ function ProfileAndCapabilitiesSection({
   return (
     <form className={formStyle} onSubmit={handleSubmit} noValidate>
       {/* Head - Technician Active Status */}
-      <TechnicianActiveBar
+      <ActiveStatusBar
+        label="Technician status"
+        activeDescription="Active technicians are included in matching results."
+        inactiveDescription="Inactive technicians are excluded from all matching results."
         isActive={formState.active}
-        isDisabled={isPending}
-        toggleActive={toggleActive}
+        disabled={isPending}
+        onChange={setActive}
       />
 
       {/* Fields */}
@@ -114,17 +117,17 @@ function ProfileAndCapabilitiesSection({
         />
 
         {/* Submit Area */}
-        <SubmitArea
+        <FormSubmitArea
           error={updateTechnicianMutation.error}
           isDirty={isDirty}
           isPending={isPending}
-          handleDiscardChanges={handleDiscardChanges}
+          onDiscard={handleDiscardChanges}
         />
 
         {/* Success Snackbar */}
-        <SubmitSnackbar
+        <SaveSuccessSnackbar
           isOpen={isSavedSnackbarOpen}
-          handleClose={() => setIsSavedSnackbarOpen(false)}
+          onClose={() => setIsSavedSnackbarOpen(false)}
         />
       </div>
     </form>
