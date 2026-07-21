@@ -1,14 +1,9 @@
 import type { UserProfile } from "./auth.types";
 import type { AppRole } from "../../../entities/user/user.types";
+import { ROLE_LEVEL } from "../../../entities/user/roles.constants";
 
 export type { AppRole } from "../../../entities/user/user.types";
-
-export const ROLE_LEVEL = {
-  user: 0,
-  secondary_admin: 1,
-  main_admin: 2,
-  owner: 3,
-};
+export { ROLE_LEVEL } from "../../../entities/user/roles.constants";
 
 export interface AuthPermissions {
   role: AppRole | null;
