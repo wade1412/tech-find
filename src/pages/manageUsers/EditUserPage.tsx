@@ -2,12 +2,13 @@ import { useParams } from "react-router";
 import { useUsersQuery } from "../../entities/user/useUsersQuery";
 import {
   centeredContainerStyle,
-  editHeaderWithButtonContainerStyle,
   formStyle,
-  ghostButton,
 } from "../../shared/styles/styles";
 import ErrorMessage from "../../shared/ui/ErrorMessage";
 import PageHeader from "../../shared/ui/PageHeader";
+import EditUserForm from "../../features/user-management/ui/EditUserForm";
+import NotFoundPage from "../NotFoundPage";
+import { InlineSpinner } from "../../shared/ui/Spinners";
 
 function EditUserPage() {
   const { userId } = useParams<{ userId: string }>();
@@ -16,29 +17,30 @@ function EditUserPage() {
   const selectedUser = users?.find((user) => user.id === userId);
 
   if (isPending) {
-    <div className={centeredContainerStyle}>Loading...</div>;
+    return <InlineSpinner />;
   }
 
   if (isError) {
-    <div className={centeredContainerStyle}>
-      <ErrorMessage message={error?.message} />
-    </div>;
+    return (
+      <div className={centeredContainerStyle}>
+        <ErrorMessage message={error?.message} />
+      </div>
+    );
+  }
+
+  if (!selectedUser) {
+    return <NotFoundPage />;
   }
 
   return (
     <div className={centeredContainerStyle}>
       <section className={formStyle}>
-        {/* Header */}
-        <div className={editHeaderWithButtonContainerStyle}>
-          <PageHeader
-            title={selectedUser?.alias || "User Alias"}
-            subtitle={selectedUser?.email}
-          />
+        <PageHeader
+          title={selectedUser.alias}
+          subtitle={`${selectedUser.full_name} · ${selectedUser.email}`}
+        />
 
-          <button className={ghostButton}>Archive</button>
-        </div>
-
-        {/* User Info Form */}
+        <EditUserForm key={selectedUser.id} user={selectedUser} />
       </section>
     </div>
   );

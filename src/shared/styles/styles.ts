@@ -11,6 +11,12 @@ export const formStyle = "flex flex-col gap-4";
 
 export const formWithPaddingStyle = `${formStyle} p-2`;
 
+export const formLabelStyle =
+  "text-sm font-medium text-zinc-400 dark:text-zinc-500";
+
+export const formInputStyle =
+  "rounded-xl border border-zinc-200 bg-zinc-50/50 px-3.5 py-2 text-sm text-zinc-900 outline-none transition-[border,background-color,color] focus:border-main-500 focus:bg-white focus:ring-2 focus:ring-main-500/20 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-main-500 dark:focus:bg-zinc-950";
+
 export const skillGroupTitleStyle =
   "font-heading border-b border-zinc-100 px-5 py-3 text-sm font-bold text-zinc-800 dark:text-zinc-950 dark:border-zinc-800 bg-main-500/80 dark:bg-main-400/85 rounded-t-xl";
 
