@@ -15,7 +15,7 @@ import {
   type EditSectionId,
 } from "../../features/technician-management/model/manageTechnicians.constants";
 import EditTechnicianSectionCard from "./EditTechnicianSectionCard";
-import TechnicianActiveBar from "../../features/technician-management/profile-and-capabilities/ui/TechnicianActiveBar";
+import ActiveStatusBar from "../../shared/ui/ActiveStatusBar";
 import ProfileAndCapabilitiesFields from "../../features/technician-management/profile-and-capabilities/ui/ProfileAndCapabilitiesFields";
 import {
   formatJobsPerDayRange,
@@ -68,10 +68,10 @@ function NewTechnicianForm({
   const createTechnicianMutation = useCreateTechnicianMutation();
 
   // ----- Profile Section Handlers -----
-  const toggleActive = () =>
+  const setActive = (active: boolean) =>
     setNewTechnicianDraft((prev) => ({
       ...prev,
-      profile: { ...prev.profile, active: !prev.profile.active },
+      profile: { ...prev.profile, active },
     }));
   const onProfileFieldChange = (key: ProfileFieldKey, newValue: string) => {
     setNewTechnicianDraft((prev) => ({
@@ -184,10 +184,13 @@ function NewTechnicianForm({
         {/* Selected Section */}
         {selectedSectionId === "profile" && (
           <div className={formStyle}>
-            <TechnicianActiveBar
+            <ActiveStatusBar
+              label="Technician status"
               isActive={newTechnicianDraft.profile.active}
-              isDisabled={isPending}
-              toggleActive={toggleActive}
+              disabled={isPending}
+              onChange={setActive}
+              activeDescription="This technician can be scheduled for jobs."
+              inactiveDescription="This technician is excluded from scheduling."
             />
             <div className="p-2">
               <ProfileAndCapabilitiesFields
