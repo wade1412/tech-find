@@ -4,7 +4,7 @@ import {
   createTechnicianFormState,
 } from "./profile.helpers";
 import { makeTechnician } from "../../../technician-filter/model/filterTestFixtures";
-import { EDITABLE_KEYS } from "./profile.constants";
+import { EDITABLE_TECHNICIAN_PROFILE_KEYS } from "./profile.constants";
 
 describe("createTechnicianFormState", () => {
   it("takes only editable keys", () => {
@@ -12,7 +12,7 @@ describe("createTechnicianFormState", () => {
 
     const draft = createTechnicianFormState(technician);
 
-    expect(Object.keys(draft)).toEqual(EDITABLE_KEYS);
+    expect(Object.keys(draft)).toEqual(EDITABLE_TECHNICIAN_PROFILE_KEYS);
   });
 
   it("converts null notes to empty string", () => {

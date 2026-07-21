@@ -1,26 +1,22 @@
 import { Alert, Snackbar } from "@mui/material";
 
-interface SubmitSnackbarProps {
+interface SaveSuccessSnackbarProps {
   isOpen: boolean;
-  handleClose: () => void;
+  onClose: () => void;
 }
 
-function SubmitSnackbar({ isOpen, handleClose }: SubmitSnackbarProps) {
+function SaveSuccessSnackbar({ isOpen, onClose }: SaveSuccessSnackbarProps) {
   return (
     <Snackbar
       open={isOpen}
       autoHideDuration={2500}
-      onClose={handleClose}
+      onClose={onClose}
       anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      slotProps={{
-        transition: {
-          timeout: 180,
-        },
-      }}
+      slotProps={{ transition: { timeout: 180 } }}
     >
       <Alert
         severity="success"
-        onClose={handleClose}
+        onClose={onClose}
         sx={(theme) => ({
           alignItems: "center",
           borderRadius: "14px",
@@ -38,4 +34,4 @@ function SubmitSnackbar({ isOpen, handleClose }: SubmitSnackbarProps) {
   );
 }
 
-export default SubmitSnackbar;
+export default SaveSuccessSnackbar;

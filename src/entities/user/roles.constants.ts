@@ -1,11 +1,22 @@
 import type { AppRole } from "./user.types";
 
-export const roleLabelMap: Record<AppRole, string> = {
-  user: "User",
-  secondary_admin: "Secondary Admin",
-  main_admin: "Main Admin",
-  owner: "Owner",
+export const ROLE_LEVEL: Record<AppRole, number> = {
+  user: 0,
+  secondary_admin: 1,
+  main_admin: 2,
+  owner: 3,
 };
+
+export const USER_ROLE_OPTIONS = [
+  { value: "user", label: "User" },
+  { value: "secondary_admin", label: "Secondary Admin" },
+  { value: "main_admin", label: "Main Admin" },
+  { value: "owner", label: "Owner" },
+] as const satisfies ReadonlyArray<{ value: AppRole; label: string }>;
+
+export const roleLabelMap = Object.fromEntries(
+  USER_ROLE_OPTIONS.map(({ value, label }) => [value, label]),
+) as Record<AppRole, string>;
 
 export const roleStyles: Record<AppRole, string> = {
   user: "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300",
