@@ -98,7 +98,7 @@ function TechnicianList() {
   if (isError) return <ErrorMessage message={error?.message} />;
 
   return (
-    <div className="relative flex min-h-0 flex-col gap-2.5 md:h-(--technician-list-height) md:overflow-hidden">
+    <div className="relative flex h-full min-h-0 flex-col gap-2.5 overflow-hidden">
       <div className="flex items-center justify-between">
         <h2 className="font-heading text-sm font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
           Technicians
@@ -121,7 +121,7 @@ function TechnicianList() {
         values={orderedIds}
         onReorder={handleReorder}
         onScroll={updateScrollFade}
-        className="technician-scroll flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto overscroll-contain px-1 md:pb-8"
+        className="technician-scroll flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto overscroll-contain px-1 pb-8"
         variants={technicianListVariants}
         initial="hidden"
         animate="visible"

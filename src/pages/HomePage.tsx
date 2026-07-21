@@ -1,39 +1,21 @@
-import type { CSSProperties } from "react";
 import TechnicianList from "../entities/technician/ui/TechnicianList";
 import FilterPanel from "../features/technician-filter/ui/FilterPanel";
-import { useAvailableViewportHeight } from "../shared/hooks/useAvailableViewportHeight";
 import { centeredContainerStyle } from "../shared/styles/styles";
 
-type TechnicianListHeightStyle = CSSProperties & {
-  "--technician-list-height"?: string;
-};
-
 export function HomePage() {
-  const { ref: technicianColumnRef, height: availableViewportHeight } =
-    useAvailableViewportHeight<HTMLDivElement>({
-      reservedBottomSelector: "[data-app-footer]",
-      containerSelector: "[data-home-page]",
-    });
-  const technicianListHeightStyle: TechnicianListHeightStyle = {
-    "--technician-list-height":
-      availableViewportHeight !== null
-        ? `${availableViewportHeight}px`
-        : undefined,
-  };
-
   return (
-    <div data-home-page className={centeredContainerStyle}>
-      <div
-        className="grid grid-cols-1 items-start gap-6 md:grid-cols-2"
-        style={technicianListHeightStyle}
-      >
+    <div
+      data-home-page
+      className={`${centeredContainerStyle} flex min-h-0 w-full flex-1 flex-col`}
+    >
+      <div className="grid min-h-0 flex-1 grid-cols-1 grid-rows-[auto_minmax(0,1fr)] items-stretch gap-6 md:grid-cols-2 md:grid-rows-1">
         {/* Left Column - filtering options: Units, Brands and others */}
         <div className="min-w-0">
           <FilterPanel />
         </div>
 
         {/* Right Column - Technicians List */}
-        <div ref={technicianColumnRef} className="min-w-0">
+        <div className="flex min-h-0 min-w-0 flex-col">
           <TechnicianList />
         </div>
       </div>
