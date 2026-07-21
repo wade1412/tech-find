@@ -59,3 +59,5 @@ export const buttonContainerStyle =
 export const pageTitleWithButtonsContainerStyle =
   "flex flex-col gap-3 md:flex-row md:items-center md:justify-between";
 
+export const editHeaderWithButtonContainerStyle =
+  "flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center";

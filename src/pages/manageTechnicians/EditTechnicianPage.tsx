@@ -16,7 +16,11 @@ import {
 } from "../../features/technician-management/model/manageTechnicians.constants";
 import EditTechnicianSkeleton from "../../features/technician-management/ui/EditTechnicianSkeleton";
 import ArchiveTechnicianWithConfirmationButton from "../../features/technician-management/archive-technician/ui/ArchiveTechnicianWithConfirmationButton";
-import { centeredContainerStyle } from "../../shared/styles/styles";
+import {
+  centeredContainerStyle,
+  editHeaderWithButtonContainerStyle,
+  formStyle,
+} from "../../shared/styles/styles";
 
 function EditTechnicianPage() {
   const { technicianId } = useParams();
@@ -65,9 +69,9 @@ function EditTechnicianPage() {
 
   return (
     <div className={centeredContainerStyle}>
-      <section className="flex flex-col gap-4">
+      <section className={formStyle}>
         {/* Header */}
-        <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
+        <div className={editHeaderWithButtonContainerStyle}>
           <PageHeader
             title={selectedTechnician?.alias || "Technician Alias"}
             subtitle={subtitle}
