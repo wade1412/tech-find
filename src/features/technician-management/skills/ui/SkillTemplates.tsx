@@ -1,4 +1,4 @@
-import SectionHeader from "../../ui/SectionHeader";
+import SectionHeader from "../../../../shared/ui/SectionHeader";
 import type {
   SkillTemplateAvailability,
   SkillTemplateDefinition,

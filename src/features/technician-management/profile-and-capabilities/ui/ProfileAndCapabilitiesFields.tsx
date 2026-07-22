@@ -1,5 +1,5 @@
 import Checkbox from "../../../../shared/ui/Checkbox";
-import SectionHeader from "../../ui/SectionHeader";
+import SectionHeader from "../../../../shared/ui/SectionHeader";
 import { CAPABILITY_FIELDS, PROFILE_FIELDS } from "../model/profile.constants";
 import { inputStyle, labelStyle } from "../model/profile.styles";
 import type {

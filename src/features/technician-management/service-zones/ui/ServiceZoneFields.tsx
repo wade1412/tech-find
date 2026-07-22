@@ -1,6 +1,6 @@
 import { Autocomplete, TextField } from "@mui/material";
 import type { ServiceZone } from "../../../../entities/service-zone/service-zone.types";
-import SectionHeader from "../../ui/SectionHeader";
+import SectionHeader from "../../../../shared/ui/SectionHeader";
 import { selectStyle } from "../../../../shared/styles/muiSelectStyles";
 import { AnimatePresence, motion } from "motion/react";
 import {

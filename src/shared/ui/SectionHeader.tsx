@@ -1,7 +1,7 @@
 import {
   headingStyleDefault,
   sectionHeaderSubtextStyle,
-} from "../../../shared/styles/styles";
+} from "../styles/styles";
 
 interface SectionHeaderProps {
   label: string;

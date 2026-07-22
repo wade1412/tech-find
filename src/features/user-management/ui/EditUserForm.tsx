@@ -15,13 +15,13 @@ import type { EditableUserTextField } from "../model/editUser.types";
 import { validateUserForm } from "../model/editUser.validation";
 import { useUpdateUserMutation } from "../model/useUpdateUserMutation";
 import EditUserFields from "./EditUserFields";
+import { formStyle, formWithPaddingStyle } from "../../../shared/styles/styles";
+import SectionHeader from "../../../shared/ui/SectionHeader";
 
 function EditUserForm({ user }: { user: User }) {
   const { profile, retryProfile } = useAuth();
   const { role: actorRole } = useAuthPermissions();
-  const [formState, setFormState] = useState(() =>
-    createUserFormState(user),
-  );
+  const [formState, setFormState] = useState(() => createUserFormState(user));
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [isSavedSnackbarOpen, setIsSavedSnackbarOpen] = useState(false);
   const updateUserMutation = useUpdateUserMutation();
@@ -99,39 +99,50 @@ function EditUserForm({ user }: { user: User }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5 p-2">
-      <ActiveStatusBar
-        label="User access"
-        isActive={formState.active}
-        disabled={!capabilities.canEditAccess || isPending}
-        onChange={handleActiveChange}
-        activeDescription="This user can sign in and access features allowed by their role."
-        inactiveDescription="This user is blocked from signing in and refreshing sessions."
-      />
+    <form onSubmit={handleSubmit} noValidate className={formStyle}>
+      <div className="flex flex-col gap-2">
+        <ActiveStatusBar
+          label="User access"
+          isActive={formState.active}
+          disabled={!capabilities.canEditAccess || isPending}
+          onChange={handleActiveChange}
+          activeDescription="This user can sign in and access features allowed by their role."
+          inactiveDescription="This user is blocked from signing in and refreshing sessions."
+        />
 
-      {capabilities.message && (
-        <p className="rounded-xl border border-zinc-200 bg-zinc-50/70 px-4 py-3 text-xs text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-400">
-          {capabilities.message}
-        </p>
-      )}
+        {capabilities.message && (
+          <p className="rounded-xl border border-zinc-200 bg-zinc-50/70 px-4 py-3 text-xs text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-400">
+            {capabilities.message}
+          </p>
+        )}
+      </div>
 
-      <EditUserFields
-        formState={formState}
-        errors={visibleErrors}
-        allowedRoles={capabilities.allowedRoles}
-        disabledProfile={!capabilities.canEditProfile || isPending}
-        disabledAccess={!capabilities.canEditAccess || isPending}
-        onTextChange={handleTextChange}
-        onRoleChange={handleRoleChange}
-      />
+      <div className={formWithPaddingStyle}>
+        <div className="flex min-w-0 flex-col gap-3">
+          <SectionHeader
+            label="User Profile"
+            subtext="Update the user's name, sign-in email, and access role"
+          />
 
-      <FormSubmitArea
-        error={updateUserMutation.error}
-        errorMessage={updateUserMutation.error?.message}
-        isDirty={isDirty && capabilities.canEditProfile}
-        isPending={isPending}
-        onDiscard={handleDiscardChanges}
-      />
+          <EditUserFields
+            formState={formState}
+            errors={visibleErrors}
+            allowedRoles={capabilities.allowedRoles}
+            disabledProfile={!capabilities.canEditProfile || isPending}
+            disabledAccess={!capabilities.canEditAccess || isPending}
+            onTextChange={handleTextChange}
+            onRoleChange={handleRoleChange}
+          />
+        </div>
+
+        <FormSubmitArea
+          error={updateUserMutation.error}
+          errorMessage={updateUserMutation.error?.message}
+          isDirty={isDirty && capabilities.canEditProfile}
+          isPending={isPending}
+          onDiscard={handleDiscardChanges}
+        />
+      </div>
 
       <SaveSuccessSnackbar
         isOpen={isSavedSnackbarOpen}

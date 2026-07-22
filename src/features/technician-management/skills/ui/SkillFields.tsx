@@ -10,7 +10,7 @@ import {
 } from "../../../../shared/styles/motionVariants";
 import { noEditValuesStyle } from "../../../../shared/styles/styles";
 import OpenEditorButton from "../../ui/Editor/OpenEditorButton";
-import SectionHeader from "../../ui/SectionHeader";
+import SectionHeader from "../../../../shared/ui/SectionHeader";
 import {
   filterSkillsBySearch,
   getSkillIdentity,

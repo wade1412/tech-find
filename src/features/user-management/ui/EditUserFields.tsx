@@ -1,9 +1,11 @@
+import { Autocomplete, TextField } from "@mui/material";
 import { USER_ROLE_OPTIONS } from "../../../entities/user/roles.constants";
 import type { AppRole } from "../../../entities/user/user.types";
 import {
   formInputStyle,
   formLabelStyle,
 } from "../../../shared/styles/styles";
+import { compactSelectStyle } from "../../../shared/styles/muiSelectStyles";
 import type {
   EditableUserTextField,
   UserFormErrors,
@@ -28,7 +30,6 @@ const TEXT_FIELDS = [
     autoComplete: "name",
     type: "text",
   },
-  { key: "email", label: "Email", autoComplete: "email", type: "email" },
 ] as const;
 
 function EditUserFields({
@@ -43,16 +44,23 @@ function EditUserFields({
   const visibleRoleOptions = USER_ROLE_OPTIONS.filter(({ value }) =>
     allowedRoles.includes(value),
   );
+  const selectedRoleOption =
+    USER_ROLE_OPTIONS.find(({ value }) => value === formState.role) ??
+    USER_ROLE_OPTIONS[0];
+  const roleOptions = visibleRoleOptions.some(
+    ({ value }) => value === formState.role,
+  )
+    ? visibleRoleOptions
+    : [selectedRoleOption, ...visibleRoleOptions];
 
   return (
     <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
       {TEXT_FIELDS.map(({ key, label, autoComplete, type }) => {
         const errorMessage = errors?.[key];
         const errorId = `${key}-error`;
-        const helpId = key === "email" ? "email-help" : undefined;
 
         return (
-          <div key={key} className={key === "email" ? "md:col-span-2" : ""}>
+          <div key={key}>
             <label htmlFor={key} className={`flex flex-col gap-1.5 ${formLabelStyle}`}>
               {label}
             </label>
@@ -65,7 +73,7 @@ function EditUserFields({
               value={formState[key]}
               onChange={(event) => onTextChange(key, event.target.value)}
               aria-invalid={Boolean(errorMessage)}
-              aria-describedby={errorMessage ? errorId : helpId}
+              aria-describedby={errorMessage ? errorId : undefined}
               className={`${formInputStyle} mt-1.5 w-full disabled:cursor-not-allowed disabled:opacity-60`}
             />
             {errorMessage ? (
@@ -76,38 +84,76 @@ function EditUserFields({
               >
                 {errorMessage}
               </p>
-            ) : key === "email" ? (
-              <p id="email-help" className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                This is the email the user signs in with.
-              </p>
             ) : null}
           </div>
         );
       })}
 
-      <div className="md:col-span-2 md:max-w-sm">
-        <label htmlFor="role" className={`flex flex-col gap-1.5 ${formLabelStyle}`}>
+      <div>
+        <label
+          htmlFor="email"
+          className={`flex flex-col gap-1.5 ${formLabelStyle}`}
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          disabled={disabledProfile}
+          value={formState.email}
+          onChange={(event) => onTextChange("email", event.target.value)}
+          aria-invalid={Boolean(errors?.email)}
+          aria-describedby={errors?.email ? "email-error" : undefined}
+          className={`${formInputStyle} mt-1.5 w-full disabled:cursor-not-allowed disabled:opacity-60`}
+        />
+        {errors?.email && (
+          <p
+            id="email-error"
+            role="alert"
+            className="mt-1 text-xs font-medium text-red-600 dark:text-red-400"
+          >
+            {errors.email}
+          </p>
+        )}
+      </div>
+
+      <div>
+        <label
+          id="role-label"
+          htmlFor="role"
+          className={`flex flex-col gap-1.5 ${formLabelStyle}`}
+        >
           Role
         </label>
-        <select
-          id="role"
-          name="role"
+        <Autocomplete
+          className="mt-1.5"
+          size="small"
+          disableClearable
           disabled={disabledAccess}
-          value={formState.role}
-          onChange={(event) => onRoleChange(event.target.value as AppRole)}
-          className={`${formInputStyle} mt-1.5 w-full disabled:cursor-not-allowed disabled:opacity-60`}
-        >
-          {disabledAccess && !visibleRoleOptions.some(({ value }) => value === formState.role) && (
-            <option value={formState.role}>
-              {USER_ROLE_OPTIONS.find(({ value }) => value === formState.role)?.label}
-            </option>
+          value={selectedRoleOption}
+          options={roleOptions}
+          onChange={(_, option) => onRoleChange(option.value)}
+          isOptionEqualToValue={(option, value) =>
+            option.value === value.value
+          }
+          getOptionLabel={(option) => option.label}
+          sx={(theme) => compactSelectStyle(theme)}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              slotProps={{
+                ...params.slotProps,
+                htmlInput: {
+                  ...params.slotProps.htmlInput,
+                  id: "role",
+                  "aria-labelledby": "role-label",
+                },
+              }}
+            />
           )}
-          {visibleRoleOptions.map(({ value, label }) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </select>
+        />
       </div>
     </div>
   );

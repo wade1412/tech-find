@@ -1,4 +1,4 @@
-import SectionHeader from "../features/technician-management/ui/SectionHeader";
+import SectionHeader from "../shared/ui/SectionHeader";
 
 function ManageServicesPage() {
   return (
