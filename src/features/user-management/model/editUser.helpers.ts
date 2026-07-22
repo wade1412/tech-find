@@ -81,7 +81,7 @@ export function getUserEditCapabilities({
       allowedRoles: [],
       canEditAccess: false,
       canEditProfile: false,
-      message: "Main admins cannot edit another main admin or an owner.",
+      message: "Main admins cannot edit another main admin user profile.",
     };
   }
 

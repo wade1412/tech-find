@@ -1,10 +1,7 @@
 import { Autocomplete, TextField } from "@mui/material";
 import { USER_ROLE_OPTIONS } from "../../../entities/user/roles.constants";
 import type { AppRole } from "../../../entities/user/user.types";
-import {
-  formInputStyle,
-  formLabelStyle,
-} from "../../../shared/styles/styles";
+import { formInputStyle, formLabelStyle } from "../../../shared/styles/styles";
 import { compactSelectStyle } from "../../../shared/styles/muiSelectStyles";
 import type {
   EditableUserTextField,
@@ -61,21 +58,25 @@ function EditUserFields({
 
         return (
           <div key={key}>
-            <label htmlFor={key} className={`flex flex-col gap-1.5 ${formLabelStyle}`}>
+            <label
+              htmlFor={key}
+              className={`flex flex-col gap-1.5 ${formLabelStyle}`}
+            >
               {label}
+
+              <input
+                id={key}
+                name={key}
+                type={type}
+                autoComplete={autoComplete}
+                disabled={disabledProfile}
+                value={formState[key]}
+                onChange={(event) => onTextChange(key, event.target.value)}
+                aria-invalid={Boolean(errorMessage)}
+                aria-describedby={errorMessage ? errorId : undefined}
+                className={formInputStyle}
+              />
             </label>
-            <input
-              id={key}
-              name={key}
-              type={type}
-              autoComplete={autoComplete}
-              disabled={disabledProfile}
-              value={formState[key]}
-              onChange={(event) => onTextChange(key, event.target.value)}
-              aria-invalid={Boolean(errorMessage)}
-              aria-describedby={errorMessage ? errorId : undefined}
-              className={`${formInputStyle} mt-1.5 w-full disabled:cursor-not-allowed disabled:opacity-60`}
-            />
             {errorMessage ? (
               <p
                 id={errorId}
@@ -95,19 +96,19 @@ function EditUserFields({
           className={`flex flex-col gap-1.5 ${formLabelStyle}`}
         >
           Email
+          <input
+            id="email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            disabled={disabledProfile}
+            value={formState.email}
+            onChange={(event) => onTextChange("email", event.target.value)}
+            aria-invalid={Boolean(errors?.email)}
+            aria-describedby={errors?.email ? "email-error" : undefined}
+            className={formInputStyle}
+          />
         </label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          autoComplete="email"
-          disabled={disabledProfile}
-          value={formState.email}
-          onChange={(event) => onTextChange("email", event.target.value)}
-          aria-invalid={Boolean(errors?.email)}
-          aria-describedby={errors?.email ? "email-error" : undefined}
-          className={`${formInputStyle} mt-1.5 w-full disabled:cursor-not-allowed disabled:opacity-60`}
-        />
         {errors?.email && (
           <p
             id="email-error"
@@ -126,34 +127,33 @@ function EditUserFields({
           className={`flex flex-col gap-1.5 ${formLabelStyle}`}
         >
           Role
+          <Autocomplete
+            size="small"
+            disableClearable
+            disabled={disabledAccess}
+            value={selectedRoleOption}
+            options={roleOptions}
+            onChange={(_, option) => onRoleChange(option.value)}
+            isOptionEqualToValue={(option, value) =>
+              option.value === value.value
+            }
+            getOptionLabel={(option) => option.label}
+            sx={(theme) => compactSelectStyle(theme)}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                slotProps={{
+                  ...params.slotProps,
+                  htmlInput: {
+                    ...params.slotProps.htmlInput,
+                    id: "role",
+                    "aria-labelledby": "role-label",
+                  },
+                }}
+              />
+            )}
+          />
         </label>
-        <Autocomplete
-          className="mt-1.5"
-          size="small"
-          disableClearable
-          disabled={disabledAccess}
-          value={selectedRoleOption}
-          options={roleOptions}
-          onChange={(_, option) => onRoleChange(option.value)}
-          isOptionEqualToValue={(option, value) =>
-            option.value === value.value
-          }
-          getOptionLabel={(option) => option.label}
-          sx={(theme) => compactSelectStyle(theme)}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              slotProps={{
-                ...params.slotProps,
-                htmlInput: {
-                  ...params.slotProps.htmlInput,
-                  id: "role",
-                  "aria-labelledby": "role-label",
-                },
-              }}
-            />
-          )}
-        />
       </div>
     </div>
   );

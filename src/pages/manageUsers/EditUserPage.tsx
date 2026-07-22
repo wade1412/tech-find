@@ -1,9 +1,6 @@
 import { useParams } from "react-router";
 import { useUsersQuery } from "../../entities/user/useUsersQuery";
-import {
-  centeredContainerStyle,
-  formStyle,
-} from "../../shared/styles/styles";
+import { centeredContainerStyle, formStyle } from "../../shared/styles/styles";
 import ErrorMessage from "../../shared/ui/ErrorMessage";
 import PageHeader from "../../shared/ui/PageHeader";
 import EditUserForm from "../../features/user-management/ui/EditUserForm";
@@ -45,7 +42,7 @@ function EditUserPage() {
       <section className={formStyle}>
         <PageHeader
           title={selectedUser.alias}
-          subtitle={`${selectedUser.full_name} · ${selectedUser.email}`}
+          subtitle={`${selectedUser.full_name} · ${selectedUser.role.charAt(0).toUpperCase() + selectedUser.role.slice(1)}`}
         />
 
         <EditUserForm key={selectedUser.id} user={selectedUser} />

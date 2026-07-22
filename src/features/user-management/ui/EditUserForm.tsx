@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useState, type SubmitEvent } from "react";
 import type { AppRole, User } from "../../../entities/user/user.types";
 import { useAuth } from "../../auth/model/AuthContext";
 import { useAuthPermissions } from "../../auth/model/useAuthPermissions";
@@ -39,17 +39,17 @@ function EditUserForm({ user }: { user: User }) {
 
   const handleTextChange = (key: EditableUserTextField, value: string) => {
     updateUserMutation.reset();
-    setFormState((previous) => ({ ...previous, [key]: value }));
+    setFormState((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleRoleChange = (role: AppRole) => {
     updateUserMutation.reset();
-    setFormState((previous) => ({ ...previous, role }));
+    setFormState((prev) => ({ ...prev, role }));
   };
 
   const handleActiveChange = (active: boolean) => {
     updateUserMutation.reset();
-    setFormState((previous) => ({ ...previous, active }));
+    setFormState((prev) => ({ ...prev, active }));
   };
 
   const handleDiscardChanges = () => {
@@ -58,8 +58,8 @@ function EditUserForm({ user }: { user: User }) {
     updateUserMutation.reset();
   };
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleSubmit = async (e: SubmitEvent) => {
+    e.preventDefault();
     setHasSubmitted(true);
 
     if (
@@ -94,7 +94,7 @@ function EditUserForm({ user }: { user: User }) {
         await retryProfile();
       }
     } catch {
-      // The mutation exposes the server error in the submit area.
+      // The mutation shows the server error in the submit area.
     }
   };
 
@@ -134,7 +134,6 @@ function EditUserForm({ user }: { user: User }) {
             onRoleChange={handleRoleChange}
           />
         </div>
-
         <FormSubmitArea
           error={updateUserMutation.error}
           errorMessage={updateUserMutation.error?.message}
