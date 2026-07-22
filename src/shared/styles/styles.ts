@@ -57,7 +57,8 @@ export const sectionHeaderSubtextStyle =
 
 export const manageListGridStyle = "grid grid-cols-1 gap-2.5 md:grid-cols-3";
 
-export const centeredContainerStyle = "mx-auto max-w-6xl p-4 md:p-6";
+export const centeredContainerStyle =
+  "mx-auto max-w-6xl py-4 px-4 md:px-6 py-4";
 
 export const buttonContainerStyle =
   "flex w-full flex-col gap-2 sm:flex-row md:w-auto md:items-center";
