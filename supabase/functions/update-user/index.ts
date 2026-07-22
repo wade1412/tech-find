@@ -192,6 +192,11 @@ Deno.serve(async (request) => {
 
   const actorProfile = actor as UserProfile;
   const targetProfile = target as UserProfile;
+
+  if (actorProfile.role !== "owner" && targetProfile.role === "owner") {
+    return jsonResponse(404, { message: "User not found" });
+  }
+
   const permissionError = canEditTarget(actorProfile, targetProfile, update);
   if (permissionError) {
     return jsonResponse(403, { message: permissionError });

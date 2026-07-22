@@ -29,6 +29,8 @@ import ManagementListSkeleton from "../../shared/ui/ManagementListSkeleton";
 import PageHeader from "../../shared/ui/PageHeader";
 import SearchInput from "../../shared/ui/SearchInput";
 import SegmentedControl from "../../shared/ui/SegmentedControl";
+import { useAuthPermissions } from "../../features/auth/model/useAuthPermissions";
+import { getUsersVisibleToRole } from "../../features/user-management/model/userVisibility";
 
 function formatUserCount(count: number) {
   return `${count} ${count === 1 ? "user" : "users"}`;
@@ -36,6 +38,7 @@ function formatUserCount(count: number) {
 
 function ManageUsersPage() {
   const { data: users, isPending, isError, error } = useUsersQuery();
+  const { role } = useAuthPermissions();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const filterParam = searchParams.get("filter");
@@ -90,14 +93,23 @@ function ManageUsersPage() {
     );
   };
 
+  const accessibleUsers = useMemo(
+    () => getUsersVisibleToRole(users ?? [], role),
+    [users, role],
+  );
   const visibleUsers = useMemo(
-    () => filterUsers({ users: users ?? [], searchTerm, status: statusFilter }),
-    [users, searchTerm, statusFilter],
+    () =>
+      filterUsers({
+        users: accessibleUsers,
+        searchTerm,
+        status: statusFilter,
+      }),
+    [accessibleUsers, searchTerm, statusFilter],
   );
 
   const hasAppliedFilters =
     Boolean(searchTerm.trim()) || statusFilter !== "all";
-  const usersCount = users?.length ?? 0;
+  const usersCount = accessibleUsers.length;
   const resultCountLabel = hasAppliedFilters
     ? `${visibleUsers.length} of ${formatUserCount(usersCount)}`
     : formatUserCount(usersCount);

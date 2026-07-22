@@ -9,12 +9,20 @@ import PageHeader from "../../shared/ui/PageHeader";
 import EditUserForm from "../../features/user-management/ui/EditUserForm";
 import NotFoundPage from "../NotFoundPage";
 import { InlineSpinner } from "../../shared/ui/Spinners";
+import { useAuthPermissions } from "../../features/auth/model/useAuthPermissions";
+import { getUsersVisibleToRole } from "../../features/user-management/model/userVisibility";
+import { useMemo } from "react";
 
 function EditUserPage() {
   const { userId } = useParams<{ userId: string }>();
   const { data: users, isPending, isError, error } = useUsersQuery();
+  const { role } = useAuthPermissions();
 
-  const selectedUser = users?.find((user) => user.id === userId);
+  const accessibleUsers = useMemo(
+    () => getUsersVisibleToRole(users ?? [], role),
+    [users, role],
+  );
+  const selectedUser = accessibleUsers.find((user) => user.id === userId);
 
   if (isPending) {
     return <InlineSpinner />;
