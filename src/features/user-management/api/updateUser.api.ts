@@ -1,4 +1,8 @@
-import { FunctionsHttpError } from "@supabase/supabase-js";
+import {
+  FunctionsFetchError,
+  FunctionsHttpError,
+  FunctionsRelayError,
+} from "@supabase/supabase-js";
 import type { User } from "../../../entities/user/user.types";
 import { supabase } from "../../../shared/api/supabase/supabaseClient";
 import type { UpdateUserInput } from "../model/editUser.types";
@@ -15,6 +19,14 @@ async function getFunctionErrorMessage(error: unknown): Promise<string> {
     } catch {
       // Fall through to the SDK error when the response is not JSON.
     }
+  }
+
+  if (error instanceof FunctionsFetchError) {
+    return "Could not reach the user update service. Check your connection and Edge Function deployment.";
+  }
+
+  if (error instanceof FunctionsRelayError) {
+    return "The user update service is temporarily unavailable. Try again.";
   }
 
   return error instanceof Error ? error.message : "Failed to update user";
