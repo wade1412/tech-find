@@ -256,6 +256,10 @@ content_path = "./supabase/templates/recovery.html"
 subject = "Confirm your TechFind email"
 content_path = "./supabase/templates/confirmation.html"
 
+[auth.email.template.invite]
+subject = "You are invited to TechFind"
+content_path = "./supabase/templates/invite.html"
+
 # Uncomment to customize notification email template
 # [auth.email.notification.password_changed]
 # enabled = true
@@ -389,6 +393,9 @@ policy = "per_worker"
 inspector_port = 8083
 # The Deno major version to use.
 deno_version = 2
+
+[functions.create-user]
+verify_jwt = true
 
 [functions.update-user]
 verify_jwt = true

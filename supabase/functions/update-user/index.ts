@@ -19,6 +19,7 @@ interface UpdateUserPayload {
   active: boolean;
   alias: string;
   email: string;
+  expectedUpdatedAt: string;
   full_name: string;
   role: AppRole;
   userId: string;
@@ -51,6 +52,8 @@ function parsePayload(value: unknown): UpdateUserPayload | null {
   if (
     typeof payload.userId !== "string" ||
     !UUID_PATTERN.test(payload.userId) ||
+    typeof payload.expectedUpdatedAt !== "string" ||
+    Number.isNaN(Date.parse(payload.expectedUpdatedAt)) ||
     typeof payload.active !== "boolean" ||
     typeof payload.alias !== "string" ||
     typeof payload.email !== "string" ||
@@ -80,6 +83,7 @@ function parsePayload(value: unknown): UpdateUserPayload | null {
     active: payload.active,
     alias,
     email,
+    expectedUpdatedAt: payload.expectedUpdatedAt,
     full_name: fullName,
     role: payload.role,
     userId: payload.userId,
@@ -155,7 +159,11 @@ Deno.serve(async (request) => {
   }
 
   const admin = createClient(supabaseUrl, adminKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
+    auth: {
+      autoRefreshToken: false,
+      detectSessionInUrl: false,
+      persistSession: false,
+    },
   });
   const token = authorization.slice("Bearer ".length);
   const { data: authData, error: authError } = await admin.auth.getUser(token);
@@ -202,6 +210,83 @@ Deno.serve(async (request) => {
     return jsonResponse(403, { message: permissionError });
   }
 
+  const writeAudit = async ({
+    afterState = null,
+    errorMessage = null,
+    outcome,
+    requiresReconciliation = false,
+  }: {
+    afterState?: UserProfile | null;
+    errorMessage?: string | null;
+    outcome: "succeeded" | "failed" | "conflict";
+    requiresReconciliation?: boolean;
+  }) => {
+    const { error } = await admin.from("user_management_audit").insert({
+      actor_id: actorProfile.id,
+      target_user_id: targetProfile.id,
+      operation: "update",
+      outcome,
+      before_state: targetProfile,
+      after_state: afterState,
+      error_message: errorMessage,
+      requires_reconciliation: requiresReconciliation,
+    });
+
+    if (error) {
+      console.error("Failed to write user update audit", error);
+    }
+  };
+
+  if (targetProfile.updated_at !== update.expectedUpdatedAt) {
+    await writeAudit({
+      outcome: "conflict",
+      errorMessage: "The supplied profile version is stale.",
+    });
+    return jsonResponse(409, {
+      message:
+        "This user was changed by another administrator. Discard your changes to load the latest version.",
+    });
+  }
+
+  const { data: updatedProfileData, error: profileError } = await admin
+    .from("user_profile")
+    .update({
+      active: update.active,
+      alias: update.alias,
+      email: update.email,
+      full_name: update.full_name,
+      role: update.role,
+    })
+    .eq("id", update.userId)
+    .eq("updated_at", update.expectedUpdatedAt)
+    .select("*")
+    .maybeSingle();
+
+  if (profileError || !updatedProfileData) {
+    if (!profileError) {
+      await writeAudit({
+        outcome: "conflict",
+        errorMessage: "The profile changed during the update.",
+      });
+      return jsonResponse(409, {
+        message:
+          "This user was changed by another administrator. Discard your changes to load the latest version.",
+      });
+    }
+
+    const conflict = isConflictError(profileError.message, profileError.code);
+    await writeAudit({
+      outcome: "failed",
+      errorMessage: profileError.message,
+    });
+    return jsonResponse(conflict ? 409 : 500, {
+      message: conflict
+        ? "A user with this email already exists."
+        : "Failed to update user profile.",
+    });
+  }
+
+  const updatedProfile = updatedProfileData as UserProfile;
   const emailChanged = update.email !== targetProfile.email.toLowerCase();
   const statusChanged = update.active !== targetProfile.active;
   const authPatch: AdminUserAttributes = {};
@@ -221,52 +306,50 @@ Deno.serve(async (request) => {
     );
 
     if (error) {
+      const { data: rolledBackProfile, error: rollbackError } = await admin
+        .from("user_profile")
+        .update({
+          active: targetProfile.active,
+          alias: targetProfile.alias,
+          email: targetProfile.email,
+          full_name: targetProfile.full_name,
+          role: targetProfile.role,
+        })
+        .eq("id", targetProfile.id)
+        .eq("updated_at", updatedProfile.updated_at)
+        .select("id")
+        .maybeSingle();
+      const requiresReconciliation = Boolean(
+        rollbackError || !rolledBackProfile,
+      );
+
+      if (requiresReconciliation) {
+        console.error("Failed to roll back user profile after Auth error", {
+          authError: error,
+          rollbackError,
+          userId: targetProfile.id,
+        });
+      }
+
+      await writeAudit({
+        afterState: updatedProfile,
+        outcome: "failed",
+        errorMessage: error.message,
+        requiresReconciliation,
+      });
+
       return jsonResponse(isConflictError(error.message) ? 409 : 400, {
-        message: error.message,
+        message: isConflictError(error.message)
+          ? "A user with this email already exists."
+          : "Failed to update the user's authentication account.",
       });
     }
   }
 
-  const { data: updatedProfile, error: profileError } = await admin
-    .from("user_profile")
-    .update({
-      active: update.active,
-      alias: update.alias,
-      email: update.email,
-      full_name: update.full_name,
-      role: update.role,
-    })
-    .eq("id", update.userId)
-    .select("*")
-    .single();
-
-  if (profileError || !updatedProfile) {
-    if (emailChanged || statusChanged) {
-      const rollbackPatch: AdminUserAttributes = {};
-      if (emailChanged) {
-        rollbackPatch.email = targetProfile.email;
-        rollbackPatch.email_confirm = true;
-      }
-      if (statusChanged) {
-        rollbackPatch.ban_duration = targetProfile.active ? "none" : "876000h";
-      }
-
-      const { error: rollbackError } = await admin.auth.admin.updateUserById(
-        update.userId,
-        rollbackPatch,
-      );
-      if (rollbackError) {
-        console.error("Failed to roll back Auth user update", rollbackError);
-      }
-    }
-
-    return jsonResponse(
-      isConflictError(profileError?.message ?? "", profileError?.code)
-        ? 409
-        : 500,
-      { message: profileError?.message ?? "Failed to update user profile" },
-    );
-  }
+  await writeAudit({
+    afterState: updatedProfile,
+    outcome: "succeeded",
+  });
 
   return jsonResponse(200, { user: updatedProfile });
 });
