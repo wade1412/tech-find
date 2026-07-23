@@ -2,10 +2,16 @@ export const PASSWORD_MIN_LENGTH = 8;
 
 const RECOVERY_USER_STORAGE_KEY = "techfind.recovery-user-id";
 
-export type SecureEmailLinkType = "recovery" | "email" | "signup";
+export type SecureEmailLinkType = "recovery" | "invite" | "email" | "signup";
 
 export type SecureEmailLinkParams = {
   tokenHash: string;
+  type: SecureEmailLinkType;
+};
+
+export type ImplicitEmailLinkParams = {
+  accessToken: string;
+  refreshToken: string;
   type: SecureEmailLinkType;
 };
 
@@ -15,6 +21,7 @@ export type SecureEmailLinkParseResult =
 
 const supportedEmailLinkTypes = new Set<SecureEmailLinkType>([
   "recovery",
+  "invite",
   "email",
   "signup",
 ]);
@@ -45,6 +52,30 @@ export const parseSecureEmailLink = (
   return {
     success: true,
     params: { tokenHash, type: type as SecureEmailLinkType },
+  };
+};
+
+export const parseImplicitEmailLink = (
+  hash: string,
+): ImplicitEmailLinkParams | null => {
+  const params = new URLSearchParams(hash.replace(/^#/, ""));
+  const accessToken = params.get("access_token");
+  const refreshToken = params.get("refresh_token");
+  const type = params.get("type");
+
+  if (
+    !accessToken ||
+    !refreshToken ||
+    !type ||
+    !supportedEmailLinkTypes.has(type as SecureEmailLinkType)
+  ) {
+    return null;
+  }
+
+  return {
+    accessToken,
+    refreshToken,
+    type: type as SecureEmailLinkType,
   };
 };
 
