@@ -3,12 +3,13 @@ import {
   clearPasswordRecoverySession,
   hasPasswordRecoverySession,
   markPasswordRecoverySession,
+  parseImplicitEmailLink,
   parseSecureEmailLink,
   validateNewPassword,
 } from "./auth.recovery";
 
 describe("parseSecureEmailLink", () => {
-  it.each(["recovery", "email", "signup"] as const)(
+  it.each(["recovery", "invite", "email", "signup"] as const)(
     "parses a valid %s link",
     (type) => {
       expect(
@@ -34,6 +35,34 @@ describe("parseSecureEmailLink", () => {
       success: false,
       error: "This email link type is not supported.",
     });
+  });
+});
+
+describe("parseImplicitEmailLink", () => {
+  it("parses Supabase's default invite redirect fragment", () => {
+    expect(
+      parseImplicitEmailLink(
+        "#access_token=access-123&refresh_token=refresh-123&type=invite",
+      ),
+    ).toEqual({
+      accessToken: "access-123",
+      refreshToken: "refresh-123",
+      type: "invite",
+    });
+  });
+
+  it("rejects a fragment without both session tokens", () => {
+    expect(
+      parseImplicitEmailLink("#access_token=access-123&type=invite"),
+    ).toBeNull();
+  });
+
+  it("rejects an unsupported fragment type", () => {
+    expect(
+      parseImplicitEmailLink(
+        "#access_token=access-123&refresh_token=refresh-123&type=magiclink",
+      ),
+    ).toBeNull();
   });
 });
 
