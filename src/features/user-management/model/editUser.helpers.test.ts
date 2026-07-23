@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest";
 import type { AppRole, User } from "../../../entities/user/user.types";
 import {
+  buildCreateUserInput,
   buildUpdateUserInput,
+  getCreatableUserRoles,
   getUserEditCapabilities,
+  isNewUserFormDirty,
   isUserFormDirty,
 } from "./editUser.helpers";
 
@@ -25,7 +28,7 @@ function getCapabilities(actorId: string, actorRole: AppRole, target: User) {
 describe("editUser helpers", () => {
   it("normalizes submitted names and email", () => {
     expect(
-      buildUpdateUserInput("target-user", {
+      buildUpdateUserInput(makeUser(), {
         active: true,
         alias: "  Alex J  ",
         email: "  ALEX@EXAMPLE.COM ",
@@ -36,10 +39,69 @@ describe("editUser helpers", () => {
       active: true,
       alias: "Alex J",
       email: "alex@example.com",
+      expectedUpdatedAt: "2026-01-01T00:00:00.000Z",
       full_name: "Alex Johnson",
       role: "secondary_admin",
       userId: "target-user",
     });
+  });
+
+  it("builds a normalized invitation input", () => {
+    expect(
+      buildCreateUserInput(
+        {
+          active: true,
+          alias: "  Alex ",
+          email: " ALEX@EXAMPLE.COM ",
+          full_name: " Alex Johnson ",
+          role: "user",
+        },
+        "https://example.com/secure-email-link",
+      ),
+    ).toEqual({
+      active: true,
+      alias: "Alex",
+      email: "alex@example.com",
+      full_name: "Alex Johnson",
+      redirectTo: "https://example.com/secure-email-link",
+      role: "user",
+    });
+  });
+
+  it("detects meaningful input in a new-user form", () => {
+    expect(
+      isNewUserFormDirty({
+        active: true,
+        alias: "",
+        email: "",
+        full_name: "",
+        role: "user",
+      }),
+    ).toBe(false);
+
+    expect(
+      isNewUserFormDirty({
+        active: true,
+        alias: "Alex",
+        email: "",
+        full_name: "",
+        role: "user",
+      }),
+    ).toBe(true);
+  });
+
+  it("limits creatable roles by actor hierarchy", () => {
+    expect(getCreatableUserRoles("owner")).toEqual([
+      "user",
+      "secondary_admin",
+      "main_admin",
+      "owner",
+    ]);
+    expect(getCreatableUserRoles("main_admin")).toEqual([
+      "user",
+      "secondary_admin",
+    ]);
+    expect(getCreatableUserRoles("secondary_admin")).toEqual([]);
   });
 
   it("does not mark formatting-only changes as dirty", () => {
