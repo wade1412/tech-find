@@ -31,6 +31,8 @@ import SearchInput from "../../shared/ui/SearchInput";
 import SegmentedControl from "../../shared/ui/SegmentedControl";
 import { useAuthPermissions } from "../../features/auth/model/useAuthPermissions";
 import { getUsersVisibleToRole } from "../../features/user-management/model/userVisibility";
+import { useAuth } from "../../features/auth/model/AuthContext";
+import { getUserEditCapabilities } from "../../features/user-management/model/editUser.helpers";
 
 function formatUserCount(count: number) {
   return `${count} ${count === 1 ? "user" : "users"}`;
@@ -38,6 +40,7 @@ function formatUserCount(count: number) {
 
 function ManageUsersPage() {
   const { data: users, isPending, isError, error } = useUsersQuery();
+  const { profile } = useAuth();
   const { role } = useAuthPermissions();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -132,7 +135,7 @@ function ManageUsersPage() {
         <div className={pageTitleWithButtonsContainerStyle}>
           <PageHeader
             title="Manage Users"
-            subtitle="Select a user to edit their profile and role"
+            subtitle="View user accounts and manage profiles within your access level"
           />
 
           <div className={buttonContainerStyle}>
@@ -203,7 +206,16 @@ function ManageUsersPage() {
                       exit="exit"
                       whileTap={{ scale: 0.98 }}
                     >
-                      <ManageUserCard user={user} />
+                      <ManageUserCard
+                        user={user}
+                        isViewOnly={
+                          !getUserEditCapabilities({
+                            actorId: profile?.id,
+                            actorRole: role,
+                            target: user,
+                          }).canEditProfile
+                        }
+                      />
                     </motion.div>
                   ))
                 ) : (

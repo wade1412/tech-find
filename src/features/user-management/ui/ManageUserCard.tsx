@@ -2,7 +2,13 @@ import { Link } from "react-router";
 import type { User } from "../../../entities/user/user.types";
 import UserRoleBadge from "../../../entities/user/ui/UserRoleBadge";
 
-function ManageUserCard({ user }: { user: User }) {
+function ManageUserCard({
+  isViewOnly = false,
+  user,
+}: {
+  isViewOnly?: boolean;
+  user: User;
+}) {
   const isInactive = !user.active;
 
   return (
@@ -54,10 +60,20 @@ function ManageUserCard({ user }: { user: User }) {
           </div>
         </div>
 
-        {isInactive && (
-          <div className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-zinc-200 bg-white/70 px-2.5 py-1 text-xs font-medium text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900/60 dark:text-zinc-400">
-            <span className="h-1.5 w-1.5 rounded-full bg-zinc-400 dark:bg-zinc-500" />
-            Inactive
+        {(isInactive || isViewOnly) && (
+          <div className="flex flex-col items-end gap-1.5">
+            {isInactive && (
+              <span className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-zinc-200 bg-white/70 px-2.5 py-1 text-xs font-medium text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900/60 dark:text-zinc-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-zinc-400 dark:bg-zinc-500" />
+                Inactive
+              </span>
+            )}
+
+            {isViewOnly && (
+              <span className="rounded-lg border border-zinc-200 bg-zinc-50 px-2.5 py-1 text-xs font-medium text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400">
+                View only
+              </span>
+            )}
           </div>
         )}
       </div>
