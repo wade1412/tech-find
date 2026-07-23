@@ -84,7 +84,7 @@ function EditUserForm({ user }: { user: User }) {
 
     try {
       const updatedUser = await updateUserMutation.mutateAsync(
-        buildUpdateUserInput(user.id, formState),
+        buildUpdateUserInput(user, formState),
       );
       setFormState(createUserFormState(updatedUser));
       setHasSubmitted(false);

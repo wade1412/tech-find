@@ -9,6 +9,7 @@ import { InlineSpinner } from "../../shared/ui/Spinners";
 import { useAuthPermissions } from "../../features/auth/model/useAuthPermissions";
 import { getUsersVisibleToRole } from "../../features/user-management/model/userVisibility";
 import { useMemo } from "react";
+import { roleLabelMap } from "../../entities/user/roles.constants";
 
 function EditUserPage() {
   const { userId } = useParams<{ userId: string }>();
@@ -42,7 +43,7 @@ function EditUserPage() {
       <section className={formStyle}>
         <PageHeader
           title={selectedUser.alias}
-          subtitle={`${selectedUser.full_name} · ${selectedUser.role.charAt(0).toUpperCase() + selectedUser.role.slice(1)}`}
+          subtitle={`${selectedUser.full_name} · ${roleLabelMap[selectedUser.role]}`}
         />
 
         <EditUserForm key={selectedUser.id} user={selectedUser} />

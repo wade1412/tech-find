@@ -1,19 +1,25 @@
 import { primaryButton, secondaryButton } from "../styles/styles";
 
 interface FormSubmitAreaProps {
+  discardLabel?: string;
   error: Error | null;
   errorMessage?: string;
   isDirty: boolean;
   isPending: boolean;
   onDiscard: () => void;
+  pendingLabel?: string;
+  submitLabel?: string;
 }
 
 function FormSubmitArea({
+  discardLabel = "Discard changes",
   error,
   errorMessage,
   isDirty,
   isPending,
   onDiscard,
+  pendingLabel = "Saving...",
+  submitLabel = "Save Changes",
 }: FormSubmitAreaProps) {
   return (
     <div className="flex flex-col gap-3 border-t border-zinc-200 pt-4 md:flex-row md:items-center md:justify-between dark:border-zinc-800">
@@ -35,7 +41,7 @@ function FormSubmitArea({
           onClick={onDiscard}
           className={`${secondaryButton} w-full sm:w-auto`}
         >
-          Discard changes
+          {discardLabel}
         </button>
 
         <button
@@ -43,7 +49,7 @@ function FormSubmitArea({
           disabled={!isDirty || isPending}
           className={`${primaryButton} w-full sm:w-auto`}
         >
-          {isPending ? "Saving..." : "Save Changes"}
+          {isPending ? pendingLabel : submitLabel}
         </button>
       </div>
     </div>

@@ -2,10 +2,19 @@ import type { AppRole, User } from "../../../entities/user/user.types";
 import { ROLE_LEVEL } from "../../../entities/user/roles.constants";
 import { MAIN_ADMIN_ASSIGNABLE_ROLES } from "./editUser.constants";
 import type {
+  CreateUserInput,
   UpdateUserInput,
   UserEditCapabilities,
   UserFormState,
 } from "./editUser.types";
+
+export const EMPTY_USER_FORM_STATE: UserFormState = {
+  active: true,
+  alias: "",
+  email: "",
+  full_name: "",
+  role: "user",
+};
 
 export function createUserFormState(user: User): UserFormState {
   return {
@@ -35,11 +44,47 @@ export function isUserFormDirty(user: User, draft: UserFormState): boolean {
   );
 }
 
+export function isNewUserFormDirty(draft: UserFormState): boolean {
+  const normalizedDraft = normalizeUserFormState(draft);
+
+  return (Object.keys(EMPTY_USER_FORM_STATE) as Array<keyof UserFormState>).some(
+    (key) => normalizedDraft[key] !== EMPTY_USER_FORM_STATE[key],
+  );
+}
+
 export function buildUpdateUserInput(
-  userId: string,
+  user: User,
   draft: UserFormState,
 ): UpdateUserInput {
-  return { userId, ...normalizeUserFormState(draft) };
+  return {
+    userId: user.id,
+    expectedUpdatedAt: user.updated_at,
+    ...normalizeUserFormState(draft),
+  };
+}
+
+export function buildCreateUserInput(
+  draft: UserFormState,
+  redirectTo: string,
+): CreateUserInput {
+  return {
+    ...normalizeUserFormState(draft),
+    redirectTo,
+  };
+}
+
+export function getCreatableUserRoles(
+  actorRole: AppRole | null,
+): AppRole[] {
+  if (actorRole === "owner") {
+    return ["user", "secondary_admin", "main_admin", "owner"];
+  }
+
+  if (actorRole === "main_admin") {
+    return [...MAIN_ADMIN_ASSIGNABLE_ROLES];
+  }
+
+  return [];
 }
 
 export function getUserEditCapabilities({
