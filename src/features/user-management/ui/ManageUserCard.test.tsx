@@ -35,4 +35,19 @@ describe("ManageUserCard", () => {
       "/users/user-1/edit",
     );
   });
+
+  it("marks accounts that the actor can only view", () => {
+    render(
+      <MemoryRouter initialEntries={["/users"]}>
+        <Routes>
+          <Route
+            path="/users"
+            element={<ManageUserCard user={user} isViewOnly />}
+          />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText("View only")).not.toBeNull();
+  });
 });
