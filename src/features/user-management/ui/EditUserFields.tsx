@@ -124,36 +124,37 @@ function EditUserFields({
         <label
           id="role-label"
           htmlFor="role"
-          className={`flex flex-col gap-1.5 ${formLabelStyle}`}
+          className={formLabelStyle}
         >
           Role
-          <Autocomplete
-            size="small"
-            disableClearable
-            disabled={disabledAccess}
-            value={selectedRoleOption}
-            options={roleOptions}
-            onChange={(_, option) => onRoleChange(option.value)}
-            isOptionEqualToValue={(option, value) =>
-              option.value === value.value
-            }
-            getOptionLabel={(option) => option.label}
-            sx={(theme) => compactSelectStyle(theme)}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                slotProps={{
-                  ...params.slotProps,
-                  htmlInput: {
-                    ...params.slotProps.htmlInput,
-                    id: "role",
-                    "aria-labelledby": "role-label",
-                  },
-                }}
-              />
-            )}
-          />
         </label>
+        <Autocomplete
+          className="mt-1.5"
+          size="small"
+          disableClearable
+          disabled={disabledAccess}
+          value={selectedRoleOption}
+          options={roleOptions}
+          onChange={(_, option) => onRoleChange(option.value)}
+          isOptionEqualToValue={(option, value) =>
+            option.value === value.value
+          }
+          getOptionLabel={(option) => option.label}
+          sx={(theme) => compactSelectStyle(theme)}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              slotProps={{
+                ...params.slotProps,
+                htmlInput: {
+                  ...params.slotProps.htmlInput,
+                  id: "role",
+                  "aria-labelledby": "role-label",
+                },
+              }}
+            />
+          )}
+        />
       </div>
     </div>
   );

@@ -2,10 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import {
   closeLocalAuthSession,
+  verifyImplicitEmailLink,
   verifySecureEmailLink,
 } from "../features/auth/model/auth.email-links.api";
 import {
   markPasswordRecoverySession,
+  parseImplicitEmailLink,
   parseSecureEmailLink,
 } from "../features/auth/model/auth.recovery";
 import AuthPageShell, {
@@ -20,14 +22,22 @@ function SecureEmailLinkPage() {
     () => parseSecureEmailLink(location.search),
     [location.search],
   );
+  const implicitLink = useMemo(
+    () => parseImplicitEmailLink(location.hash),
+    [location.hash],
+  );
   const [verificationError, setVerificationError] = useState("");
-  const error = link.success ? verificationError : link.error;
-  const isRecoveryLink = link.success && link.params.type === "recovery";
+  const error =
+    link.success || implicitLink ? verificationError : link.error;
+  const linkType = link.success ? link.params.type : implicitLink?.type;
+  const isRecoveryLink = linkType === "recovery";
+  const isPasswordSetupLink =
+    linkType === "recovery" || linkType === "invite";
 
   useEffect(() => {
     let isActive = true;
 
-    if (!link.success) {
+    if (!link.success && !implicitLink) {
       return () => {
         isActive = false;
       };
@@ -35,10 +45,13 @@ function SecureEmailLinkPage() {
 
     const verifyLink = async () => {
       try {
-        const session = await verifySecureEmailLink(link.params);
+        const type = link.success ? link.params.type : implicitLink!.type;
+        const session = link.success
+          ? await verifySecureEmailLink(link.params)
+          : await verifyImplicitEmailLink(implicitLink!);
         if (!isActive) return;
 
-        if (link.params.type === "recovery") {
+        if (type === "recovery" || type === "invite") {
           if (!session) {
             throw new Error("The recovery session could not be created.");
           }
@@ -73,11 +86,17 @@ function SecureEmailLinkPage() {
     return () => {
       isActive = false;
     };
-  }, [link, navigate]);
+  }, [implicitLink, link, navigate]);
 
   return (
     <AuthPageShell
-      title={error ? "Email link unavailable" : "Verifying email link"}
+      title={
+        error
+          ? "Email link unavailable"
+          : isPasswordSetupLink
+            ? "Preparing password setup"
+            : "Verifying email link"
+      }
       description={
         error
           ? "The link may have expired or already been used."
