@@ -12,7 +12,12 @@ export type UserFormErrors = Partial<
 >;
 
 export interface UpdateUserInput extends UserFormState {
+  expectedUpdatedAt: string;
   userId: string;
+}
+
+export interface CreateUserInput extends UserFormState {
+  redirectTo: string;
 }
 
 export interface UserEditCapabilities {
