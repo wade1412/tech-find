@@ -1,6 +1,10 @@
 import { useParams } from "react-router";
 import { useUsersQuery } from "../../entities/user/useUsersQuery";
-import { centeredContainerStyle, formStyle } from "../../shared/styles/styles";
+import {
+  centeredContainerStyle,
+  editHeaderWithButtonContainerStyle,
+  formStyle,
+} from "../../shared/styles/styles";
 import ErrorMessage from "../../shared/ui/ErrorMessage";
 import PageHeader from "../../shared/ui/PageHeader";
 import EditUserForm from "../../features/user-management/ui/EditUserForm";
@@ -10,6 +14,7 @@ import { useAuthPermissions } from "../../features/auth/model/useAuthPermissions
 import { getUsersVisibleToRole } from "../../features/user-management/model/userVisibility";
 import { useMemo } from "react";
 import { roleLabelMap } from "../../entities/user/roles.constants";
+import ArchiveUserWithConfirmationButton from "../../features/user-management/archive-user/ui/ArchiveUserWithConfirmationButton";
 
 function EditUserPage() {
   const { userId } = useParams<{ userId: string }>();
@@ -41,10 +46,14 @@ function EditUserPage() {
   return (
     <div className={centeredContainerStyle}>
       <section className={formStyle}>
-        <PageHeader
-          title={selectedUser.alias}
-          subtitle={`${selectedUser.full_name} · ${roleLabelMap[selectedUser.role]}`}
-        />
+        <div className={editHeaderWithButtonContainerStyle}>
+          <PageHeader
+            title={selectedUser.alias}
+            subtitle={`${selectedUser.full_name} · ${roleLabelMap[selectedUser.role]}`}
+          />
+
+          <ArchiveUserWithConfirmationButton user={selectedUser} />
+        </div>
 
         <EditUserForm key={selectedUser.id} user={selectedUser} />
       </section>
