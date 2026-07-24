@@ -4,7 +4,8 @@ import { useNavigate } from "react-router";
 import { useAuthPermissions } from "../../../auth/model/useAuthPermissions";
 import { useArchiveUserMutation } from "../model/useUserArchiveMutations";
 import ConfirmArchiveEntityDialog from "../../../../shared/ui/ConfirmArchiveEntityDialog";
-import ArchiveEntityButton from "../../../../shared/ui/ArchiveEntityButton";
+import ArchiveButton from "../../../../shared/ui/ArchiveButton";
+import { archiveEntityButtonStyle } from "../../../../shared/styles/styles";
 
 function ArchiveUserWithConfirmationButton({ user }: { user: User }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -36,9 +37,10 @@ function ArchiveUserWithConfirmationButton({ user }: { user: User }) {
 
   return (
     <>
-      <ArchiveEntityButton
+      <ArchiveButton
+        label="Archive User"
         handleClick={handleArchiveButtonClick}
-        entityLabel="user"
+        className={archiveEntityButtonStyle}
       />
 
       <ConfirmArchiveEntityDialog

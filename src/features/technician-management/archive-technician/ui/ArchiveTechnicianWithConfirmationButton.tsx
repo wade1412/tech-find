@@ -4,7 +4,8 @@ import type { Technician } from "../../../../entities/technician/technician.type
 import { useAuthPermissions } from "../../../auth/model/useAuthPermissions";
 import { useArchiveTechnicianMutation } from "../model/useTechnicianArchiveMutations";
 import ConfirmArchiveEntityDialog from "../../../../shared/ui/ConfirmArchiveEntityDialog";
-import ArchiveEntityButton from "../../../../shared/ui/ArchiveEntityButton";
+import ArchiveButton from "../../../../shared/ui/ArchiveButton";
+import { archiveEntityButtonStyle } from "../../../../shared/styles/styles";
 
 interface ArchiveTechnicianWithConfirmationButtonProps {
   technician: Technician;
@@ -42,9 +43,10 @@ function ArchiveTechnicianWithConfirmationButton({
 
   return (
     <>
-      <ArchiveEntityButton
+      <ArchiveButton
+        label="Archive Technician"
         handleClick={handleArchiveButtonClick}
-        entityLabel="technician"
+        className={archiveEntityButtonStyle}
       />
 
       <ConfirmArchiveEntityDialog

@@ -1,15 +1,14 @@
-import { archiveButtonStyle } from "../styles/styles";
-
 interface ArchiveButtonProps {
   handleClick: () => void;
-  entityLabel: string;
+  label: string;
+  className: string;
 }
 
-function ArchiveEntityButton({ handleClick, entityLabel }: ArchiveButtonProps) {
+function ArchiveButton({ handleClick, label, className }: ArchiveButtonProps) {
   return (
     <button
       type="button"
-      className={archiveButtonStyle}
+      className={className}
       onClick={handleClick}
       aria-haspopup="dialog"
     >
@@ -24,9 +23,9 @@ function ArchiveEntityButton({ handleClick, entityLabel }: ArchiveButtonProps) {
         <path d="M4 7.5h16M6 7.5v11h12v-11M9.5 11.5h5" />
         <path d="M4 4.5h16v3H4z" />
       </svg>
-      {`Archive ${entityLabel.charAt(0).toUpperCase() + entityLabel.slice(1)}`}
+      {label}
     </button>
   );
 }
 
-export default ArchiveEntityButton;
+export default ArchiveButton;
