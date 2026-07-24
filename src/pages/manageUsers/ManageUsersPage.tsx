@@ -30,7 +30,10 @@ import PageHeader from "../../shared/ui/PageHeader";
 import SearchInput from "../../shared/ui/SearchInput";
 import SegmentedControl from "../../shared/ui/SegmentedControl";
 import { useAuthPermissions } from "../../features/auth/model/useAuthPermissions";
-import { getUsersVisibleToRole } from "../../features/user-management/model/userVisibility";
+import {
+  getUsersVisibleToRole,
+  putCurrentUserFirst,
+} from "../../features/user-management/model/userVisibility";
 import { useAuth } from "../../features/auth/model/AuthContext";
 import { getUserEditCapabilities } from "../../features/user-management/model/editUser.helpers";
 
@@ -100,15 +103,15 @@ function ManageUsersPage() {
     () => getUsersVisibleToRole(users ?? [], role),
     [users, role],
   );
-  const visibleUsers = useMemo(
-    () =>
-      filterUsers({
+  const visibleUsers = useMemo(() => {
+    const filteredUsers = filterUsers({
         users: accessibleUsers,
         searchTerm,
         status: statusFilter,
-      }),
-    [accessibleUsers, searchTerm, statusFilter],
-  );
+    });
+
+    return putCurrentUserFirst(filteredUsers, profile?.id);
+  }, [accessibleUsers, profile?.id, searchTerm, statusFilter]);
 
   const hasAppliedFilters =
     Boolean(searchTerm.trim()) || statusFilter !== "all";
@@ -208,6 +211,7 @@ function ManageUsersPage() {
                     >
                       <ManageUserCard
                         user={user}
+                        isCurrentUser={user.id === profile?.id}
                         isViewOnly={
                           !getUserEditCapabilities({
                             actorId: profile?.id,

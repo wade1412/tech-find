@@ -3,9 +3,11 @@ import type { User } from "../../../entities/user/user.types";
 import UserRoleBadge from "../../../entities/user/ui/UserRoleBadge";
 
 function ManageUserCard({
+  isCurrentUser = false,
   isViewOnly = false,
   user,
 }: {
+  isCurrentUser?: boolean;
   isViewOnly?: boolean;
   user: User;
 }) {
@@ -60,8 +62,14 @@ function ManageUserCard({
           </div>
         </div>
 
-        {(isInactive || isViewOnly) && (
+        {(isCurrentUser || isInactive || isViewOnly) && (
           <div className="flex flex-col items-end gap-1.5">
+            {isCurrentUser && (
+              <span className="rounded-lg border border-main-500/30 bg-main-500/10 px-2.5 py-1 text-xs font-medium text-main-500 dark:border-main-400/30 dark:bg-main-400/10 dark:text-main-400">
+                Your account
+              </span>
+            )}
+
             {isInactive && (
               <span className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-zinc-200 bg-white/70 px-2.5 py-1 text-xs font-medium text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900/60 dark:text-zinc-400">
                 <span className="h-1.5 w-1.5 rounded-full bg-zinc-400 dark:bg-zinc-500" />

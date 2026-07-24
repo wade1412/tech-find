@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import type { User } from "../../../entities/user/user.types";
-import { getUsersVisibleToRole } from "./userVisibility";
+import {
+  getUsersVisibleToRole,
+  putCurrentUserFirst,
+} from "./userVisibility";
 
 const makeUser = (id: string, role: User["role"]): User => ({
   active: true,
@@ -11,6 +14,20 @@ const makeUser = (id: string, role: User["role"]): User => ({
   id,
   role,
   updated_at: "2026-01-01T00:00:00.000Z",
+});
+
+describe("putCurrentUserFirst", () => {
+  it("moves the current user first without changing the other users' order", () => {
+    expect(
+      putCurrentUserFirst(users, "main-admin").map(({ id }) => id),
+    ).toEqual(["main-admin", "regular-user", "owner-user"]);
+  });
+
+  it("keeps the order when the current user is not in the list", () => {
+    expect(
+      putCurrentUserFirst(users, "missing-user").map(({ id }) => id),
+    ).toEqual(["regular-user", "main-admin", "owner-user"]);
+  });
 });
 
 const users = [

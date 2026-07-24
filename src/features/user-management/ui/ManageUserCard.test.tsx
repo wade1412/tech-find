@@ -50,4 +50,19 @@ describe("ManageUserCard", () => {
 
     expect(screen.getByText("View only")).not.toBeNull();
   });
+
+  it("marks the signed-in user's account", () => {
+    render(
+      <MemoryRouter initialEntries={["/users"]}>
+        <Routes>
+          <Route
+            path="/users"
+            element={<ManageUserCard user={user} isCurrentUser />}
+          />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText("Your account")).not.toBeNull();
+  });
 });

@@ -5,7 +5,7 @@ export const headingStyleDefault = `${headingStyleBase}  text-zinc-400 dark:text
 
 export const headingStyleWithBottomMargin = `${headingStyleDefault} mb-3`;
 
-export const ignoreItemHeadingStyle = `${headingStyleBase} text-main-500/80 dark:main-400/85`;
+export const ignoreItemHeadingStyle = `${headingStyleBase} text-main-500/80 dark:text-main-400/85`;
 
 export const formStyle = "flex flex-col gap-4";
 
@@ -58,7 +58,7 @@ export const sectionHeaderSubtextStyle =
 export const manageListGridStyle = "grid grid-cols-1 gap-2.5 md:grid-cols-3";
 
 export const centeredContainerStyle =
-  "mx-auto max-w-6xl py-4 px-4 md:px-6 py-4";
+  "mx-auto w-full max-w-6xl px-4 py-4 md:px-6";
 
 export const buttonContainerStyle =
   "flex w-full flex-col gap-2 sm:flex-row md:w-auto md:items-center";
