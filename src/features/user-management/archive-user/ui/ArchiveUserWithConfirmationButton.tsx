@@ -1,24 +1,18 @@
 import { useState } from "react";
+import type { User } from "../../../../entities/user/user.types";
 import { useNavigate } from "react-router";
-import type { Technician } from "../../../../entities/technician/technician.types";
 import { useAuthPermissions } from "../../../auth/model/useAuthPermissions";
-import { useArchiveTechnicianMutation } from "../model/useTechnicianArchiveMutations";
-import ConfirmArchiveTechnicianDialog from "./ConfirmArchiveTechnicianDialog";
+import { useArchiveUserMutation } from "../model/useUserArchiveMutations";
 import { archiveButtonStyle } from "../../../../shared/styles/styles";
+import ConfirmArchiveUserDialog from "./ConfirmArchiveUserDialog";
 
-interface ArchiveTechnicianWithConfirmationButtonProps {
-  technician: Technician;
-}
-
-function ArchiveTechnicianWithConfirmationButton({
-  technician,
-}: ArchiveTechnicianWithConfirmationButtonProps) {
+function ArchiveUserWithConfirmationButton({ user }: { user: User }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const navigate = useNavigate();
-  const { canArchiveTechnicians } = useAuthPermissions();
-  const archiveMutation = useArchiveTechnicianMutation();
+  const { canManageUsers } = useAuthPermissions();
+  const archiveMutation = useArchiveUserMutation();
 
-  if (!canArchiveTechnicians) return null;
+  if (!canManageUsers) return null;
 
   const handleClose = () => {
     if (archiveMutation.isPending) return;
@@ -27,10 +21,10 @@ function ArchiveTechnicianWithConfirmationButton({
   };
 
   const handleConfirm = () => {
-    archiveMutation.mutate(technician.id, {
+    archiveMutation.mutate(user.id, {
       onSuccess: () => {
         setIsDialogOpen(false);
-        navigate("/technicians", { replace: true });
+        navigate("/users", { replace: true });
       },
     });
   };
@@ -57,11 +51,11 @@ function ArchiveTechnicianWithConfirmationButton({
           <path d="M4 7.5h16M6 7.5v11h12v-11M9.5 11.5h5" />
           <path d="M4 4.5h16v3H4z" />
         </svg>
-        Archive technician
+        Archive User
       </button>
 
-      <ConfirmArchiveTechnicianDialog
-        technician={technician}
+      <ConfirmArchiveUserDialog
+        user={user}
         isOpen={isDialogOpen}
         isPending={archiveMutation.isPending}
         error={archiveMutation.error}
@@ -72,4 +66,4 @@ function ArchiveTechnicianWithConfirmationButton({
   );
 }
 
-export default ArchiveTechnicianWithConfirmationButton;
+export default ArchiveUserWithConfirmationButton;
