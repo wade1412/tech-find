@@ -3,8 +3,8 @@ import { useNavigate } from "react-router";
 import type { Technician } from "../../../../entities/technician/technician.types";
 import { useAuthPermissions } from "../../../auth/model/useAuthPermissions";
 import { useArchiveTechnicianMutation } from "../model/useTechnicianArchiveMutations";
-import ConfirmArchiveTechnicianDialog from "./ConfirmArchiveTechnicianDialog";
 import { archiveButtonStyle } from "../../../../shared/styles/styles";
+import ConfirmArchiveEntityDialog from "../../../../shared/ui/ConfirmArchiveEntityDialog";
 
 interface ArchiveTechnicianWithConfirmationButtonProps {
   technician: Technician;
@@ -60,8 +60,10 @@ function ArchiveTechnicianWithConfirmationButton({
         Archive technician
       </button>
 
-      <ConfirmArchiveTechnicianDialog
-        technician={technician}
+      <ConfirmArchiveEntityDialog
+        entityLabel="technician"
+        entityName={technician.alias}
+        confirmationMessageSubtext=" Service zones, skills, and ignore-list items will be preserved, but the technician will be excluded from jobs matching. You can restore this technician from the archive at any time."
         isOpen={isDialogOpen}
         isPending={archiveMutation.isPending}
         error={archiveMutation.error}

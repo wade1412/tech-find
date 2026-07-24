@@ -4,7 +4,7 @@ import { useNavigate } from "react-router";
 import { useAuthPermissions } from "../../../auth/model/useAuthPermissions";
 import { useArchiveUserMutation } from "../model/useUserArchiveMutations";
 import { archiveButtonStyle } from "../../../../shared/styles/styles";
-import ConfirmArchiveUserDialog from "./ConfirmArchiveUserDialog";
+import ConfirmArchiveEntityDialog from "../../../../shared/ui/ConfirmArchiveEntityDialog";
 
 function ArchiveUserWithConfirmationButton({ user }: { user: User }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -54,8 +54,10 @@ function ArchiveUserWithConfirmationButton({ user }: { user: User }) {
         Archive User
       </button>
 
-      <ConfirmArchiveUserDialog
-        user={user}
+      <ConfirmArchiveEntityDialog
+        entityLabel="user"
+        entityName={user.alias}
+        confirmationMessageSubtext="User profile information will be preserved, but the user will be forbidden to use the app. You can restore this user from the archive at any time."
         isOpen={isDialogOpen}
         isPending={archiveMutation.isPending}
         error={archiveMutation.error}
