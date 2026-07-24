@@ -12,8 +12,13 @@ import {
   technicianListVariants,
 } from "../../../shared/styles/motionVariants";
 import ErrorMessage from "../../../shared/ui/ErrorMessage";
+import { useMediaQuery } from "react-responsive";
+import { DESKTOP_BREAKPOINT } from "../../../shared/model/responsive.constants";
 
 function TechnicianList() {
+  const isDesktopMode = useMediaQuery({
+    query: `(min-width: ${DESKTOP_BREAKPOINT})`,
+  });
   const { filter, updateSort } = useTechnicianFilters();
   const {
     filteredTechnicians,
@@ -121,7 +126,7 @@ function TechnicianList() {
         values={orderedIds}
         onReorder={handleReorder}
         onScroll={updateScrollFade}
-        className="technician-scroll flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto overscroll-contain px-1 pb-8"
+        className="app-scroll technician-scroll flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto overscroll-contain px-1 pb-8"
         variants={technicianListVariants}
         initial="hidden"
         animate="visible"
@@ -138,6 +143,7 @@ function TechnicianList() {
                   key={technician.id}
                   layout="position"
                   value={technician.id}
+                  dragListener={isDesktopMode}
                   onDragStart={handleDragStart}
                   onDragEnd={handleDragEnd}
                   variants={technicianCardVariants}
@@ -178,7 +184,8 @@ function TechnicianList() {
 
       <div
         aria-hidden="true"
-        className={`pointer-events-none absolute right-3 bottom-0 left-1 h-6 bg-linear-to-t from-zinc-50 via-zinc-50/85 to-transparent backdrop-blur-[1px] transition-opacity duration-200 dark:from-zinc-950 dark:via-zinc-950/85 ${
+        data-technician-scroll-fade
+        className={`pointer-events-none absolute right-3 bottom-0 left-1 h-10 bg-linear-to-t from-zinc-50 via-zinc-50/90 to-transparent backdrop-blur-[1.5px] transition-opacity duration-200 dark:from-zinc-950 dark:via-zinc-950/90 ${
           canScrollDown ? "opacity-100" : "opacity-0"
         }`}
       />

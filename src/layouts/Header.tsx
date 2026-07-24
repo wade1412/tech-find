@@ -48,7 +48,7 @@ function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-10 border-b border-zinc-200 bg-zinc-50/80 backdrop-blur-sm transition-colors dark:border-zinc-800 dark:bg-zinc-950/80">
+    <header className="sticky top-0 z-10 shrink-0 border-b border-zinc-200 bg-zinc-50/80 backdrop-blur-sm transition-colors dark:border-zinc-800 dark:bg-zinc-950/80">
       <div
         className={`mx-auto max-w-6xl items-center px-4 py-3 md:px-6 ${isDesktopHeader ? "flex justify-between" : "grid grid-cols-[auto_minmax(0,1fr)_auto_auto] gap-2"}`}
       >
