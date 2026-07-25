@@ -9,7 +9,9 @@ export function useUpdateUserMutation() {
   return useMutation({
     mutationFn: updateUser,
     onSuccess: (updatedUser) => {
-      queryClient.setQueryData<User[]>(queryKeys.users, (users) =>
+      queryClient.setQueryData<User[]>(
+        [...queryKeys.users, "all"],
+        (users) =>
         users
           ?.map((user) =>
             user.id === updatedUser.id ? updatedUser : user,

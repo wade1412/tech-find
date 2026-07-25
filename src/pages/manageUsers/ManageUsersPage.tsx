@@ -36,6 +36,7 @@ import {
 } from "../../features/user-management/model/userVisibility";
 import { useAuth } from "../../features/auth/model/AuthContext";
 import { getUserEditCapabilities } from "../../features/user-management/model/editUser.helpers";
+import OpenArchivedUsersDialogButton from "../../features/user-management/archive-user/ui/OpenArchivedUsersDialogButton";
 
 function formatUserCount(count: number) {
   return `${count} ${count === 1 ? "user" : "users"}`;
@@ -105,9 +106,9 @@ function ManageUsersPage() {
   );
   const visibleUsers = useMemo(() => {
     const filteredUsers = filterUsers({
-        users: accessibleUsers,
-        searchTerm,
-        status: statusFilter,
+      users: accessibleUsers,
+      searchTerm,
+      status: statusFilter,
     });
 
     return putCurrentUserFirst(filteredUsers, profile?.id);
@@ -142,6 +143,7 @@ function ManageUsersPage() {
           />
 
           <div className={buttonContainerStyle}>
+            <OpenArchivedUsersDialogButton />
             <Link to="new" className={createManagementItemButtonStyle}>
               <svg
                 aria-hidden="true"

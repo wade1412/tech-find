@@ -9,10 +9,7 @@ import { queryKeys } from "../../../../shared/api/queryKeys";
 const useInvalidateUserQuery = () => {
   const queryClient = useQueryClient();
 
-  return () =>
-    new Promise(() =>
-      queryClient.invalidateQueries({ queryKey: queryKeys.users }),
-    );
+  return () => queryClient.invalidateQueries({ queryKey: queryKeys.users });
 };
 
 export const useArchiveUserMutation = () => {

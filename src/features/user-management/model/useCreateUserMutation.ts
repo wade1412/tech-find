@@ -9,10 +9,12 @@ export function useCreateUserMutation() {
   return useMutation({
     mutationFn: createUser,
     onSuccess: (createdUser) => {
-      queryClient.setQueryData<User[]>(queryKeys.users, (users = []) =>
-        [...users, createdUser].sort((left, right) =>
-          left.alias.localeCompare(right.alias),
-        ),
+      queryClient.setQueryData<User[]>(
+        [...queryKeys.users, "all"],
+        (users = []) =>
+          [...users, createdUser].sort((left, right) =>
+            left.alias.localeCompare(right.alias),
+          ),
       );
     },
     onSettled: () =>

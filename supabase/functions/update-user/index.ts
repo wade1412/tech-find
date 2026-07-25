@@ -187,7 +187,12 @@ Deno.serve(async (request) => {
   const [{ data: actor, error: actorError }, { data: target, error: targetError }] =
     await Promise.all([
       admin.from("user_profile").select("*").eq("id", authData.user.id).single(),
-      admin.from("user_profile").select("*").eq("id", update.userId).single(),
+      admin
+        .from("user_profile")
+        .select("*")
+        .eq("id", update.userId)
+        .is("archived_at", null)
+        .single(),
     ]);
 
   if (actorError || !actor) {
