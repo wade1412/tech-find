@@ -7,10 +7,30 @@
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "14.5"
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
   }
   public: {
     Tables: {
@@ -384,10 +404,52 @@ export type Database = {
         }
         Relationships: []
       }
+      user_management_audit: {
+        Row: {
+          actor_id: string
+          after_state: Json | null
+          before_state: Json | null
+          created_at: string
+          error_message: string | null
+          id: string
+          operation: string
+          outcome: string
+          requires_reconciliation: boolean
+          target_user_id: string | null
+        }
+        Insert: {
+          actor_id: string
+          after_state?: Json | null
+          before_state?: Json | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          operation: string
+          outcome: string
+          requires_reconciliation?: boolean
+          target_user_id?: string | null
+        }
+        Update: {
+          actor_id?: string
+          after_state?: Json | null
+          before_state?: Json | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          operation?: string
+          outcome?: string
+          requires_reconciliation?: boolean
+          target_user_id?: string | null
+        }
+        Relationships: []
+      }
       user_profile: {
         Row: {
           active: boolean
+          active_before_archive: boolean | null
           alias: string
+          archived_at: string | null
+          archived_by: string | null
           created_at: string
           email: string
           full_name: string
@@ -397,7 +459,10 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          active_before_archive?: boolean | null
           alias: string
+          archived_at?: string | null
+          archived_by?: string | null
           created_at?: string
           email: string
           full_name: string
@@ -407,7 +472,10 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          active_before_archive?: boolean | null
           alias?: string
+          archived_at?: string | null
+          archived_by?: string | null
           created_at?: string
           email?: string
           full_name?: string
@@ -415,7 +483,15 @@ export type Database = {
           role?: Database["public"]["Enums"]["app_role"]
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_profile_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "user_profile"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -426,14 +502,8 @@ export type Database = {
         Args: { role: Database["public"]["Enums"]["app_role"] }
         Returns: number
       }
-      current_app_role: {
-        Args: never
-        Returns: Database["public"]["Enums"]["app_role"]
-      }
-      current_user_has_role: {
-        Args: { required_role: Database["public"]["Enums"]["app_role"] }
-        Returns: boolean
-      }
+      archive_technician: { Args: { p_technician_id: string }; Returns: string }
+      archive_user: { Args: { p_user_id: string }; Returns: string }
       create_technician: {
         Args: {
           p_ignore_items?: Json
@@ -458,19 +528,25 @@ export type Database = {
           name: string
           notes: string | null
         }
+        SetofOptions: {
+          from: "*"
+          to: "technician"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
-      archive_technician: {
-        Args: { p_technician_id: string }
-        Returns: string
+      current_app_role: {
+        Args: never
+        Returns: Database["public"]["Enums"]["app_role"]
       }
-      purge_technician: {
-        Args: { p_technician_id: string }
-        Returns: string
+      current_user_has_role: {
+        Args: { required_role: Database["public"]["Enums"]["app_role"] }
+        Returns: boolean
       }
-      restore_technician: {
-        Args: { p_technician_id: string }
-        Returns: string
-      }
+      purge_technician: { Args: { p_technician_id: string }; Returns: string }
+      purge_user: { Args: { p_user_id: string }; Returns: string }
+      restore_technician: { Args: { p_technician_id: string }; Returns: string }
+      restore_user: { Args: { p_user_id: string }; Returns: string }
       update_technician_ignore_list: {
         Args: {
           p_added_items?: Json
@@ -657,6 +733,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       app_role: ["user", "secondary_admin", "main_admin", "owner"],

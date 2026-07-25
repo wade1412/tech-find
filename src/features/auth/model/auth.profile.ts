@@ -9,6 +9,13 @@ export function validateUserProfile(profile: UserProfile | null): UserProfile {
     );
   }
 
+  if (profile.archived_at) {
+    throw createAuthError(
+      "inactive_profile",
+      "Your account is archived. Please contact an owner if you need access restored.",
+    );
+  }
+
   if (!profile.active) {
     throw createAuthError(
       "inactive_profile",

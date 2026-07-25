@@ -1,10 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "../../shared/api/queryKeys";
-import { getAllUsers } from "./user.api";
+import { getAllUsers, getArchivedUsers } from "./user.api";
 
-export const useUsersQuery = () => {
+type UserQueryStatus = "all" | "archived";
+
+export const useUsersQuery = (
+  status: UserQueryStatus = "all",
+  enabled = true,
+) => {
   return useQuery({
-    queryKey: queryKeys.users,
-    queryFn: getAllUsers,
+    queryKey: [...queryKeys.users, status],
+    queryFn: () => {
+      if (status === "archived") return getArchivedUsers();
+      return getAllUsers();
+    },
+    enabled,
   });
 };
