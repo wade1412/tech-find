@@ -8,6 +8,9 @@ afterEach(cleanup);
 
 const user: User = {
   id: "user-1",
+  active_before_archive: null,
+  archived_at: null,
+  archived_by: null,
   email: "owner@example.com",
   full_name: "Olivia Owner",
   alias: "Olivia",

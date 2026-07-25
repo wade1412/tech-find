@@ -17,7 +17,10 @@ const mockedCreateUser = vi.mocked(createUser);
 
 const ownerProfile: User = {
   active: true,
+  active_before_archive: null,
   alias: "Owner",
+  archived_at: null,
+  archived_by: null,
   created_at: "2026-01-01T00:00:00.000Z",
   email: "owner@example.com",
   full_name: "Olivia Owner",

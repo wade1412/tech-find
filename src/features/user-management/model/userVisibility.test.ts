@@ -7,7 +7,10 @@ import {
 
 const makeUser = (id: string, role: User["role"]): User => ({
   active: true,
+  active_before_archive: null,
   alias: id,
+  archived_at: null,
+  archived_by: null,
   created_at: "2026-01-01T00:00:00.000Z",
   email: `${id}@example.com`,
   full_name: id,

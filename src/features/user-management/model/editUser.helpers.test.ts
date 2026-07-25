@@ -11,7 +11,10 @@ import {
 
 const makeUser = (overrides: Partial<User> = {}): User => ({
   active: true,
+  active_before_archive: null,
   alias: "Alex",
+  archived_at: null,
+  archived_by: null,
   created_at: "2026-01-01T00:00:00.000Z",
   email: "alex@example.com",
   full_name: "Alex Johnson",
