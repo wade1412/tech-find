@@ -1,17 +1,23 @@
-import SectionHeader from "../shared/ui/SectionHeader";
+import ManageServicesSections from "../features/services-management/ui/ManageServicesSections";
+import { centeredContainerStyle, formStyle } from "../shared/styles/styles";
+import PageHeader from "../shared/ui/PageHeader";
 
 function ManageServicesPage() {
   return (
-    <div className="mx-auto max-w-6xl p-4 md:p-6">
-      <div className="flex flex-col gap-10">
-        <SectionHeader
-          label="Manage Services"
-          subtext="Edit units, brand and service zones"
+    <div className={centeredContainerStyle}>
+      <div className={formStyle}>
+        <PageHeader
+          title="Manage Services"
+          subtitle="Edit units, brands, service zones and specific issues"
         />
 
-        <span className="text-base text-zinc-300 text-center">
-          Work In Progress, come back later
-        </span>
+        {/* Divider */}
+        <div
+          aria-hidden="true"
+          className="h-px w-full bg-zinc-200 dark:bg-zinc-800"
+        />
+
+        <ManageServicesSections />
       </div>
     </div>
   );

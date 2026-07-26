@@ -5,7 +5,7 @@ interface EditTechnicianSectionCardProps {
   onClick: () => void;
 }
 
-function EditTechnicianSectionCard({
+function EditSectionCard({
   id,
   title,
   selectedSectionId,
@@ -42,4 +42,4 @@ function EditTechnicianSectionCard({
   );
 }
 
-export default EditTechnicianSectionCard;
+export default EditSectionCard;

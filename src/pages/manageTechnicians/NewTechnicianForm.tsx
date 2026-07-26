@@ -11,10 +11,10 @@ import PageHeader from "../../shared/ui/PageHeader";
 import { formStyle, primaryButton } from "../../shared/styles/styles";
 import { validateProfileForm } from "../../features/technician-management/profile-and-capabilities/model/profile.validation";
 import {
-  editSections,
-  type EditSectionId,
+  editTechnicianSections,
+  type EditTechnicianSectionId,
 } from "../../features/technician-management/model/manageTechnicians.constants";
-import EditTechnicianSectionCard from "./EditTechnicianSectionCard";
+import EditSectionCard from "../../shared/ui/EditSectionCard";
 import ActiveStatusBar from "../../shared/ui/ActiveStatusBar";
 import ProfileAndCapabilitiesFields from "../../features/technician-management/profile-and-capabilities/ui/ProfileAndCapabilitiesFields";
 import {
@@ -63,7 +63,7 @@ function NewTechnicianForm({
   const [newTechnicianDraft, setNewTechnicianDraft] =
     useState<NewTechnicianDraft>(() => createEmptyNewTechnicianDraft());
   const [selectedSectionId, setSelectedSectionId] =
-    useState<EditSectionId>("profile");
+    useState<EditTechnicianSectionId>("profile");
   const navigate = useNavigate();
   const createTechnicianMutation = useCreateTechnicianMutation();
 
@@ -170,8 +170,8 @@ function NewTechnicianForm({
 
         {/* Sections Cards */}
         <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4">
-          {editSections.map((section) => (
-            <EditTechnicianSectionCard
+          {editTechnicianSections.map((section) => (
+            <EditSectionCard
               key={section.id}
               id={section.id}
               title={section.title}
