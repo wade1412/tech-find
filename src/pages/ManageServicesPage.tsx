@@ -1,5 +1,6 @@
 import ManageServicesSections from "../features/services-management/ui/ManageServicesSections";
 import { centeredContainerStyle, formStyle } from "../shared/styles/styles";
+import HorizontalDivider from "../shared/ui/HorizontalDivider";
 import PageHeader from "../shared/ui/PageHeader";
 
 function ManageServicesPage() {
@@ -11,11 +12,7 @@ function ManageServicesPage() {
           subtitle="Edit units, brands, service zones and specific issues"
         />
 
-        {/* Divider */}
-        <div
-          aria-hidden="true"
-          className="h-px w-full bg-zinc-200 dark:bg-zinc-800"
-        />
+        <HorizontalDivider />
 
         <ManageServicesSections />
       </div>

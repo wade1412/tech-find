@@ -37,6 +37,7 @@ import {
 import { useAuth } from "../../features/auth/model/AuthContext";
 import { getUserEditCapabilities } from "../../features/user-management/model/editUser.helpers";
 import OpenArchivedUsersDialogButton from "../../features/user-management/archive-user/ui/OpenArchivedUsersDialogButton";
+import HorizontalDivider from "../../shared/ui/HorizontalDivider";
 
 function formatUserCount(count: number) {
   return `${count} ${count === 1 ? "user" : "users"}`;
@@ -160,11 +161,7 @@ function ManageUsersPage() {
           </div>
         </div>
 
-        {/* Divider */}
-        <div
-          aria-hidden="true"
-          className="h-px w-full bg-zinc-200 dark:bg-zinc-800"
-        />
+        <HorizontalDivider />
 
         <div className={`${formStyle} px-2`}>
           <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">

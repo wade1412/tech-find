@@ -32,6 +32,7 @@ import {
 } from "../../features/technician-management/model/manageTechnicians.constants";
 import OpenArchivedTechniciansDialogButton from "../../features/technician-management/archive-technician/ui/OpenArchivedTechniciansDialogButton";
 import ManagementListSkeleton from "../../shared/ui/ManagementListSkeleton";
+import HorizontalDivider from "../../shared/ui/HorizontalDivider";
 
 function ManageTechniciansPage() {
   const {
@@ -166,11 +167,7 @@ function ManageTechniciansPage() {
           </div>
         </div>
 
-        {/* Divider */}
-        <div
-          aria-hidden="true"
-          className="h-px w-full bg-zinc-200 dark:bg-zinc-800"
-        />
+        <HorizontalDivider />
 
         {/* List Filter and Search */}
         <div className={`${formStyle} px-2`}>

@@ -29,6 +29,7 @@ import {
 } from "../model/skillTemplates.helpers";
 import ClearSkillsDialog from "./ClearSkillsDialog";
 import SearchInput from "../../../../shared/ui/SearchInput";
+import HorizontalDivider from "../../../../shared/ui/HorizontalDivider";
 
 interface SkillFieldsProps {
   skills: SkillDraft[];
@@ -267,10 +268,7 @@ function SkillFields({
         </AnimatePresence>
       </div>
 
-      <div
-        aria-hidden="true"
-        className="h-px w-full bg-zinc-200 dark:bg-zinc-800"
-      />
+      <HorizontalDivider />
 
       {templates.length > 0 && (
         <>
@@ -281,10 +279,7 @@ function SkillFields({
             availabilityById={templateAvailabilityById}
             feedback={templateFeedback}
           />
-          <div
-            aria-hidden="true"
-            className="h-px w-full bg-zinc-200 dark:bg-zinc-800"
-          />
+          <HorizontalDivider />
         </>
       )}
 

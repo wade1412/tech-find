@@ -19,6 +19,7 @@ import {
 import type { IgnoreItemDraft } from "../model/ignoreList.types";
 import IgnoreItemEditor from "./IgnoreItemEditor";
 import IgnoreListItemCard from "./IgnoreListItemCard";
+import HorizontalDivider from "../../../../shared/ui/HorizontalDivider";
 
 interface IgnoreListFieldsProps {
   items: IgnoreItemDraft[];
@@ -159,10 +160,7 @@ function IgnoreListFields({
         </AnimatePresence>
       </div>
 
-      <div
-        aria-hidden="true"
-        className="h-px w-full bg-zinc-200 dark:bg-zinc-800"
-      />
+      <HorizontalDivider />
 
       <motion.div
         layout
