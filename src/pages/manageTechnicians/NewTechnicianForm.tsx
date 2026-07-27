@@ -8,7 +8,12 @@ import type {
 } from "../../features/technician-management/profile-and-capabilities/model/profile.types";
 import type { SkillDraft } from "../../features/technician-management/skills/model/skills.types";
 import PageHeader from "../../shared/ui/PageHeader";
-import { formStyle, primaryButton } from "../../shared/styles/styles";
+import {
+  centeredContainerStyle,
+  editSectionListStyle,
+  formStyle,
+  primaryButton,
+} from "../../shared/styles/styles";
 import { validateProfileForm } from "../../features/technician-management/profile-and-capabilities/model/profile.validation";
 import {
   editTechnicianSections,
@@ -139,8 +144,8 @@ function NewTechnicianForm({
   };
 
   return (
-    <div className="mx-auto max-w-6xl p-4 md:p-6">
-      <section className="flex flex-col gap-4">
+    <div className={centeredContainerStyle}>
+      <section className={formStyle}>
         {/* Header */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <PageHeader
@@ -169,7 +174,7 @@ function NewTechnicianForm({
         )}
 
         {/* Sections Cards */}
-        <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4">
+        <div className={editSectionListStyle}>
           {editTechnicianSections.map((section) => (
             <EditSectionCard
               key={section.id}

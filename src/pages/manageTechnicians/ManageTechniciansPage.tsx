@@ -12,11 +12,10 @@ import {
   managementListVariants,
 } from "../../shared/styles/motionVariants";
 import ErrorMessage from "../../shared/ui/ErrorMessage";
-import { Link, useSearchParams } from "react-router";
+import { useSearchParams } from "react-router";
 import {
   buttonContainerStyle,
   centeredContainerStyle,
-  createManagementItemButtonStyle,
   formStyle,
   ghostButton,
   manageListGridStyle,
@@ -33,6 +32,7 @@ import {
 import OpenArchivedTechniciansDialogButton from "../../features/technician-management/archive-technician/ui/OpenArchivedTechniciansDialogButton";
 import ManagementListSkeleton from "../../shared/ui/ManagementListSkeleton";
 import HorizontalDivider from "../../shared/ui/HorizontalDivider";
+import CreateNewEntityLinkButton from "../../shared/ui/CreateNewEntityLinkButton";
 
 function ManageTechniciansPage() {
   const {
@@ -146,24 +146,7 @@ function ManageTechniciansPage() {
 
           <div className={buttonContainerStyle}>
             <OpenArchivedTechniciansDialogButton />
-            <Link to="new" className={createManagementItemButtonStyle}>
-              <svg
-                fill="none"
-                className="h-3.5 w-3.5"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2.5}
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 4.5v15m7.5-7.5h-15"
-                />
-              </svg>
-
-              <span className="text-center">Create Technician</span>
-            </Link>
+            <CreateNewEntityLinkButton linkTo="new" label="Create Technician" />
           </div>
         </div>
 
