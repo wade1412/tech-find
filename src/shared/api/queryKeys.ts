@@ -4,7 +4,11 @@ export const queryKeys = {
     all: ["technicians", "all"],
     archived: ["technicians", "archived"],
   },
-  units: ["units"],
+  units: {
+    active: ["units", "active"],
+    all: ["units", "all"],
+    detail: (id: string) => ["units", "detail", id],
+  },
   specificIssues: ["specific-issues"],
   brands: ["brands"],
   brandGroups: ["brand_groups"],

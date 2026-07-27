@@ -73,3 +73,6 @@ export const archiveEntityButtonStyle =
   "inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-zinc-200 bg-transparent px-4 py-2.5 text-xs font-semibold text-zinc-600 transition-[background-color,border-color,color,opacity,transform] hover:border-red-500/50 hover:text-red-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-main-500 focus-visible:ring-offset-2 active:scale-[0.98] dark:border-zinc-700 dark:text-zinc-300  dark:focus-visible:ring-offset-zinc-950";
 
 export const editSectionListStyle = "grid grid-cols-2 md:grid-cols-4 gap-2.5";
+
+export const searchRowStyle =
+  "flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between";

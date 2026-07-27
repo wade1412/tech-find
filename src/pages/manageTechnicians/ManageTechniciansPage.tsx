@@ -21,6 +21,7 @@ import {
   manageListGridStyle,
   noEditValuesStyle,
   pageTitleWithButtonsContainerStyle,
+  searchRowStyle,
   sectionHeaderSubtextStyle,
 } from "../../shared/styles/styles";
 import SegmentedControl from "../../shared/ui/SegmentedControl";
@@ -154,7 +155,7 @@ function ManageTechniciansPage() {
 
         {/* List Filter and Search */}
         <div className={`${formStyle} px-2`}>
-          <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
+          <div className={searchRowStyle}>
             <div className="w-full sm:w-auto sm:min-w-75">
               <SegmentedControl
                 ariaLabel="Select technicians filter"

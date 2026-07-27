@@ -33,14 +33,15 @@ const EditTechnicianPage = lazy(
 const ManageUsersPage = lazy(
   () => import("../pages/manageUsers/ManageUsersPage"),
 );
-const EditUserPage = lazy(
-  () => import("../pages/manageUsers/EditUserPage"),
-);
-const NewUserPage = lazy(
-  () => import("../pages/manageUsers/NewUserPage"),
-);
+const EditUserPage = lazy(() => import("../pages/manageUsers/EditUserPage"));
+const NewUserPage = lazy(() => import("../pages/manageUsers/NewUserPage"));
 
-const ManageServicesPage = lazy(() => import("../pages/ManageServicesPage"));
+const ManageServicesPage = lazy(
+  () => import("../pages/manageServices/ManageServicesPage"),
+);
+const EditUnitPage = lazy(() => import("../pages/manageServices/EditUnitPage"));
+const NewUnitPage = lazy(() => import("../pages/manageServices/NewUnitPage"));
+
 const OwnerToolsPage = lazy(() => import("../pages/OwnerToolsPage"));
 
 function App() {
@@ -113,10 +114,15 @@ function App() {
           path="services"
           element={
             <PermissionRoute permission="canManageServices">
-              <ManageServicesPage />
+              <Outlet />
             </PermissionRoute>
           }
-        />
+        >
+          <Route index element={<ManageServicesPage />} />
+          <Route path="units/:unitId/edit" element={<EditUnitPage />} />
+          <Route path="units/new" element={<NewUnitPage />} />
+        </Route>
+
         <Route
           path="users"
           element={
