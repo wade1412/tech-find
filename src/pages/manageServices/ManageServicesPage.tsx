@@ -1,7 +1,7 @@
-import ManageServicesSections from "../features/services-management/ui/ManageServicesSections";
-import { centeredContainerStyle, formStyle } from "../shared/styles/styles";
-import HorizontalDivider from "../shared/ui/HorizontalDivider";
-import PageHeader from "../shared/ui/PageHeader";
+import ManageServicesSections from "../../features/services-management/ui/ManageServicesSections";
+import { centeredContainerStyle, formStyle } from "../../shared/styles/styles";
+import HorizontalDivider from "../../shared/ui/HorizontalDivider";
+import PageHeader from "../../shared/ui/PageHeader";
 
 function ManageServicesPage() {
   return (
