@@ -12,6 +12,9 @@ const UNIT_SELECT = `
   slug,
   display_order,
   active,
+  active_before_archive,
+  archived_at,
+  archived_by,
   is_built_in,
   can_be_stacked,
   can_be_gas,
@@ -23,15 +26,20 @@ export const getUnits = async (
 ): Promise<Unit[]> => {
   let query = supabase
     .from("unit")
-    .select(UNIT_SELECT)
-    .order("display_order")
-    .order("name");
+    .select(UNIT_SELECT);
 
   if (status === "active") {
-    query = query.eq("active", true);
+    query = query.eq("active", true).is("archived_at", null);
+  } else if (status === "all") {
+    query = query.is("archived_at", null);
+  } else {
+    query = query.not("archived_at", "is", null);
   }
 
-  const { data, error } = await query;
+  const { data, error } =
+    status === "archived"
+      ? await query.order("archived_at", { ascending: false })
+      : await query.order("display_order").order("name");
 
   if (error) throw error;
 
@@ -43,6 +51,7 @@ export const getUnitById = async (id: string): Promise<Unit | null> => {
     .from("unit")
     .select(UNIT_SELECT)
     .eq("id", id)
+    .is("archived_at", null)
     .maybeSingle();
 
   if (error) throw error;
@@ -71,11 +80,45 @@ export const updateUnit = async (
     .from("unit")
     .update(patch)
     .eq("id", id)
+    .is("archived_at", null)
     .select(UNIT_SELECT)
     .single();
 
   if (error) throw error;
   if (!data) throw new Error("Unit update returned no row");
+
+  return data;
+};
+
+export const archiveUnit = async (id: string): Promise<string> => {
+  const { data, error } = await supabase.rpc("archive_unit", {
+    p_unit_id: id,
+  });
+
+  if (error) throw error;
+  if (!data) throw new Error("Unit archive returned no id");
+
+  return data;
+};
+
+export const restoreUnit = async (id: string): Promise<string> => {
+  const { data, error } = await supabase.rpc("restore_unit", {
+    p_unit_id: id,
+  });
+
+  if (error) throw error;
+  if (!data) throw new Error("Unit restore returned no id");
+
+  return data;
+};
+
+export const purgeUnit = async (id: string): Promise<string> => {
+  const { data, error } = await supabase.rpc("purge_unit", {
+    p_unit_id: id,
+  });
+
+  if (error) throw error;
+  if (!data) throw new Error("Unit purge returned no id");
 
   return data;
 };
