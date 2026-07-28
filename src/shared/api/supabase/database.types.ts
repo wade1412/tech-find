@@ -371,6 +371,9 @@ export type Database = {
       unit: {
         Row: {
           active: boolean
+          active_before_archive: boolean | null
+          archived_at: string | null
+          archived_by: string | null
           can_be_commercial: boolean
           can_be_gas: boolean
           can_be_stacked: boolean
@@ -382,6 +385,9 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          active_before_archive?: boolean | null
+          archived_at?: string | null
+          archived_by?: string | null
           can_be_commercial?: boolean
           can_be_gas?: boolean
           can_be_stacked?: boolean
@@ -393,6 +399,9 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          active_before_archive?: boolean | null
+          archived_at?: string | null
+          archived_by?: string | null
           can_be_commercial?: boolean
           can_be_gas?: boolean
           can_be_stacked?: boolean
@@ -402,7 +411,15 @@ export type Database = {
           name?: string
           slug?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "unit_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "user_profile"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_management_audit: {
         Row: {
@@ -503,6 +520,7 @@ export type Database = {
         Returns: number
       }
       archive_technician: { Args: { p_technician_id: string }; Returns: string }
+      archive_unit: { Args: { p_unit_id: string }; Returns: string }
       archive_user: { Args: { p_user_id: string }; Returns: string }
       create_technician: {
         Args: {
@@ -544,8 +562,10 @@ export type Database = {
         Returns: boolean
       }
       purge_technician: { Args: { p_technician_id: string }; Returns: string }
+      purge_unit: { Args: { p_unit_id: string }; Returns: string }
       purge_user: { Args: { p_user_id: string }; Returns: string }
       restore_technician: { Args: { p_technician_id: string }; Returns: string }
+      restore_unit: { Args: { p_unit_id: string }; Returns: string }
       restore_user: { Args: { p_user_id: string }; Returns: string }
       update_technician_ignore_list: {
         Args: {
@@ -742,3 +762,5 @@ export const Constants = {
     },
   },
 } as const
+
+

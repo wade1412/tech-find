@@ -7,6 +7,7 @@ export const queryKeys = {
   units: {
     active: ["units", "active"],
     all: ["units", "all"],
+    archived: ["units", "archived"],
     detail: (id: string) => ["units", "detail", id],
   },
   specificIssues: ["specific-issues"],
