@@ -26,6 +26,9 @@ export const makeTechnician = (
 });
 
 export const makeUnit = (overrides: Partial<Unit> = {}): Unit => ({
+  active_before_archive: null,
+  archived_at: null,
+  archived_by: null,
   id: "unit-1",
   name: "Washer",
   slug: "washer",

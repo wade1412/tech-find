@@ -90,9 +90,9 @@ function EditUnitFields({
                     id="display-order-help"
                     className="mt-1 px-2 text-xs leading-5 text-zinc-500 dark:text-zinc-400"
                   >
-                    Controls the position on the filter panel.Leave gaps such as
-                    10, 20, 30 so a new unit can be inserted later as 15 without
-                    renumbering the full list.
+                    Controls the position on the filter panel. Leave gaps such
+                    as 10, 20, 30 so a new unit can be inserted later as 15
+                    without renumbering the full list.
                   </p>
                 )}
 

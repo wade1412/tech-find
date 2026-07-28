@@ -4,6 +4,9 @@ import { filterUnits } from "./filterUnits";
 
 const makeUnit = (overrides: Partial<Unit> = {}): Unit => ({
   active: true,
+  active_before_archive: null,
+  archived_at: null,
+  archived_by: null,
   can_be_commercial: false,
   can_be_gas: false,
   can_be_stacked: false,

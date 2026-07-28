@@ -9,6 +9,9 @@ const unitsById = new Map<string, Unit>([
   [
     "washer",
     {
+      active_before_archive: null,
+      archived_at: null,
+      archived_by: null,
       id: "washer",
       name: "Washer",
       slug: "washer",
@@ -23,6 +26,9 @@ const unitsById = new Map<string, Unit>([
   [
     "dryer",
     {
+      active_before_archive: null,
+      archived_at: null,
+      archived_by: null,
       id: "dryer",
       name: "Dryer",
       slug: "dryer",
@@ -37,6 +43,9 @@ const unitsById = new Map<string, Unit>([
   [
     "oven",
     {
+      active_before_archive: null,
+      archived_at: null,
+      archived_by: null,
       id: "oven",
       name: "Wall Oven",
       slug: "wall-oven",

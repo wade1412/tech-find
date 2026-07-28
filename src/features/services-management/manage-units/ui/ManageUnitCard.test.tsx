@@ -6,6 +6,9 @@ import ManageUnitCard from "./ManageUnitCard";
 
 const unit: Unit = {
   active: false,
+  active_before_archive: null,
+  archived_at: null,
+  archived_by: null,
   can_be_commercial: true,
   can_be_gas: true,
   can_be_stacked: false,
