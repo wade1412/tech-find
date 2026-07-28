@@ -29,6 +29,7 @@ import {
   type UnitStatusFilterValue,
 } from "../model/unitListFilters.constants";
 import ManageUnitCard from "./ManageUnitCard";
+import OpenArchivedUnitsDialogButton from "../archive-unit/ui/OpenArchivedUnitsDialogButton";
 
 interface ManageUnitsSectionProps {
   units: Unit[];
@@ -114,6 +115,7 @@ function ManageUnitsSection({ units }: ManageUnitsSectionProps) {
         />
 
         <div className={buttonContainerStyle}>
+          <OpenArchivedUnitsDialogButton />
           <CreateNewEntityLinkButton linkTo="units/new" label="Create Unit" />
         </div>
       </div>

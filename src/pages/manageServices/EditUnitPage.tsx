@@ -1,9 +1,14 @@
 import { useParams } from "react-router";
-import { centeredContainerStyle, formStyle } from "../../shared/styles/styles";
-import PageHeader from "../../shared/ui/PageHeader";
-import ErrorMessage from "../../shared/ui/ErrorMessage";
-import UnitForm from "../../features/services-management/manage-units/ui/UnitForm";
 import { useUnitQuery } from "../../entities/unit/useUnitQuery";
+import ArchiveUnitWithConfirmationButton from "../../features/services-management/manage-units/archive-unit/ui/ArchiveUnitWithConfirmationButton";
+import UnitForm from "../../features/services-management/manage-units/ui/UnitForm";
+import {
+  centeredContainerStyle,
+  editHeaderWithButtonContainerStyle,
+  formStyle,
+} from "../../shared/styles/styles";
+import ErrorMessage from "../../shared/ui/ErrorMessage";
+import PageHeader from "../../shared/ui/PageHeader";
 import { InlineSpinner } from "../../shared/ui/Spinners";
 import NotFoundPage from "../NotFoundPage";
 
@@ -27,10 +32,14 @@ function EditUnitPage() {
   return (
     <div className={centeredContainerStyle}>
       <section className={formStyle}>
-        <PageHeader
-          title={unit.name}
-          subtitle={`Edit unit details and job capabilities · ${unit.slug}`}
-        />
+        <div className={editHeaderWithButtonContainerStyle}>
+          <PageHeader
+            title={unit.name}
+            subtitle={`Edit unit details and job capabilities · ${unit.slug}`}
+          />
+
+          <ArchiveUnitWithConfirmationButton unit={unit} />
+        </div>
 
         <UnitForm key={unit.id} unit={unit} />
       </section>
