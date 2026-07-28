@@ -17,6 +17,8 @@ export interface AuthPermissions {
   canPurgeTechnicians: boolean;
   canManageUsers: boolean;
   canManageServices: boolean;
+  canArchiveServices: boolean;
+  canPurgeServices: boolean;
 
   canUseOwnerTools: boolean;
 }
@@ -27,6 +29,8 @@ export type AdminPermission =
   | "canPurgeTechnicians"
   | "canManageUsers"
   | "canManageServices"
+  | "canArchiveServices"
+  | "canPurgeServices"
   | "canUseOwnerTools";
 
 type PermissionProfile = Pick<UserProfile, "role" | "active">;
@@ -77,6 +81,8 @@ export function getAuthPermissions(
 
     canManageUsers: hasRoleLevelOf(role, "main_admin"),
     canManageServices: hasRoleLevelOf(role, "main_admin"),
+    canArchiveServices: hasRoleLevelOf(role, "main_admin"),
+    canPurgeServices: role === "owner",
 
     canUseOwnerTools: role === "owner",
   };

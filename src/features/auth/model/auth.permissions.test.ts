@@ -87,6 +87,8 @@ describe("auth.permissions", () => {
         canPurgeTechnicians: false,
         canManageUsers: false,
         canManageServices: false,
+        canArchiveServices: false,
+        canPurgeServices: false,
 
         canUseOwnerTools: false,
       });
@@ -108,6 +110,8 @@ describe("auth.permissions", () => {
         canPurgeTechnicians: false,
         canManageUsers: false,
         canManageServices: false,
+        canArchiveServices: false,
+        canPurgeServices: false,
         canUseOwnerTools: false,
       });
     });
@@ -128,6 +132,8 @@ describe("auth.permissions", () => {
         canPurgeTechnicians: false,
         canManageUsers: false,
         canManageServices: false,
+        canArchiveServices: false,
+        canPurgeServices: false,
         canUseOwnerTools: false,
       });
     });
@@ -148,6 +154,8 @@ describe("auth.permissions", () => {
         canPurgeTechnicians: false,
         canManageUsers: false,
         canManageServices: false,
+        canArchiveServices: false,
+        canPurgeServices: false,
         canUseOwnerTools: false,
       });
     });
@@ -168,6 +176,8 @@ describe("auth.permissions", () => {
         canPurgeTechnicians: false,
         canManageUsers: true,
         canManageServices: true,
+        canArchiveServices: true,
+        canPurgeServices: false,
         canUseOwnerTools: false,
       });
     });
@@ -188,6 +198,8 @@ describe("auth.permissions", () => {
         canPurgeTechnicians: true,
         canManageUsers: true,
         canManageServices: true,
+        canArchiveServices: true,
+        canPurgeServices: true,
         canUseOwnerTools: true,
       });
     });
