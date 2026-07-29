@@ -37,6 +37,10 @@ export type Database = {
       brand: {
         Row: {
           active: boolean
+          active_before_archive: boolean | null
+          archived_at: string | null
+          archived_by: string | null
+          archived_via_group_id: string | null
           group_id: string
           id: string
           name: string
@@ -44,6 +48,10 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          active_before_archive?: boolean | null
+          archived_at?: string | null
+          archived_by?: string | null
+          archived_via_group_id?: string | null
           group_id?: string
           id?: string
           name?: string
@@ -51,12 +59,30 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          active_before_archive?: boolean | null
+          archived_at?: string | null
+          archived_by?: string | null
+          archived_via_group_id?: string | null
           group_id?: string
           id?: string
           name?: string
           slug?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "brand_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "user_profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "brand_archived_via_group_id_fkey"
+            columns: ["archived_via_group_id"]
+            isOneToOne: false
+            referencedRelation: "brand_group"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "brand_groupId_fkey"
             columns: ["group_id"]
@@ -69,6 +95,9 @@ export type Database = {
       brand_group: {
         Row: {
           active: boolean
+          active_before_archive: boolean | null
+          archived_at: string | null
+          archived_by: string | null
           display_order: number
           id: string
           name: string
@@ -76,6 +105,9 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          active_before_archive?: boolean | null
+          archived_at?: string | null
+          archived_by?: string | null
           display_order?: number
           id?: string
           name?: string
@@ -83,12 +115,23 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          active_before_archive?: boolean | null
+          archived_at?: string | null
+          archived_by?: string | null
           display_order?: number
           id?: string
           name?: string
           slug?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "brand_group_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "user_profile"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       service_zone: {
         Row: {
@@ -519,6 +562,11 @@ export type Database = {
         Args: { role: Database["public"]["Enums"]["app_role"] }
         Returns: number
       }
+      archive_brand: { Args: { p_brand_id: string }; Returns: string }
+      archive_brand_group: {
+        Args: { p_brand_group_id: string }
+        Returns: string
+      }
       archive_technician: { Args: { p_technician_id: string }; Returns: string }
       archive_unit: { Args: { p_unit_id: string }; Returns: string }
       archive_user: { Args: { p_user_id: string }; Returns: string }
@@ -561,9 +609,16 @@ export type Database = {
         Args: { required_role: Database["public"]["Enums"]["app_role"] }
         Returns: boolean
       }
+      purge_brand: { Args: { p_brand_id: string }; Returns: string }
+      purge_brand_group: { Args: { p_brand_group_id: string }; Returns: string }
       purge_technician: { Args: { p_technician_id: string }; Returns: string }
       purge_unit: { Args: { p_unit_id: string }; Returns: string }
       purge_user: { Args: { p_user_id: string }; Returns: string }
+      restore_brand: { Args: { p_brand_id: string }; Returns: string }
+      restore_brand_group: {
+        Args: { p_brand_group_id: string }
+        Returns: string
+      }
       restore_technician: { Args: { p_technician_id: string }; Returns: string }
       restore_unit: { Args: { p_unit_id: string }; Returns: string }
       restore_user: { Args: { p_user_id: string }; Returns: string }
@@ -762,5 +817,4 @@ export const Constants = {
     },
   },
 } as const
-
 
