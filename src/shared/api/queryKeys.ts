@@ -11,7 +11,12 @@ export const queryKeys = {
     detail: (id: string) => ["units", "detail", id],
   },
   specificIssues: ["specific-issues"],
-  brands: ["brands"],
+  brands: {
+    active: ["brands", "active"],
+    all: ["brands", "all"],
+    archived: ["brands", "archived"],
+    detail: (id: string) => ["brands", "detail", id],
+  },
   brandGroups: ["brand_groups"],
   technicianSkillSet: ["technician_skill_set"],
   technicianIgnoreList: ["technician_ignore_list"],
