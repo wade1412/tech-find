@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import type { Unit } from "../../../../entities/unit/unit.types";
+import { cardTagStyle } from "../../../../shared/styles/styles";
 
 interface ManageUnitCardProps {
   unit: Unit;
@@ -64,7 +65,7 @@ function ManageUnitCard({ unit }: ManageUnitCardProps) {
         </div>
 
         {isInactive && (
-          <span className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-zinc-200 bg-white/70 px-2.5 py-1 text-xs font-medium text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900/60 dark:text-zinc-400">
+          <span className={cardTagStyle}>
             <span className="h-1.5 w-1.5 rounded-full bg-zinc-400 dark:bg-zinc-500" />
             Inactive
           </span>

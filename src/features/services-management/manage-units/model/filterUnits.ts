@@ -1,10 +1,10 @@
 import type { Unit } from "../../../../entities/unit/unit.types";
 import { normalizeSearchText } from "../../../../shared/model/helpers";
-import type { UnitStatusFilterValue } from "./unitListFilters.constants";
+import type { ServiceStatusFilterValue } from "../../model/servicesListFilters.constants";
 
 interface FilterUnitsParams {
   searchTerm: string;
-  status: UnitStatusFilterValue;
+  status: ServiceStatusFilterValue;
   units: Unit[];
 }
 
@@ -14,9 +14,7 @@ export const filterUnits = ({
   units,
 }: FilterUnitsParams): Unit[] => {
   const normalizedSearchTerm = normalizeSearchText(searchTerm);
-  const terms = normalizedSearchTerm
-    ? normalizedSearchTerm.split(" ")
-    : [];
+  const terms = normalizedSearchTerm ? normalizedSearchTerm.split(" ") : [];
 
   return units.filter((unit) => {
     const matchesStatus =
@@ -32,12 +30,9 @@ export const filterUnits = ({
       unit.is_built_in ? "built in lift" : "",
     ];
     const searchableText = normalizeSearchText(
-      [
-        unit.name,
-        unit.slug,
-        String(unit.display_order),
-        ...capabilities,
-      ].join(" "),
+      [unit.name, unit.slug, String(unit.display_order), ...capabilities].join(
+        " ",
+      ),
     );
 
     return terms.every((term) => searchableText.includes(term));

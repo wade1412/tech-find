@@ -24,10 +24,10 @@ import SectionHeader from "../../../../shared/ui/SectionHeader";
 import SegmentedControl from "../../../../shared/ui/SegmentedControl";
 import { filterUnits } from "../model/filterUnits";
 import {
-  isUnitStatusFilterValue,
-  UNIT_STATUS_FILTER_OPTIONS,
-  type UnitStatusFilterValue,
-} from "../model/unitListFilters.constants";
+  isServiceStatusFilterValue,
+  SERVICE_STATUS_FILTER_OPTIONS,
+  type ServiceStatusFilterValue,
+} from "../../model/servicesListFilters.constants";
 import ManageUnitCard from "./ManageUnitCard";
 import OpenArchivedUnitsDialogButton from "../archive-unit/ui/OpenArchivedUnitsDialogButton";
 
@@ -42,7 +42,7 @@ function ManageUnitsSection({ units }: ManageUnitsSectionProps) {
   const [searchParams, setSearchParams] = useSearchParams();
   const searchTerm = searchParams.get("query") ?? "";
   const filterParam = searchParams.get("filter");
-  const statusFilter = isUnitStatusFilterValue(filterParam)
+  const statusFilter = isServiceStatusFilterValue(filterParam)
     ? filterParam
     : "all";
   const visibleUnits = useMemo(
@@ -77,7 +77,7 @@ function ManageUnitsSection({ units }: ManageUnitsSectionProps) {
     );
   };
 
-  const handleStatusFilterChange = (value: UnitStatusFilterValue) => {
+  const handleStatusFilterChange = (value: ServiceStatusFilterValue) => {
     setSearchParams(
       (previousParams) => {
         const nextParams = new URLSearchParams(previousParams);
@@ -127,7 +127,7 @@ function ManageUnitsSection({ units }: ManageUnitsSectionProps) {
           <div className="w-full sm:w-auto sm:min-w-75">
             <SegmentedControl
               ariaLabel="Filter units by status"
-              options={UNIT_STATUS_FILTER_OPTIONS}
+              options={SERVICE_STATUS_FILTER_OPTIONS}
               onChange={handleStatusFilterChange}
               value={statusFilter}
             />
