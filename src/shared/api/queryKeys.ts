@@ -17,7 +17,12 @@ export const queryKeys = {
     archived: ["brands", "archived"],
     detail: (id: string) => ["brands", "detail", id],
   },
-  brandGroups: ["brand_groups"],
+  brandGroups: {
+    active: ["brand-groups", "active"],
+    all: ["brand-groups", "all"],
+    archived: ["brand-groups", "archived"],
+    detail: (id: string) => ["brand-groups", "detail", id],
+  },
   technicianSkillSet: ["technician_skill_set"],
   technicianIgnoreList: ["technician_ignore_list"],
   serviceZone: ["service_zone"],
