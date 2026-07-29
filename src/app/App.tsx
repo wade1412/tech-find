@@ -36,11 +36,22 @@ const ManageUsersPage = lazy(
 const EditUserPage = lazy(() => import("../pages/manageUsers/EditUserPage"));
 const NewUserPage = lazy(() => import("../pages/manageUsers/NewUserPage"));
 
+// Services
 const ManageServicesPage = lazy(
   () => import("../pages/manageServices/ManageServicesPage"),
 );
 const EditUnitPage = lazy(() => import("../pages/manageServices/EditUnitPage"));
 const NewUnitPage = lazy(() => import("../pages/manageServices/NewUnitPage"));
+const EditBrandPage = lazy(
+  () => import("../pages/manageServices/EditBrandPage"),
+);
+const NewBrandPage = lazy(() => import("../pages/manageServices/NewBrandPage"));
+const EditBrandGroupPage = lazy(
+  () => import("../pages/manageServices/EditBrandGroupPage"),
+);
+const NewBrandGroupPage = lazy(
+  () => import("../pages/manageServices/NewBrandGroupPage"),
+);
 
 const OwnerToolsPage = lazy(() => import("../pages/OwnerToolsPage"));
 
@@ -121,6 +132,14 @@ function App() {
           <Route index element={<ManageServicesPage />} />
           <Route path="units/:unitId/edit" element={<EditUnitPage />} />
           <Route path="units/new" element={<NewUnitPage />} />
+
+          <Route path="brands/:brandId/edit" element={<EditBrandPage />} />
+          <Route path="brands/new" element={<NewBrandPage />} />
+          <Route
+            path="brand-groups/:brandGroupId/edit"
+            element={<EditBrandGroupPage />}
+          />
+          <Route path="brand-groups/new" element={<NewBrandGroupPage />} />
         </Route>
 
         <Route
