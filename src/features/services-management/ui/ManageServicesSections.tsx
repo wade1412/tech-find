@@ -44,8 +44,8 @@ function UnitsPanel() {
 }
 
 function BrandsPanel() {
-  const brandsQuery = useBrandsQuery();
-  const groupsQuery = useBrandGroupsQuery();
+  const brandsQuery = useBrandsQuery("all");
+  const groupsQuery = useBrandGroupsQuery("all");
   const isPending = brandsQuery.isPending || groupsQuery.isPending;
   const error = brandsQuery.error ?? groupsQuery.error;
 
