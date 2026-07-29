@@ -68,6 +68,9 @@ const brandGroupsById = new Map<string, BrandGroup>([
       slug: "standard",
       active: true,
       display_order: 1,
+      active_before_archive: null,
+      archived_at: null,
+      archived_by: null,
     },
   ],
   [
@@ -78,6 +81,9 @@ const brandGroupsById = new Map<string, BrandGroup>([
       slug: "high-end",
       active: true,
       display_order: 2,
+      active_before_archive: null,
+      archived_at: null,
+      archived_by: null,
     },
   ],
 ]);
