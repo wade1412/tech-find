@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useBrandGroupsQuery } from "../../../entities/brandGroup/useBrandGroupsQuery";
 import { useBrandsQuery } from "../../../entities/brand/useBrandsQuery";
 import { useServiceZonesQuery } from "../../../entities/service-zone/useServiceZonesQuery";
@@ -12,9 +11,20 @@ import ManageServiceZonesSection from "../manage-service-zones/ui/ManageServiceZ
 import ManageSpecificIssuesSection from "../manage-specific-issues/ui/ManageSpecificIssuesSection";
 import ManageUnitsSection from "../manage-units/ui/ManageUnitsSection";
 import {
+  DEFAULT_SECTION_ID,
   editServicesSections,
+  isEditServicesSectionId,
   type EditServicesSectionId,
 } from "../model/manageServices.constants";
+import { useSearchParams } from "react-router";
+import type { ComponentType } from "react";
+
+const sectionPanels = {
+  units: UnitsPanel,
+  brands: BrandsPanel,
+  specific_issues: SpecificIssuesPanel,
+  service_zones: ServiceZonesPanel,
+} satisfies Record<EditServicesSectionId, ComponentType>;
 
 function SectionLoadingState() {
   return (
@@ -79,8 +89,27 @@ function ServiceZonesPanel() {
 }
 
 function ManageServicesSections() {
-  const [selectedSectionId, setSelectedSectionId] =
-    useState<EditServicesSectionId>("units");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const sectionParam = searchParams.get("section");
+
+  const selectedSectionId = isEditServicesSectionId(sectionParam)
+    ? sectionParam
+    : DEFAULT_SECTION_ID;
+
+  const handleSectionIdChange = (id: EditServicesSectionId) => {
+    setSearchParams(
+      (prevParams) => {
+        const nextParams = new URLSearchParams(prevParams);
+
+        nextParams.set("section", id);
+
+        return nextParams;
+      },
+      { replace: true },
+    );
+  };
+
+  const ActivePanel = sectionPanels[selectedSectionId];
 
   return (
     <div className={formStyle}>
@@ -91,15 +120,12 @@ function ManageServicesSections() {
             id={section.id}
             title={section.title}
             selectedSectionId={selectedSectionId}
-            onClick={() => setSelectedSectionId(section.id)}
+            onClick={() => handleSectionIdChange(section.id)}
           />
         ))}
       </div>
 
-      {selectedSectionId === "units" && <UnitsPanel />}
-      {selectedSectionId === "brands" && <BrandsPanel />}
-      {selectedSectionId === "specific_issues" && <SpecificIssuesPanel />}
-      {selectedSectionId === "service_zones" && <ServiceZonesPanel />}
+      <ActivePanel />
     </div>
   );
 }

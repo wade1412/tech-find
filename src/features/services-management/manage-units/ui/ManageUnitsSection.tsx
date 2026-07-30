@@ -8,7 +8,6 @@ import {
 } from "../../../../shared/styles/motionVariants";
 import {
   buttonContainerStyle,
-  formStyle,
   formWithPaddingStyle,
   ghostButton,
   manageListGridStyle,
@@ -122,7 +121,7 @@ function ManageUnitsSection({ units }: ManageUnitsSectionProps) {
 
       <HorizontalDivider />
 
-      <div className={formStyle}>
+      <div className={formWithPaddingStyle}>
         <div className={searchRowStyle}>
           <div className="w-full sm:w-auto sm:min-w-75">
             <SegmentedControl

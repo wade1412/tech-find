@@ -15,14 +15,14 @@ import {
 
 interface BrandsListProps {
   brands: Brand[];
-  brandGroupById: ReadonlyMap<string, BrandGroup>;
+  brandGroupsById: ReadonlyMap<string, BrandGroup>;
   hasAppliedFilters: boolean;
   onFiltersClear: () => void;
 }
 
 function BrandsList({
   brands,
-  brandGroupById,
+  brandGroupsById,
   hasAppliedFilters,
   onFiltersClear,
 }: BrandsListProps) {
@@ -53,7 +53,7 @@ function BrandsList({
               >
                 <ManageBrandCard
                   brand={brand}
-                  brandGroup={brandGroupById.get(brand.group_id)}
+                  brandGroup={brandGroupsById.get(brand.group_id)}
                 />
               </motion.div>
             ))

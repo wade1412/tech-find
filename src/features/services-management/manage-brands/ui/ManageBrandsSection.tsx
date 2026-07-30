@@ -20,6 +20,7 @@ import {
 import { useMemo } from "react";
 import BrandGroupsList from "./BrandGroupsList";
 import BrandsList from "./BrandsList";
+import { filterBrandGroups, filterBrands } from "../model/filterBrandEntities";
 
 interface ManageBrandsSectionProps {
   brands: Brand[];
@@ -39,7 +40,7 @@ function ManageBrandsSection({
 
   const hasAppliedFilters =
     Boolean(searchTerm.trim()) || statusFilter !== "all";
-  const brandGroupById = useMemo(
+  const brandGroupsById = useMemo(
     () => new Map(brandGroups?.map((b) => [b.id, b]) ?? []),
     [brandGroups],
   );
@@ -99,6 +100,21 @@ function ManageBrandsSection({
     );
   };
 
+  const visibleBrands = useMemo(
+    () =>
+      filterBrands({
+        brands,
+        brandGroupsById,
+        searchTerm,
+        status: statusFilter,
+      }),
+    [brands, brandGroupsById, searchTerm, statusFilter],
+  );
+  const visiibleBrandGroups = useMemo(
+    () => filterBrandGroups({ brandGroups, searchTerm, status: statusFilter }),
+    [brandGroups, searchTerm, statusFilter],
+  );
+
   return (
     <div className={formWithPaddingStyle}>
       <div className={pageTitleWithButtonsContainerStyle}>
@@ -141,7 +157,7 @@ function ManageBrandsSection({
         <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(15rem,0.85fr)_auto_minmax(0,2.15fr)]">
           <section className="min-w-0 rounded-2xl">
             <BrandGroupsList
-              brandGroups={brandGroups}
+              brandGroups={visiibleBrandGroups}
               brandCountByGroupId={brandCountByGroupId}
               hasAppliedFilters={hasAppliedFilters}
               onFiltersClear={clearFilters}
@@ -156,8 +172,8 @@ function ManageBrandsSection({
 
           <section className="min-w-0 rounded-2xl">
             <BrandsList
-              brands={brands}
-              brandGroupById={brandGroupById}
+              brands={visibleBrands}
+              brandGroupsById={brandGroupsById}
               hasAppliedFilters={hasAppliedFilters}
               onFiltersClear={clearFilters}
             />

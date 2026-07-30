@@ -6,3 +6,14 @@ export const editServicesSections = [
 ] as const;
 
 export type EditServicesSectionId = (typeof editServicesSections)[number]["id"];
+
+export const DEFAULT_SECTION_ID: EditServicesSectionId = "units";
+
+const editServiceSectionIds = new Set<EditServicesSectionId>(
+  editServicesSections.map((s) => s.id),
+);
+
+export const isEditServicesSectionId = (
+  value: string | null,
+): value is EditServicesSectionId =>
+  value !== null && editServiceSectionIds.has(value as EditServicesSectionId);
