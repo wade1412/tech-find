@@ -17,7 +17,14 @@ type FilterBrandGroupsParams = {
 };
 
 const getBrandGroupSearchableText = (brandGroup: BrandGroup) =>
-  normalizeSearchText([brandGroup.name, brandGroup.slug].join(" "));
+  normalizeSearchText(
+    [brandGroup.name, brandGroup.slug, brandGroup.display_order].join(" "),
+  );
+
+export const isBrandEffectivelyActive = (
+  brand: Brand,
+  brandGroup: BrandGroup | undefined,
+) => brand.active && brandGroup?.active === true;
 
 export const filterBrands = ({
   brands,
@@ -29,16 +36,16 @@ export const filterBrands = ({
   const terms = normalizedSearchTerm ? normalizedSearchTerm.split(" ") : [];
 
   return brands.filter((brand) => {
+    const brandGroup = brandGroupsById.get(brand.group_id);
+    const isEffectivelyActive = isBrandEffectivelyActive(brand, brandGroup);
     const matchesStatus =
-      status === "all" || brand.active === (status === "active");
+      status === "all" || isEffectivelyActive === (status === "active");
 
     if (!matchesStatus) return false;
     if (terms.length === 0) return true;
 
     const searchableText = normalizeSearchText(
-      [brand.name, brand.slug, brandGroupsById.get(brand.group_id)?.name].join(
-        " ",
-      ),
+      [brand.name, brand.slug, brandGroup?.name, brandGroup?.slug].join(" "),
     );
 
     return terms.every((term) => searchableText.includes(term));

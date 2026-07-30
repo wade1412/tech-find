@@ -6,7 +6,7 @@ import { filterBrandGroups, filterBrands } from "./filterBrandEntities";
 const makeBrand = (overrides: Partial<Brand> = {}): Brand => ({
   id: "brand-1",
   name: "Brand One",
-  slug: "brand_one",
+  slug: "brand-one",
   group_id: "group-1",
   active: true,
   active_before_archive: null,
@@ -19,7 +19,7 @@ const makeBrand = (overrides: Partial<Brand> = {}): Brand => ({
 const makeBrandGroup = (overrides: Partial<BrandGroup> = {}): BrandGroup => ({
   id: "group-1",
   name: "Group One",
-  slug: "group_one",
+  slug: "group-one",
   display_order: 10,
   active: true,
   active_before_archive: null,
@@ -33,12 +33,12 @@ const brandGroups = [
   makeBrandGroup({
     id: "group-2",
     name: "Premium Group",
-    slug: "premium_group",
+    slug: "elite-collection",
   }),
   makeBrandGroup({
     id: "group-3",
     name: "Inactive Group",
-    slug: "inactive_group",
+    slug: "inactive-group",
     active: false,
   }),
 ];
@@ -50,14 +50,20 @@ const brands = [
   makeBrand({
     id: "brand-2",
     name: "Luxury Brand",
-    slug: "luxury_brand",
+    slug: "luxury-brand",
     group_id: "group-2",
   }),
   makeBrand({
     id: "brand-3",
     name: "Inactive Brand",
-    slug: "inactive_brand",
+    slug: "inactive-brand",
     active: false,
+  }),
+  makeBrand({
+    id: "brand-4",
+    name: "Legacy Brand",
+    slug: "legacy-brand",
+    group_id: "group-3",
   }),
 ];
 
@@ -81,7 +87,7 @@ describe("filterBrands", () => {
       status: "inactive",
     });
 
-    expect(result).toEqual([brands[2]]);
+    expect(result).toEqual([brands[2], brands[3]]);
   });
 
   it("filters brands by name or brand group name", () => {
@@ -103,6 +109,17 @@ describe("filterBrands", () => {
     expect(byGroupName).toEqual([brands[1]]);
   });
 
+  it("searches brands by the parent group slug", () => {
+    const result = filterBrands({
+      brands,
+      brandGroupsById,
+      searchTerm: "elite-collection",
+      status: "all",
+    });
+
+    expect(result).toEqual([brands[1]]);
+  });
+
   it("combines search and status filters", () => {
     const result = filterBrands({
       brands,
@@ -111,7 +128,7 @@ describe("filterBrands", () => {
       status: "inactive",
     });
 
-    expect(result).toEqual([brands[2]]);
+    expect(result).toEqual([brands[2], brands[3]]);
   });
 });
 
@@ -144,5 +161,18 @@ describe("filterBrandGroups", () => {
     });
 
     expect(result).toEqual([brandGroups[1]]);
+  });
+
+  it("filters groups by display order", () => {
+    const result = filterBrandGroups({
+      brandGroups: [
+        brandGroups[0],
+        { ...brandGroups[1], display_order: 25 },
+      ],
+      searchTerm: "25",
+      status: "all",
+    });
+
+    expect(result).toEqual([{ ...brandGroups[1], display_order: 25 }]);
   });
 });
