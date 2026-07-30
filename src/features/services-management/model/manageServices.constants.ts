@@ -17,3 +17,5 @@ export const isEditServicesSectionId = (
   value: string | null,
 ): value is EditServicesSectionId =>
   value !== null && editServiceSectionIds.has(value as EditServicesSectionId);
+
+export const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;

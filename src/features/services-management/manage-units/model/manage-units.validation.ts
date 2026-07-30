@@ -1,13 +1,7 @@
-import type {
-  UnitFormErrors,
-  UnitFormState,
-} from "./manage-units.types";
+import { SLUG_PATTERN } from "../../model/manageServices.constants";
+import type { UnitFormErrors, UnitFormState } from "./manage-units.types";
 
-const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-
-export const validateUnitForm = (
-  formState: UnitFormState,
-): UnitFormErrors => {
+export const validateUnitForm = (formState: UnitFormState): UnitFormErrors => {
   const name = formState.name.trim();
   const slug = formState.slug.trim().toLowerCase();
   const displayOrder = Number(formState.display_order);
