@@ -68,8 +68,8 @@ function BrandGroupsList({
             >
               <p>
                 {hasAppliedFilters
-                  ? "No brand groups match the current filters."
-                  : "No brand groups have been created yet."}
+                  ? "No groups match the current filters."
+                  : "No groups have been created yet."}
               </p>
               {hasAppliedFilters && (
                 <button

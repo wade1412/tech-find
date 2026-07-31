@@ -44,16 +44,6 @@ function ManageBrandsSection({
     () => new Map(brandGroups?.map((b) => [b.id, b]) ?? []),
     [brandGroups],
   );
-  const brandCountByGroupId = useMemo(() => {
-    const counts = new Map<string, number>();
-
-    brands.forEach((brand) => {
-      counts.set(brand.group_id, (counts.get(brand.group_id) ?? 0) + 1);
-    });
-
-    return counts;
-  }, [brands]);
-
   const handleSearchChange = (value: string) => {
     setSearchParams(
       (previousParams) => {
@@ -110,10 +100,19 @@ function ManageBrandsSection({
       }),
     [brands, brandGroupsById, searchTerm, statusFilter],
   );
-  const visiibleBrandGroups = useMemo(
+  const visibleBrandGroups = useMemo(
     () => filterBrandGroups({ brandGroups, searchTerm, status: statusFilter }),
     [brandGroups, searchTerm, statusFilter],
   );
+  const visibleBrandCountByGroupId = useMemo(() => {
+    const counts = new Map<string, number>();
+
+    visibleBrands.forEach((brand) => {
+      counts.set(brand.group_id, (counts.get(brand.group_id) ?? 0) + 1);
+    });
+
+    return counts;
+  }, [visibleBrands]);
 
   return (
     <div className={formWithPaddingStyle}>
@@ -157,8 +156,8 @@ function ManageBrandsSection({
         <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(15rem,0.85fr)_auto_minmax(0,2.15fr)]">
           <section className="min-w-0 rounded-2xl">
             <BrandGroupsList
-              brandGroups={visiibleBrandGroups}
-              brandCountByGroupId={brandCountByGroupId}
+              brandGroups={visibleBrandGroups}
+              brandCountByGroupId={visibleBrandCountByGroupId}
               hasAppliedFilters={hasAppliedFilters}
               onFiltersClear={clearFilters}
             />

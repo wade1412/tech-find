@@ -39,8 +39,8 @@ describe("ManageBrandCard", () => {
     const link = screen.getByRole("link", { name: /KitchenAid/i });
 
     expect(link.getAttribute("href")).toBe("/brands/brand-1/edit");
-    expect(screen.getByText("kitchenaid")).toBeTruthy();
-    expect(screen.getByText("High End")).toBeTruthy();
+    expect(screen.getByText(/kitchenaid/)).toBeTruthy();
+    expect(screen.getByText(/High End/)).toBeTruthy();
     expect(screen.getByText("Inactive")).toBeTruthy();
   });
 

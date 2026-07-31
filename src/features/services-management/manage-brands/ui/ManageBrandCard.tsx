@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import type { Brand } from "../../../../entities/brand/brand.types";
 import type { BrandGroup } from "../../../../entities/brandGroup/brandGroup.types";
 import { cardTagStyle } from "../../../../shared/styles/styles";
+import { isBrandEffectivelyActive } from "../model/filterBrandEntities";
 
 interface ManageBrandCardProps {
   brand: Brand;
@@ -11,12 +12,15 @@ interface ManageBrandCardProps {
 function ManageBrandCard({ brand, brandGroup }: ManageBrandCardProps) {
   const isInactive = !brand.active;
   const isGroupInactive = brandGroup?.active === false;
-  const isUnavailable = isInactive || isGroupInactive;
+  const isGroupUnavailable = !brandGroup;
+  const isUnavailable = !isBrandEffectivelyActive(brand, brandGroup);
   const statusLabel = isInactive
     ? "Inactive"
     : isGroupInactive
       ? "Group inactive"
-      : null;
+      : isGroupUnavailable
+        ? "Group unavailable"
+        : null;
 
   return (
     <Link
@@ -51,7 +55,7 @@ function ManageBrandCard({ brand, brandGroup }: ManageBrandCardProps) {
           </p>
 
           <p className="mt-1 truncate text-xs text-zinc-500 dark:text-zinc-400">
-            {brandGroup?.name ?? "Unknown group"}
+            {brandGroup?.name ?? "Unknown group"} · {brand.slug}
           </p>
         </div>
 
