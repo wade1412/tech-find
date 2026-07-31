@@ -3,6 +3,8 @@ import SectionHeader from "../../../../shared/ui/SectionHeader";
 import {
   formInputStyle,
   formLabelStyle,
+  inputErrorStyle,
+  inputHintStyle,
 } from "../../../../shared/styles/styles";
 import {
   UNIT_PROFILE_FIELDS,
@@ -76,20 +78,14 @@ function EditUnitFields({
                 </label>
 
                 {key === "slug" && (
-                  <p
-                    id="slug-order-help"
-                    className="mt-1 px-2 text-xs leading-5 text-zinc-500 dark:text-zinc-400"
-                  >
-                    Short readable name of the unit, that will be used for page
-                    links. Keep it short and easy to read.
+                  <p id="slug-order-help" className={inputHintStyle}>
+                    Used as a stable readable name. Use lowercase letters,
+                    numbers, and single hyphens.
                   </p>
                 )}
 
                 {key === "display_order" && (
-                  <p
-                    id="display-order-help"
-                    className="mt-1 px-2 text-xs leading-5 text-zinc-500 dark:text-zinc-400"
-                  >
+                  <p id="display-order-help" className={inputHintStyle}>
                     Controls the position on the filter panel. Leave gaps such
                     as 10, 20, 30 so a new unit can be inserted later as 15
                     without renumbering the full list.
@@ -97,11 +93,7 @@ function EditUnitFields({
                 )}
 
                 {error && (
-                  <p
-                    id={errorId}
-                    role="alert"
-                    className="mt-1 text-xs font-medium text-red-600 dark:text-red-400"
-                  >
+                  <p id={errorId} role="alert" className={inputErrorStyle}>
                     {error}
                   </p>
                 )}

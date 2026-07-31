@@ -81,3 +81,9 @@ export const cardTagStyle =
   "inline-flex items-center justify-center gap-1.5 rounded-lg border border-zinc-200 bg-white/70 px-2.5 py-1 text-xs font-medium text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900/60 dark:text-zinc-400";
 
 export const brandsListStyle = "flex flex-col gap-2.5";
+
+export const inputHintStyle =
+  "mt-1 px-2 text-xs leading-5 text-zinc-500 dark:text-zinc-400";
+
+export const inputErrorStyle =
+  "mt-1 px-2 text-xs font-medium text-red-600 dark:text-red-400";

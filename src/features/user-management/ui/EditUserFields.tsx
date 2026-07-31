@@ -1,7 +1,11 @@
 import { Autocomplete, TextField } from "@mui/material";
 import { USER_ROLE_OPTIONS } from "../../../entities/user/roles.constants";
 import type { AppRole } from "../../../entities/user/user.types";
-import { formInputStyle, formLabelStyle } from "../../../shared/styles/styles";
+import {
+  formInputStyle,
+  formLabelStyle,
+  inputErrorStyle,
+} from "../../../shared/styles/styles";
 import { compactSelectStyle } from "../../../shared/styles/muiSelectStyles";
 import type {
   EditableUserTextField,
@@ -78,11 +82,7 @@ function EditUserFields({
               />
             </label>
             {errorMessage ? (
-              <p
-                id={errorId}
-                role="alert"
-                className="mt-1 text-xs font-medium text-red-600 dark:text-red-400"
-              >
+              <p id={errorId} role="alert" className={inputErrorStyle}>
                 {errorMessage}
               </p>
             ) : null}
@@ -110,22 +110,14 @@ function EditUserFields({
           />
         </label>
         {errors?.email && (
-          <p
-            id="email-error"
-            role="alert"
-            className="mt-1 text-xs font-medium text-red-600 dark:text-red-400"
-          >
+          <p id="email-error" role="alert" className={inputErrorStyle}>
             {errors.email}
           </p>
         )}
       </div>
 
       <div>
-        <label
-          id="role-label"
-          htmlFor="role"
-          className={formLabelStyle}
-        >
+        <label id="role-label" htmlFor="role" className={formLabelStyle}>
           Role
         </label>
         <Autocomplete
@@ -136,9 +128,7 @@ function EditUserFields({
           value={selectedRoleOption}
           options={roleOptions}
           onChange={(_, option) => onRoleChange(option.value)}
-          isOptionEqualToValue={(option, value) =>
-            option.value === value.value
-          }
+          isOptionEqualToValue={(option, value) => option.value === value.value}
           getOptionLabel={(option) => option.label}
           sx={(theme) => compactSelectStyle(theme)}
           renderInput={(params) => (
