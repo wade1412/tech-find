@@ -4,12 +4,6 @@ export interface BrandFormState {
   slug: string;
   group_id: string;
 }
-
-export type BrandGroupSelectOption = {
-  label: string;
-  value: string;
-};
-
 export interface BrandGroupFormState {
   active: boolean;
   name: string;
