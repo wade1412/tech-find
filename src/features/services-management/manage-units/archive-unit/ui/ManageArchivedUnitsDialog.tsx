@@ -1,8 +1,9 @@
 import { useState } from "react";
 import type { Unit } from "../../../../../entities/unit/unit.types";
 import { useUnitsQuery } from "../../../../../entities/unit/useUnitsQuery";
-import ManageArchivedServiceEntitiesDialog from "../../../archive-service-entity/ui/ManageArchivedServiceEntitiesDialog";
 import { useAuthPermissions } from "../../../../auth/model/useAuthPermissions";
+import ArchivedServiceEntityList from "../../../archive-service-entity/ui/ArchivedServiceEntityList";
+import ManageArchivedServiceEntitiesDialog from "../../../archive-service-entity/ui/ManageArchivedServiceEntitiesDialog";
 import {
   usePurgeUnitMutation,
   useRestoreUnitMutation,
@@ -44,32 +45,46 @@ function ManageArchivedUnitsDialog({
   return (
     <>
       <ManageArchivedServiceEntitiesDialog
-        archiveDescription="Restore units without losing display order, capabilities, specific issues, or technician configuration."
-        canPurge={canPurgeServices}
-        entityLabel="unit"
-        entityPluralLabel="units"
-        isError={archivedQuery.isError}
-        isLoading={archivedQuery.isPending}
-        isMutating={isMutating}
+        title="Archived Units"
+        description="Restore units without losing display order, capabilities, specific issues, or technician configuration."
+        isBusy={isMutating}
         isOpen={isOpen}
-        items={archivedQuery.data ?? []}
         onClose={handleClose}
-        onPurgeRequest={setPurgeTarget}
-        onRestore={(id) => {
-          restoreMutation.reset();
-          restoreMutation.mutate(id);
+        status={{
+          isLoading: archivedQuery.isPending,
+          errorMessage: archivedQuery.isError
+            ? "Failed to load archived units."
+            : undefined,
         }}
-        purgeDescription="Owner-only permanent purge removes the unit and cascades to its specific issues, technician skills, and ignore-list references. It cannot be undone."
-        renderDetails={(unit) => (
-          <p className="mt-0.5 truncate text-xs text-zinc-500 dark:text-zinc-400">
-            {unit.slug} · Filter order {unit.display_order}
-          </p>
-        )}
-        restoreError={restoreMutation.isError}
-        restoringId={
-          restoreMutation.isPending ? restoreMutation.variables : undefined
-        }
-      />
+      >
+        <ArchivedServiceEntityList
+          copy={{
+            emptyDescription: "Archived units will appear here.",
+            entityLabel: "unit",
+            purgeDescription:
+              "Owner-only permanent purge removes the unit and cascades to its specific issues, technician skills, and ignore-list references. It cannot be undone.",
+          }}
+          items={archivedQuery.data ?? []}
+          onPurgeRequest={setPurgeTarget}
+          onRestore={(id) => {
+            restoreMutation.reset();
+            restoreMutation.mutate(id);
+          }}
+          renderDetails={(unit) => (
+            <p className="mt-0.5 truncate text-xs text-zinc-500 dark:text-zinc-400">
+              {unit.slug} · Filter order {unit.display_order}
+            </p>
+          )}
+          state={{
+            canPurge: canPurgeServices,
+            isBusy: isMutating,
+            restoreError: restoreMutation.isError,
+            restoringId: restoreMutation.isPending
+              ? restoreMutation.variables
+              : undefined,
+          }}
+        />
+      </ManageArchivedServiceEntitiesDialog>
 
       <ConfirmPermanentUnitPurgeDialog
         key={purgeTarget?.id ?? "closed"}
