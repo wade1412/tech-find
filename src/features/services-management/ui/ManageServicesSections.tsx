@@ -102,6 +102,8 @@ function ManageServicesSections() {
         const nextParams = new URLSearchParams(prevParams);
 
         nextParams.set("section", id);
+        nextParams.delete("query");
+        nextParams.delete("filter");
 
         return nextParams;
       },
