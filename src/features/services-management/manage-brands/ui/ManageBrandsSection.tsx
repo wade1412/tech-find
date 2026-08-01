@@ -21,6 +21,7 @@ import { useMemo } from "react";
 import BrandGroupsList from "./BrandGroupsList";
 import BrandsList from "./BrandsList";
 import { filterBrandGroups, filterBrands } from "../model/filterBrandEntities";
+import OpenArchivedBrandsDialogButton from "./OpenArchivedBrandsDialogButton";
 
 interface ManageBrandsSectionProps {
   brands: Brand[];
@@ -119,10 +120,12 @@ function ManageBrandsSection({
       <div className={pageTitleWithButtonsContainerStyle}>
         <SectionHeader
           label="Manage Brands"
-          subtext="Edit brand groups and brands"
+          subtext="Organize brands into groups used by filters and technician configuration"
         />
 
         <div className={buttonContainerStyle}>
+          <OpenArchivedBrandsDialogButton />
+
           <CreateNewEntityLinkButton
             linkTo="brand-groups/new"
             label="Create Group"
