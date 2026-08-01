@@ -99,7 +99,7 @@ function BrandForm({ brand, brandGroups }: BrandFormProps) {
       <ActiveStatusBar
         label="Brand status"
         activeDescription="Active brands are available in brand filters and technician ignore list configuration."
-        inactiveDescription="Inactive brands stay configured but are hidden from active workflows."
+        inactiveDescription="Inactive brands stay configured, but are hidden from active workflows."
         isActive={formState.active}
         disabled={isPending}
         onChange={(active) => {
