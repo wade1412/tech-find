@@ -82,7 +82,7 @@ describe("ManageArchivedUnitsDialog", () => {
     render(<ManageArchivedUnitsDialog isOpen onClose={vi.fn()} />);
 
     expect(screen.queryByText("Danger zone")).toBeNull();
-    await user.click(screen.getByRole("button", { name: "Restore" }));
+    await user.click(screen.getByRole("button", { name: "Restore Dryer" }));
     expect(restoreMutation.mutate).toHaveBeenCalledWith(archivedUnit.id);
   });
 
@@ -96,7 +96,7 @@ describe("ManageArchivedUnitsDialog", () => {
 
     await user.click(screen.getByText("Danger zone"));
     await user.click(
-      screen.getByRole("button", { name: "Purge permanently" }),
+      screen.getByRole("button", { name: "Purge Dryer permanently" }),
     );
 
     expect(
