@@ -97,6 +97,9 @@ const specificIssuesById = new Map<string, SpecificIssue>([
       slug: "no-heat",
       unit_id: "oven",
       active: true,
+      active_before_archive: null,
+      archived_at: null,
+      archived_by: null,
     },
   ],
 ]);
