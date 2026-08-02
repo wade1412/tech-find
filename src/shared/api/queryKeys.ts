@@ -10,7 +10,12 @@ export const queryKeys = {
     archived: ["units", "archived"],
     detail: (id: string) => ["units", "detail", id],
   },
-  specificIssues: ["specific-issues"],
+  specificIssues: {
+    active: ["specific-issues", "active"],
+    all: ["specific-issues", "all"],
+    archived: ["specific-issues", "archived"],
+    detail: (id: string) => ["specific-issues", "detail", id],
+  },
   brands: {
     active: ["brands", "active"],
     all: ["brands", "all"],
