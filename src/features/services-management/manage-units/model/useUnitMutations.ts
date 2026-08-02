@@ -17,6 +17,14 @@ interface UpdateUnitVariables {
 const invalidateUnits = (queryClient: ReturnType<typeof useQueryClient>) =>
   queryClient.invalidateQueries({ queryKey: ["units"] });
 
+const invalidateUnitDependants = (
+  queryClient: ReturnType<typeof useQueryClient>,
+) =>
+  Promise.all([
+    invalidateUnits(queryClient),
+    queryClient.invalidateQueries({ queryKey: ["specific-issues"] }),
+  ]);
+
 export const useCreateUnitMutation = () => {
   const queryClient = useQueryClient();
 
@@ -24,7 +32,7 @@ export const useCreateUnitMutation = () => {
     mutationFn: (input: UnitInsert) => createUnit(input),
     onSuccess: (unit) => {
       queryClient.setQueryData(queryKeys.units.detail(unit.id), unit);
-      return invalidateUnits(queryClient);
+      return invalidateUnitDependants(queryClient);
     },
   });
 };
@@ -37,7 +45,7 @@ export const useUpdateUnitMutation = () => {
       updateUnit(id, patch),
     onSuccess: (unit) => {
       queryClient.setQueryData(queryKeys.units.detail(unit.id), unit);
-      return invalidateUnits(queryClient);
+      return invalidateUnitDependants(queryClient);
     },
   });
 };

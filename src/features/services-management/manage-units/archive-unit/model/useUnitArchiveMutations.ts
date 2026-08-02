@@ -9,7 +9,11 @@ import { queryKeys } from "../../../../../shared/api/queryKeys";
 const useInvalidateUnitQueries = () => {
   const queryClient = useQueryClient();
 
-  return () => queryClient.invalidateQueries({ queryKey: ["units"] });
+  return () =>
+    Promise.all([
+      queryClient.invalidateQueries({ queryKey: ["units"] }),
+      queryClient.invalidateQueries({ queryKey: ["specific-issues"] }),
+    ]);
 };
 
 export const useArchiveUnitMutation = () => {
@@ -43,7 +47,7 @@ export const usePurgeUnitMutation = () => {
           queryKey: queryKeys.units.detail(purgedId),
         }),
         queryClient.invalidateQueries({
-          queryKey: queryKeys.specificIssues,
+          queryKey: ["specific-issues"],
         }),
         queryClient.invalidateQueries({
           queryKey: queryKeys.technicianSkillSet,
