@@ -160,6 +160,9 @@ export type Database = {
       specific_issue: {
         Row: {
           active: boolean
+          active_before_archive: boolean | null
+          archived_at: string | null
+          archived_by: string | null
           id: string
           name: string
           slug: string
@@ -167,6 +170,9 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          active_before_archive?: boolean | null
+          archived_at?: string | null
+          archived_by?: string | null
           id?: string
           name: string
           slug?: string
@@ -174,12 +180,22 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          active_before_archive?: boolean | null
+          archived_at?: string | null
+          archived_by?: string | null
           id?: string
           name?: string
           slug?: string
           unit_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "specific_issue_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "user_profile"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "specific_issue_unit_id_fkey"
             columns: ["unit_id"]
@@ -567,6 +583,10 @@ export type Database = {
         Args: { p_brand_group_id: string }
         Returns: string
       }
+      archive_specific_issue: {
+        Args: { p_specific_issue_id: string }
+        Returns: string
+      }
       archive_technician: { Args: { p_technician_id: string }; Returns: string }
       archive_unit: { Args: { p_unit_id: string }; Returns: string }
       archive_user: { Args: { p_user_id: string }; Returns: string }
@@ -611,12 +631,20 @@ export type Database = {
       }
       purge_brand: { Args: { p_brand_id: string }; Returns: string }
       purge_brand_group: { Args: { p_brand_group_id: string }; Returns: string }
+      purge_specific_issue: {
+        Args: { p_specific_issue_id: string }
+        Returns: string
+      }
       purge_technician: { Args: { p_technician_id: string }; Returns: string }
       purge_unit: { Args: { p_unit_id: string }; Returns: string }
       purge_user: { Args: { p_user_id: string }; Returns: string }
       restore_brand: { Args: { p_brand_id: string }; Returns: string }
       restore_brand_group: {
         Args: { p_brand_group_id: string }
+        Returns: string
+      }
+      restore_specific_issue: {
+        Args: { p_specific_issue_id: string }
         Returns: string
       }
       restore_technician: { Args: { p_technician_id: string }; Returns: string }
