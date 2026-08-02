@@ -17,7 +17,7 @@ import {
   type EditServicesSectionId,
 } from "../model/manageServices.constants";
 import { useSearchParams } from "react-router";
-import type { ComponentType } from "react";
+import { useMemo, type ComponentType } from "react";
 
 const sectionPanels = {
   units: UnitsPanel,
@@ -71,12 +71,24 @@ function BrandsPanel() {
 }
 
 function SpecificIssuesPanel() {
-  const query = useSpecificIssuesQuery();
+  const issuesQuery = useSpecificIssuesQuery("all");
+  const unitsQuery = useUnitsQuery("all");
+  const unitsById = useMemo(
+    () => new Map((unitsQuery.data ?? []).map((unit) => [unit.id, unit])),
+    [unitsQuery.data],
+  );
+  const isPending = issuesQuery.isPending || unitsQuery.isPending;
+  const error = issuesQuery.error ?? unitsQuery.error;
 
-  if (query.isPending) return <SectionLoadingState />;
-  if (query.isError) return <ErrorMessage message={query.error.message} />;
+  if (isPending) return <SectionLoadingState />;
+  if (error) return <ErrorMessage message={error.message} />;
 
-  return <ManageSpecificIssuesSection specificIssues={query.data} />;
+  return (
+    <ManageSpecificIssuesSection
+      specificIssues={issuesQuery.data ?? []}
+      unitsById={unitsById}
+    />
+  );
 }
 
 function ServiceZonesPanel() {
