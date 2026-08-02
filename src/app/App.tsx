@@ -52,6 +52,12 @@ const EditBrandGroupPage = lazy(
 const NewBrandGroupPage = lazy(
   () => import("../pages/manageServices/NewBrandGroupPage"),
 );
+const EditSpecificIssuePage = lazy(
+  () => import("../pages/manageServices/EditSpecificIssuePage"),
+);
+const NewSpecificIssuePage = lazy(
+  () => import("../pages/manageServices/NewSpecificIssuePage"),
+);
 
 const OwnerToolsPage = lazy(() => import("../pages/OwnerToolsPage"));
 
@@ -140,6 +146,14 @@ function App() {
             element={<EditBrandGroupPage />}
           />
           <Route path="brand-groups/new" element={<NewBrandGroupPage />} />
+          <Route
+            path="specific-issues/:specificIssueId/edit"
+            element={<EditSpecificIssuePage />}
+          />
+          <Route
+            path="specific-issues/new"
+            element={<NewSpecificIssuePage />}
+          />
         </Route>
 
         <Route
