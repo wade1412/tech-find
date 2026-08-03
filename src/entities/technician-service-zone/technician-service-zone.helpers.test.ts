@@ -4,6 +4,9 @@ import type { TechnicianServiceZone } from "./technician-service-zone.types";
 import { createTechnicianZoneNamesMap } from "./technician-service-zone.helpers";
 
 const makeZone = (overrides: Partial<ServiceZone> = {}): ServiceZone => ({
+  active_before_archive: null,
+  archived_at: null,
+  archived_by: null,
   id: "zone-1",
   name: "Brooklyn",
   slug: "brooklyn",

@@ -30,7 +30,12 @@ export const queryKeys = {
   },
   technicianSkillSet: ["technician_skill_set"],
   technicianIgnoreList: ["technician_ignore_list"],
-  serviceZone: ["service_zone"],
+  serviceZones: {
+    active: ["service-zones", "active"],
+    all: ["service-zones", "all"],
+    archived: ["service-zones", "archived"],
+    detail: (id: string) => ["service-zones", "detail", id],
+  },
   technicianServiceZone: ["technician_service_zone"],
   users: ["users"],
 } as const;
