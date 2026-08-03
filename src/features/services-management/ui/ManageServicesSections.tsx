@@ -92,7 +92,7 @@ function SpecificIssuesPanel() {
 }
 
 function ServiceZonesPanel() {
-  const query = useServiceZonesQuery();
+  const query = useServiceZonesQuery("all");
 
   if (query.isPending) return <SectionLoadingState />;
   if (query.isError) return <ErrorMessage message={query.error.message} />;
