@@ -136,6 +136,9 @@ export type Database = {
       service_zone: {
         Row: {
           active: boolean
+          active_before_archive: boolean | null
+          archived_at: string | null
+          archived_by: string | null
           display_order: number
           id: string
           name: string
@@ -143,6 +146,9 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          active_before_archive?: boolean | null
+          archived_at?: string | null
+          archived_by?: string | null
           display_order: number
           id?: string
           name: string
@@ -150,12 +156,23 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          active_before_archive?: boolean | null
+          archived_at?: string | null
+          archived_by?: string | null
           display_order?: number
           id?: string
           name?: string
           slug?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "service_zone_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "user_profile"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       specific_issue: {
         Row: {
@@ -587,6 +604,10 @@ export type Database = {
         Args: { p_specific_issue_id: string }
         Returns: string
       }
+      archive_service_zone: {
+        Args: { p_service_zone_id: string }
+        Returns: string
+      }
       archive_technician: { Args: { p_technician_id: string }; Returns: string }
       archive_unit: { Args: { p_unit_id: string }; Returns: string }
       archive_user: { Args: { p_user_id: string }; Returns: string }
@@ -635,6 +656,10 @@ export type Database = {
         Args: { p_specific_issue_id: string }
         Returns: string
       }
+      purge_service_zone: {
+        Args: { p_service_zone_id: string }
+        Returns: string
+      }
       purge_technician: { Args: { p_technician_id: string }; Returns: string }
       purge_unit: { Args: { p_unit_id: string }; Returns: string }
       purge_user: { Args: { p_user_id: string }; Returns: string }
@@ -645,6 +670,10 @@ export type Database = {
       }
       restore_specific_issue: {
         Args: { p_specific_issue_id: string }
+        Returns: string
+      }
+      restore_service_zone: {
+        Args: { p_service_zone_id: string }
         Returns: string
       }
       restore_technician: { Args: { p_technician_id: string }; Returns: string }
