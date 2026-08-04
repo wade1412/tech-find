@@ -1,32 +1,60 @@
-import type { ServiceZone } from "../../../../entities/service-zone/service-zone.types";
-import { normalizeSearchText } from "../../../../shared/model/helpers";
-import type { ServiceStatusFilterValue } from "../../model/servicesListFilters.constants";
+import type {
+  ServiceZone,
+  ServiceZoneInsert,
+  ServiceZoneUpdate,
+} from "../../../../entities/service-zone/service-zone.types";
+import type { ZoneFormState } from "./manage-zones.types";
 
-type FilterServiceZonesParams = {
-  serviceZones: ServiceZone[];
-  searchTerm: string;
-  status: ServiceStatusFilterValue;
+export const createZoneFormState = (zone: ServiceZone): ZoneFormState => {
+  return {
+    active: zone.active,
+    display_order: String(zone.display_order),
+    name: zone.name,
+    slug: zone.slug,
+  };
 };
 
-export const filterServiceZones = ({
-  serviceZones,
-  searchTerm,
-  status,
-}: FilterServiceZonesParams) => {
-  const normalizedSearchTerm = normalizeSearchText(searchTerm);
-  const terms = normalizedSearchTerm ? normalizedSearchTerm.split(" ") : [];
+export const EMPTY_ZONE_FORM_STATE: ZoneFormState = {
+  active: true,
+  display_order: "10",
+  name: "",
+  slug: "",
+};
 
-  return serviceZones.filter((zone) => {
-    const matchesStatus =
-      status === "all" || zone.active === (status === "active");
+export const normalizeZoneFormState = (
+  formState: ZoneFormState,
+): ServiceZoneInsert => ({
+  active: formState.active,
 
-    if (!matchesStatus) return false;
-    if (terms.length === 0) return true;
+  display_order: Number(formState.display_order),
 
-    const searchableText = normalizeSearchText(
-      [zone.name, zone.slug, zone.display_order].join(" "),
-    );
+  name: formState.name.trim(),
+  slug: formState.slug.trim().toLowerCase(),
+});
 
-    return terms.every((term) => searchableText.includes(term));
-  });
+export const buildZonePatch = (
+  zone: ServiceZone,
+  formState: ZoneFormState,
+): ServiceZoneUpdate => {
+  const normalized = normalizeZoneFormState(formState);
+  const patch: ServiceZoneUpdate = {};
+
+  for (const key of Object.keys(normalized) as (keyof ServiceZoneInsert)[]) {
+    if (normalized[key] !== zone[key]) {
+      Object.assign(patch, { [key]: normalized[key] });
+    }
+  }
+
+  return patch;
+};
+
+export const isNewZoneFormDirty = (formState: ZoneFormState): boolean => {
+  const normalized = normalizeZoneFormState(formState);
+  const initial = normalizeZoneFormState(EMPTY_ZONE_FORM_STATE);
+
+  return Object.keys(normalized).some(
+    (key) =>
+      normalized[key as keyof ServiceZoneInsert] !==
+      initial[key as keyof ServiceZoneInsert],
+  );
 };
