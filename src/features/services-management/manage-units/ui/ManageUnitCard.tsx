@@ -1,6 +1,9 @@
 import { Link } from "react-router";
 import type { Unit } from "../../../../entities/unit/unit.types";
-import { cardTagStyle } from "../../../../shared/styles/styles";
+import {
+  cardTagStyle,
+  manageItemCardCointainerStyle,
+} from "../../../../shared/styles/styles";
 
 interface ManageUnitCardProps {
   unit: Unit;
@@ -29,7 +32,7 @@ function ManageUnitCard({ unit }: ManageUnitCardProps) {
           : "border-zinc-200 bg-white hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/70 dark:hover:border-zinc-700 dark:hover:bg-zinc-900"
       }`}
     >
-      <div className="grid min-h-24 grid-cols-[auto_1fr_auto] items-center gap-3 px-4 py-3">
+      <div className={manageItemCardCointainerStyle}>
         <span
           aria-hidden="true"
           className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors ${
