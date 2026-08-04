@@ -6,7 +6,7 @@ import AuthenticatedLayout from "../layouts/AuthenticatedLayout";
 import PermissionRoute from "../features/auth/ui/PermissionRoute";
 import NotFoundPage from "../pages/NotFoundPage";
 
-//Login and related
+//----- Login Page and related -----
 const LoginPage = lazy(() => import("../pages/LoginPage"));
 const ForgotPasswordPage = lazy(() => import("../pages/ForgotPasswordPage"));
 const SecureEmailLinkPage = lazy(() => import("../pages/SecureEmailLinkPage"));
@@ -15,10 +15,10 @@ const EmailConfirmationPage = lazy(
   () => import("../pages/EmailConfirmationPage"),
 );
 
-//Home
+// ----- Home Page -----
 const HomePage = lazy(() => import("../pages/HomePage"));
 
-//Technicians
+// ----- Manage Technicians -----
 const ManageTechniciansPage = lazy(
   () => import("../pages/manageTechnicians/ManageTechniciansPage"),
 );
@@ -29,19 +29,21 @@ const EditTechnicianPage = lazy(
   () => import("../pages/manageTechnicians/EditTechnicianPage"),
 );
 
-// Users
+// ----- Manage Users -----
 const ManageUsersPage = lazy(
   () => import("../pages/manageUsers/ManageUsersPage"),
 );
 const EditUserPage = lazy(() => import("../pages/manageUsers/EditUserPage"));
 const NewUserPage = lazy(() => import("../pages/manageUsers/NewUserPage"));
 
-// Services
+// ----- Manage Services -----
 const ManageServicesPage = lazy(
   () => import("../pages/manageServices/ManageServicesPage"),
 );
+// Manage Units
 const EditUnitPage = lazy(() => import("../pages/manageServices/EditUnitPage"));
 const NewUnitPage = lazy(() => import("../pages/manageServices/NewUnitPage"));
+// Manage Brands and Brand Groups
 const EditBrandPage = lazy(
   () => import("../pages/manageServices/EditBrandPage"),
 );
@@ -52,12 +54,16 @@ const EditBrandGroupPage = lazy(
 const NewBrandGroupPage = lazy(
   () => import("../pages/manageServices/NewBrandGroupPage"),
 );
+// Manage Specific Issues
 const EditSpecificIssuePage = lazy(
   () => import("../pages/manageServices/EditSpecificIssuePage"),
 );
 const NewSpecificIssuePage = lazy(
   () => import("../pages/manageServices/NewSpecificIssuePage"),
 );
+// Manage Service Zones
+const EditZonePage = lazy(() => import("../pages/manageServices/EditZonePage"));
+const NewZonePage = lazy(() => import("../pages/manageServices/NewZonePage"));
 
 const OwnerToolsPage = lazy(() => import("../pages/OwnerToolsPage"));
 
@@ -154,6 +160,8 @@ function App() {
             path="specific-issues/new"
             element={<NewSpecificIssuePage />}
           />
+          <Route path="zones/:zoneId/edit" element={<EditZonePage />} />
+          <Route path="zones/new" element={<NewZonePage />} />
         </Route>
 
         <Route
