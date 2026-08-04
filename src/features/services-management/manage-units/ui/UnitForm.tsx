@@ -53,10 +53,7 @@ function UnitForm({ unit }: UnitFormProps) {
     : isNewUnitFormDirty(formState);
   const isPending = mutation.isPending;
 
-  const setProfileField = (
-    key: UnitProfileFieldKey,
-    value: string,
-  ) => {
+  const setProfileField = (key: UnitProfileFieldKey, value: string) => {
     mutation.reset();
     setFormState((previous) => ({ ...previous, [key]: value }));
   };
