@@ -1,61 +1,58 @@
 import { Link } from "react-router";
-import type { BrandGroup } from "../../../../entities/brandGroup/brandGroup.types";
+import type { ServiceZone } from "../../../../entities/service-zone/service-zone.types";
 import {
   cardTagStyle,
   manageItemCardCointainerStyle,
 } from "../../../../shared/styles/styles";
 
-interface ManageBrandGroupCardProps {
-  brandGroup: BrandGroup;
-  brandCount: number;
+interface ManageZoneCardProps {
+  zone: ServiceZone;
 }
 
-function ManageBrandGroupCard({
-  brandGroup,
-  brandCount,
-}: ManageBrandGroupCardProps) {
-  const isInactive = !brandGroup.active;
+function ManageZoneCard({ zone }: ManageZoneCardProps) {
+  const isInactive = !zone.active;
 
   return (
     <Link
-      to={`brand-groups/${brandGroup.id}/edit`}
+      to={`zones/${zone.id}/edit`}
       className={`group block h-full overflow-hidden rounded-xl border transition-[border-color,background-color] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-main-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-zinc-950 ${
         isInactive
           ? "border-zinc-200/80 bg-zinc-50/80 hover:border-zinc-300 hover:bg-zinc-100/70 dark:border-zinc-800/80 dark:bg-zinc-900/40 dark:hover:border-zinc-700 dark:hover:bg-zinc-900/60"
-          : "border-main-500/30 bg-white hover:border-main-500/50 hover:bg-zinc-50 dark:border-main-400/25 dark:bg-zinc-900/70 dark:hover:border-main-400/40 dark:hover:bg-zinc-900"
+          : "border-zinc-200 bg-white hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/70 dark:hover:border-zinc-700 dark:hover:bg-zinc-900"
       }`}
     >
       <div className={manageItemCardCointainerStyle}>
         <span
           aria-hidden="true"
-          className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-xs font-bold transition-colors ${
+          className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors ${
             isInactive
               ? "bg-zinc-200/70 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-500"
-              : "bg-main-500/10 text-main-600 dark:bg-main-400/10 dark:text-main-400"
+              : "bg-zinc-100 text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300"
           }`}
         >
-          {brandGroup.name.charAt(0).toUpperCase()}
+          {zone.name.charAt(0).toUpperCase()}
         </span>
 
         <div className="min-w-0">
-          <p className="truncate text-[0.6875rem] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
-            Brand group
-          </p>
-
           <p
-            className={`mt-0.5 truncate font-heading text-base font-semibold transition-colors ${
+            className={`truncate font-heading text-base font-semibold transition-colors ${
               isInactive
                 ? "text-zinc-600 dark:text-zinc-400"
                 : "text-zinc-800 dark:text-zinc-100"
             }`}
           >
-            {brandGroup.name}
+            {zone.name}
           </p>
 
-          <p className="mt-1 truncate text-xs text-zinc-500 dark:text-zinc-400">
-            {brandCount} {brandCount === 1 ? "brand" : "brands"} · Order{" "}
-            {brandGroup.display_order}
-          </p>
+          <div
+            className={`mt-0.5 text-xs leading-5 ${
+              isInactive
+                ? "text-zinc-500/80 dark:text-zinc-500"
+                : "text-zinc-500 dark:text-zinc-400"
+            }`}
+          >
+            <p className="truncate">Filter order {zone.display_order}</p>
+          </div>
         </div>
 
         {isInactive && (
@@ -69,4 +66,4 @@ function ManageBrandGroupCard({
   );
 }
 
-export default ManageBrandGroupCard;
+export default ManageZoneCard;

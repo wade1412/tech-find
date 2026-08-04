@@ -57,6 +57,9 @@ export const sectionHeaderSubtextStyle =
 
 export const manageListGridStyle = "grid grid-cols-1 gap-2.5 md:grid-cols-3";
 
+export const manageItemCardCointainerStyle =
+  "grid min-h-20 grid-cols-[auto_1fr_auto] items-center gap-3 px-4 py-3";
+
 export const centeredContainerStyle =
   "mx-auto w-full max-w-6xl px-4 py-4 md:px-6";
 
