@@ -6,7 +6,6 @@ import {
   type ServiceStatusFilterValue,
 } from "../../model/servicesListFilters.constants";
 import { useMemo } from "react";
-import { filterServiceZones } from "../model/manage-zones.helpers";
 import {
   buttonContainerStyle,
   formWithPaddingStyle,
@@ -28,6 +27,7 @@ import {
   managementListVariants,
 } from "../../../../shared/styles/motionVariants";
 import ManageZoneCard from "./ManageZoneCard";
+import { filterServiceZones } from "../model/filterZones";
 
 interface ManageServiceZonesSectionProps {
   zones: ServiceZone[];
