@@ -10,6 +10,7 @@ import {
 import ErrorMessage from "../../shared/ui/ErrorMessage";
 import PageHeader from "../../shared/ui/PageHeader";
 import ZoneForm from "../../features/services-management/manage-service-zones/ui/ZoneForm";
+import ArchiveZoneWithConfirmationButton from "../../features/services-management/manage-service-zones/ui/ArchiveZoneWithConfirmationButton";
 
 function EditZonePage() {
   const { zoneId } = useParams<{ zoneId: string }>();
@@ -37,7 +38,7 @@ function EditZonePage() {
             subtitle={`Edit zone details · ${zone.slug}`}
           />
 
-          <button>Archive</button>
+          <ArchiveZoneWithConfirmationButton zone={zone} />
         </div>
 
         <ZoneForm key={zone.id} zone={zone} />
