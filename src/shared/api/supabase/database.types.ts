@@ -7,16 +7,40 @@
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "14.5"
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
   }
   public: {
     Tables: {
       brand: {
         Row: {
           active: boolean
+          active_before_archive: boolean | null
+          archived_at: string | null
+          archived_by: string | null
+          archived_via_group_id: string | null
           group_id: string
           id: string
           name: string
@@ -24,6 +48,10 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          active_before_archive?: boolean | null
+          archived_at?: string | null
+          archived_by?: string | null
+          archived_via_group_id?: string | null
           group_id?: string
           id?: string
           name?: string
@@ -31,12 +59,30 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          active_before_archive?: boolean | null
+          archived_at?: string | null
+          archived_by?: string | null
+          archived_via_group_id?: string | null
           group_id?: string
           id?: string
           name?: string
           slug?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "brand_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "user_profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "brand_archived_via_group_id_fkey"
+            columns: ["archived_via_group_id"]
+            isOneToOne: false
+            referencedRelation: "brand_group"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "brand_groupId_fkey"
             columns: ["group_id"]
@@ -49,6 +95,9 @@ export type Database = {
       brand_group: {
         Row: {
           active: boolean
+          active_before_archive: boolean | null
+          archived_at: string | null
+          archived_by: string | null
           display_order: number
           id: string
           name: string
@@ -56,6 +105,9 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          active_before_archive?: boolean | null
+          archived_at?: string | null
+          archived_by?: string | null
           display_order?: number
           id?: string
           name?: string
@@ -63,16 +115,30 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          active_before_archive?: boolean | null
+          archived_at?: string | null
+          archived_by?: string | null
           display_order?: number
           id?: string
           name?: string
           slug?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "brand_group_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "user_profile"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       service_zone: {
         Row: {
           active: boolean
+          active_before_archive: boolean | null
+          archived_at: string | null
+          archived_by: string | null
           display_order: number
           id: string
           name: string
@@ -80,6 +146,9 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          active_before_archive?: boolean | null
+          archived_at?: string | null
+          archived_by?: string | null
           display_order: number
           id?: string
           name: string
@@ -87,16 +156,30 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          active_before_archive?: boolean | null
+          archived_at?: string | null
+          archived_by?: string | null
           display_order?: number
           id?: string
           name?: string
           slug?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "service_zone_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "user_profile"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       specific_issue: {
         Row: {
           active: boolean
+          active_before_archive: boolean | null
+          archived_at: string | null
+          archived_by: string | null
           id: string
           name: string
           slug: string
@@ -104,6 +187,9 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          active_before_archive?: boolean | null
+          archived_at?: string | null
+          archived_by?: string | null
           id?: string
           name: string
           slug?: string
@@ -111,12 +197,22 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          active_before_archive?: boolean | null
+          archived_at?: string | null
+          archived_by?: string | null
           id?: string
           name?: string
           slug?: string
           unit_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "specific_issue_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "user_profile"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "specific_issue_unit_id_fkey"
             columns: ["unit_id"]
@@ -351,6 +447,9 @@ export type Database = {
       unit: {
         Row: {
           active: boolean
+          active_before_archive: boolean | null
+          archived_at: string | null
+          archived_by: string | null
           can_be_commercial: boolean
           can_be_gas: boolean
           can_be_stacked: boolean
@@ -362,6 +461,9 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          active_before_archive?: boolean | null
+          archived_at?: string | null
+          archived_by?: string | null
           can_be_commercial?: boolean
           can_be_gas?: boolean
           can_be_stacked?: boolean
@@ -373,6 +475,9 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          active_before_archive?: boolean | null
+          archived_at?: string | null
+          archived_by?: string | null
           can_be_commercial?: boolean
           can_be_gas?: boolean
           can_be_stacked?: boolean
@@ -381,41 +486,105 @@ export type Database = {
           is_built_in?: boolean
           name?: string
           slug?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "unit_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "user_profile"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_management_audit: {
+        Row: {
+          actor_id: string
+          after_state: Json | null
+          before_state: Json | null
+          created_at: string
+          error_message: string | null
+          id: string
+          operation: string
+          outcome: string
+          requires_reconciliation: boolean
+          target_user_id: string | null
+        }
+        Insert: {
+          actor_id: string
+          after_state?: Json | null
+          before_state?: Json | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          operation: string
+          outcome: string
+          requires_reconciliation?: boolean
+          target_user_id?: string | null
+        }
+        Update: {
+          actor_id?: string
+          after_state?: Json | null
+          before_state?: Json | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          operation?: string
+          outcome?: string
+          requires_reconciliation?: boolean
+          target_user_id?: string | null
         }
         Relationships: []
       }
       user_profile: {
         Row: {
           active: boolean
-          alias: string | null
+          active_before_archive: boolean | null
+          alias: string
+          archived_at: string | null
+          archived_by: string | null
           created_at: string
           email: string
-          full_name: string | null
+          full_name: string
           id: string
           role: Database["public"]["Enums"]["app_role"]
           updated_at: string
         }
         Insert: {
           active?: boolean
-          alias?: string | null
+          active_before_archive?: boolean | null
+          alias: string
+          archived_at?: string | null
+          archived_by?: string | null
           created_at?: string
           email: string
-          full_name?: string | null
+          full_name: string
           id: string
           role?: Database["public"]["Enums"]["app_role"]
           updated_at?: string
         }
         Update: {
           active?: boolean
-          alias?: string | null
+          active_before_archive?: boolean | null
+          alias?: string
+          archived_at?: string | null
+          archived_by?: string | null
           created_at?: string
           email?: string
-          full_name?: string | null
+          full_name?: string
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_profile_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "user_profile"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -426,14 +595,22 @@ export type Database = {
         Args: { role: Database["public"]["Enums"]["app_role"] }
         Returns: number
       }
-      current_app_role: {
-        Args: never
-        Returns: Database["public"]["Enums"]["app_role"]
+      archive_brand: { Args: { p_brand_id: string }; Returns: string }
+      archive_brand_group: {
+        Args: { p_brand_group_id: string }
+        Returns: string
       }
-      current_user_has_role: {
-        Args: { required_role: Database["public"]["Enums"]["app_role"] }
-        Returns: boolean
+      archive_specific_issue: {
+        Args: { p_specific_issue_id: string }
+        Returns: string
       }
+      archive_service_zone: {
+        Args: { p_service_zone_id: string }
+        Returns: string
+      }
+      archive_technician: { Args: { p_technician_id: string }; Returns: string }
+      archive_unit: { Args: { p_unit_id: string }; Returns: string }
+      archive_user: { Args: { p_user_id: string }; Returns: string }
       create_technician: {
         Args: {
           p_ignore_items?: Json
@@ -458,19 +635,50 @@ export type Database = {
           name: string
           notes: string | null
         }
+        SetofOptions: {
+          from: "*"
+          to: "technician"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
-      archive_technician: {
-        Args: { p_technician_id: string }
+      current_app_role: {
+        Args: never
+        Returns: Database["public"]["Enums"]["app_role"]
+      }
+      current_user_has_role: {
+        Args: { required_role: Database["public"]["Enums"]["app_role"] }
+        Returns: boolean
+      }
+      purge_brand: { Args: { p_brand_id: string }; Returns: string }
+      purge_brand_group: { Args: { p_brand_group_id: string }; Returns: string }
+      purge_specific_issue: {
+        Args: { p_specific_issue_id: string }
         Returns: string
       }
-      purge_technician: {
-        Args: { p_technician_id: string }
+      purge_service_zone: {
+        Args: { p_service_zone_id: string }
         Returns: string
       }
-      restore_technician: {
-        Args: { p_technician_id: string }
+      purge_technician: { Args: { p_technician_id: string }; Returns: string }
+      purge_unit: { Args: { p_unit_id: string }; Returns: string }
+      purge_user: { Args: { p_user_id: string }; Returns: string }
+      restore_brand: { Args: { p_brand_id: string }; Returns: string }
+      restore_brand_group: {
+        Args: { p_brand_group_id: string }
         Returns: string
       }
+      restore_specific_issue: {
+        Args: { p_specific_issue_id: string }
+        Returns: string
+      }
+      restore_service_zone: {
+        Args: { p_service_zone_id: string }
+        Returns: string
+      }
+      restore_technician: { Args: { p_technician_id: string }; Returns: string }
+      restore_unit: { Args: { p_unit_id: string }; Returns: string }
+      restore_user: { Args: { p_user_id: string }; Returns: string }
       update_technician_ignore_list: {
         Args: {
           p_added_items?: Json
@@ -657,9 +865,13 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       app_role: ["user", "secondary_admin", "main_admin", "owner"],
     },
   },
 } as const
+

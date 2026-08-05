@@ -42,6 +42,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const profileRef = useRef<UserProfile | null>(null);
   const resolvingUserIdRef = useRef<string | null>(null);
   const profileRequestIdRef = useRef(0);
+  const deactivationInProgressRef = useRef(false);
 
   const setProfileState = useCallback((newProfile: UserProfile | null) => {
     setProfile(newProfile);
@@ -171,6 +172,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await resolveSession(session, { forceProfileReload: true });
   }, [session, resolveSession]);
 
+  const deactivateCurrentSession = useCallback(async () => {
+    if (deactivationInProgressRef.current) return;
+    deactivationInProgressRef.current = true;
+
+    const inactiveError = createAuthError(
+      "inactive_profile",
+      "Your account was deactivated. Contact an owner if you need access restored.",
+    );
+
+    setAuthError(inactiveError);
+    queryClient.clear();
+
+    try {
+      await supabase.auth.signOut({ scope: "local" });
+    } catch (signOutError) {
+      console.error("Failed to close deactivated local session:", signOutError);
+    } finally {
+      clearAuthState();
+      setAuthError(inactiveError);
+      deactivationInProgressRef.current = false;
+    }
+  }, [clearAuthState, queryClient]);
+
   // Session load and update
   useEffect(() => {
     let isMounted = true;
@@ -275,6 +299,56 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       authListener.subscription.unsubscribe();
     };
   }, [clearAuthState, resolveSession]);
+
+  useEffect(() => {
+    const userId = session?.user.id;
+    if (!userId || shouldBypassProfile) return;
+
+    let isActive = true;
+    const channel = supabase
+      .channel(`current-user-profile:${userId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          filter: `id=eq.${userId}`,
+          schema: "public",
+          table: "user_profile",
+        },
+        (payload) => {
+          if (!isActive) return;
+
+          const changedProfile = payload.new as UserProfile;
+          if (changedProfile.id !== userId) return;
+
+          if (!changedProfile.active) {
+            void deactivateCurrentSession();
+            return;
+          }
+
+          void resolveSession(session, { forceProfileReload: true }).catch(
+            (error) => {
+              console.error("Failed to refresh changed user profile:", error);
+            },
+          );
+        },
+      )
+      .subscribe((status) => {
+        if (status === "CHANNEL_ERROR") {
+          console.error("User profile realtime subscription failed");
+        }
+      });
+
+    return () => {
+      isActive = false;
+      void supabase.removeChannel(channel);
+    };
+  }, [
+    deactivateCurrentSession,
+    resolveSession,
+    session,
+    shouldBypassProfile,
+  ]);
 
   const value = useMemo<AuthContextValue>(() => {
     const user = session?.user ?? null;

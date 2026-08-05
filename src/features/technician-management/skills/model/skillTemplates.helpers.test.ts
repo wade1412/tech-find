@@ -9,6 +9,9 @@ import {
 import type { SkillDraft } from "./skills.types";
 
 const makeUnit = (id: string, active = true): Unit => ({
+  active_before_archive: null,
+  archived_at: null,
+  archived_by: null,
   id,
   name: id,
   slug: id,
@@ -30,6 +33,9 @@ const makeBrandGroup = (
   slug,
   active,
   display_order: 1,
+  active_before_archive: null,
+  archived_at: null,
+  archived_by: null,
 });
 
 const units = [makeUnit("washer"), makeUnit("dryer")];

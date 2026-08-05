@@ -1,5 +1,5 @@
 import type { Technician } from "../../../../entities/technician/technician.types";
-import { EDITABLE_KEYS } from "./profile.constants";
+import { EDITABLE_TECHNICIAN_PROFILE_KEYS } from "./profile.constants";
 import type {
   EditableKey,
   JobsPerDayDraft,
@@ -11,7 +11,7 @@ type TechnicianPatch = Partial<Pick<Technician, EditableKey>>;
 export const createTechnicianFormState = (
   technician: Technician,
 ): TechnicianFormState => {
-  const entries = EDITABLE_KEYS.map((key) => {
+  const entries = EDITABLE_TECHNICIAN_PROFILE_KEYS.map((key) => {
     if (key === "notes" && !technician[key]) {
       return [key, ""];
     }
@@ -36,7 +36,7 @@ export const buildTechnicianPatch = (
 ): TechnicianPatch => {
   const patch: Record<string, unknown> = {};
 
-  for (const key of EDITABLE_KEYS) {
+  for (const key of EDITABLE_TECHNICIAN_PROFILE_KEYS) {
     const draftValue = draft[key];
     const baseValue = technician[key];
 

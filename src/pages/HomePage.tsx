@@ -1,38 +1,21 @@
-import type { CSSProperties } from "react";
 import TechnicianList from "../entities/technician/ui/TechnicianList";
 import FilterPanel from "../features/technician-filter/ui/FilterPanel";
-import { useAvailableViewportHeight } from "../shared/hooks/useAvailableViewportHeight";
-
-type TechnicianListHeightStyle = CSSProperties & {
-  "--technician-list-height"?: string;
-};
+import { centeredContainerStyle } from "../shared/styles/styles";
 
 export function HomePage() {
-  const { ref: technicianColumnRef, height: availableViewportHeight } =
-    useAvailableViewportHeight<HTMLDivElement>({
-      reservedBottomSelector: "[data-app-footer]",
-      containerSelector: "[data-home-page]",
-    });
-  const technicianListHeightStyle: TechnicianListHeightStyle = {
-    "--technician-list-height":
-      availableViewportHeight !== null
-        ? `${availableViewportHeight}px`
-        : undefined,
-  };
-
   return (
-    <div data-home-page className="mx-auto max-w-6xl p-4 md:p-6">
-      <div
-        className="grid grid-cols-1 items-start gap-6 md:grid-cols-2"
-        style={technicianListHeightStyle}
-      >
+    <div
+      data-home-page
+      className={`${centeredContainerStyle} flex min-h-0 flex-1 flex-col`}
+    >
+      <div className="grid flex-1 grid-cols-1 items-start gap-6 md:min-h-0 md:grid-cols-2 md:grid-rows-[minmax(0,1fr)] md:items-stretch md:overflow-hidden">
         {/* Left Column - filtering options: Units, Brands and others */}
-        <div className="min-w-0">
+        <div className="app-scroll min-w-0 md:min-h-0 md:overflow-y-auto md:overscroll-contain md:pr-2">
           <FilterPanel />
         </div>
 
         {/* Right Column - Technicians List */}
-        <div ref={technicianColumnRef} className="min-w-0">
+        <div className="h-128 min-w-0 md:h-auto md:min-h-0">
           <TechnicianList />
         </div>
       </div>

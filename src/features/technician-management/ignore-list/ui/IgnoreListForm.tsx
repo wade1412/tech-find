@@ -4,8 +4,8 @@ import type { SpecificIssue } from "../../../../entities/specific-issue/specific
 import type { TechnicianIgnoreList } from "../../../../entities/technician-ignore-list/technicianIgnoreList.types";
 import type { Unit } from "../../../../entities/unit/unit.types";
 import { formWithPaddingStyle } from "../../../../shared/styles/styles";
-import SubmitArea from "../../ui/SubmitArea";
-import SubmitSnackbar from "../../ui/SubmitSnackbar";
+import FormSubmitArea from "../../../../shared/ui/FormSubmitArea";
+import SaveSuccessSnackbar from "../../../../shared/ui/SaveSuccessSnackbar";
 import {
   createIgnoreItemDraft,
   createIgnoreListPatch,
@@ -92,16 +92,16 @@ function IgnoreListForm({
         disabled={isPending}
       />
 
-      <SubmitArea
+      <FormSubmitArea
         error={updateTechnicianIgnoreListMutation.error}
         isDirty={isDirty}
         isPending={isPending}
-        handleDiscardChanges={handleDiscardChanges}
+        onDiscard={handleDiscardChanges}
       />
 
-      <SubmitSnackbar
+      <SaveSuccessSnackbar
         isOpen={isSavedSnackbarOpen}
-        handleClose={() => setIsSavedSnackbarOpen(false)}
+        onClose={() => setIsSavedSnackbarOpen(false)}
       />
     </form>
   );

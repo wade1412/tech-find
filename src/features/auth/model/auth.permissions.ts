@@ -1,13 +1,9 @@
 import type { UserProfile } from "./auth.types";
+import type { AppRole } from "../../../entities/user/user.types";
+import { ROLE_LEVEL } from "../../../entities/user/roles.constants";
 
-export const ROLE_LEVEL = {
-  user: 0,
-  secondary_admin: 1,
-  main_admin: 2,
-  owner: 3,
-};
-
-export type AppRole = keyof typeof ROLE_LEVEL;
+export type { AppRole } from "../../../entities/user/user.types";
+export { ROLE_LEVEL } from "../../../entities/user/roles.constants";
 
 export interface AuthPermissions {
   role: AppRole | null;
@@ -21,6 +17,8 @@ export interface AuthPermissions {
   canPurgeTechnicians: boolean;
   canManageUsers: boolean;
   canManageServices: boolean;
+  canArchiveServices: boolean;
+  canPurgeServices: boolean;
 
   canUseOwnerTools: boolean;
 }
@@ -31,6 +29,8 @@ export type AdminPermission =
   | "canPurgeTechnicians"
   | "canManageUsers"
   | "canManageServices"
+  | "canArchiveServices"
+  | "canPurgeServices"
   | "canUseOwnerTools";
 
 type PermissionProfile = Pick<UserProfile, "role" | "active">;
@@ -81,6 +81,8 @@ export function getAuthPermissions(
 
     canManageUsers: hasRoleLevelOf(role, "main_admin"),
     canManageServices: hasRoleLevelOf(role, "main_admin"),
+    canArchiveServices: hasRoleLevelOf(role, "main_admin"),
+    canPurgeServices: role === "owner",
 
     canUseOwnerTools: role === "owner",
   };

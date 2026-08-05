@@ -1,4 +1,9 @@
-type ManagementSectionSkeletonVariant = "serviceZones" | "skills" | "ignoreList";
+import HorizontalDivider from "../../../shared/ui/HorizontalDivider";
+
+type ManagementSectionSkeletonVariant =
+  | "serviceZones"
+  | "skills"
+  | "ignoreList";
 
 interface ManagementSectionSkeletonProps {
   variant: ManagementSectionSkeletonVariant;
@@ -103,7 +108,9 @@ function IgnoreListSkeleton() {
   );
 }
 
-function ManagementSectionSkeleton({ variant }: ManagementSectionSkeletonProps) {
+function ManagementSectionSkeleton({
+  variant,
+}: ManagementSectionSkeletonProps) {
   const content = {
     serviceZones: <ServiceZonesSkeleton />,
     skills: <SkillsSkeleton />,
@@ -118,7 +125,7 @@ function ManagementSectionSkeleton({ variant }: ManagementSectionSkeletonProps) 
     >
       <SkeletonHeader />
 
-      <div className="h-px w-full bg-zinc-200 dark:bg-zinc-800" />
+      <HorizontalDivider />
 
       {content}
 

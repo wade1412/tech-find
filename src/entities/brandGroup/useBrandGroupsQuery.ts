@@ -1,10 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "../../shared/api/queryKeys";
 import { getBrandGroups } from "./brandGroup.api";
+import type { BrandGroupStatus } from "./brandGroup.types";
 
-export const useBrandGroupsQuery = () => {
+export const useBrandGroupsQuery = (
+  status: BrandGroupStatus = "active",
+  enabled = true,
+) => {
   return useQuery({
-    queryKey: queryKeys.brandGroups,
-    queryFn: getBrandGroups,
+    queryKey: queryKeys.brandGroups[status],
+    queryFn: () => getBrandGroups(status),
+    enabled,
   });
 };

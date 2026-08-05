@@ -1,5 +1,6 @@
+import { inputErrorStyle } from "../../../../shared/styles/styles";
 import Checkbox from "../../../../shared/ui/Checkbox";
-import SectionHeader from "../../ui/SectionHeader";
+import SectionHeader from "../../../../shared/ui/SectionHeader";
 import { CAPABILITY_FIELDS, PROFILE_FIELDS } from "../model/profile.constants";
 import { inputStyle, labelStyle } from "../model/profile.styles";
 import type {
@@ -115,11 +116,7 @@ function ProfileAndCapabilitiesFields({
                   </label>
 
                   {errorMessage && (
-                    <span
-                      id={errorId}
-                      role="alert"
-                      className="mt-1 text-xs font-medium text-red-600 dark:text-red-400"
-                    >
+                    <span id={errorId} role="alert" className={inputErrorStyle}>
                       {errorMessage}
                     </span>
                   )}

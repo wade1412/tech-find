@@ -8,16 +8,20 @@ import { filterManageTechnicians } from "../../features/technician-management/mo
 import { AnimatePresence } from "motion/react";
 import { motion } from "motion/react";
 import {
-  technicianCardVariants,
-  technicianListVariants,
+  managementListItemVariants,
+  managementListVariants,
 } from "../../shared/styles/motionVariants";
 import ErrorMessage from "../../shared/ui/ErrorMessage";
-import { Link, useSearchParams } from "react-router";
+import { useSearchParams } from "react-router";
 import {
-  createNewTechnicianButtonStyle,
+  buttonContainerStyle,
+  centeredContainerStyle,
   formStyle,
   ghostButton,
+  manageListGridStyle,
   noEditValuesStyle,
+  pageTitleWithButtonsContainerStyle,
+  searchRowStyle,
   sectionHeaderSubtextStyle,
 } from "../../shared/styles/styles";
 import SegmentedControl from "../../shared/ui/SegmentedControl";
@@ -27,6 +31,9 @@ import {
   type ManageTechniciansListFilterValue,
 } from "../../features/technician-management/model/manageTechnicians.constants";
 import OpenArchivedTechniciansDialogButton from "../../features/technician-management/archive-technician/ui/OpenArchivedTechniciansDialogButton";
+import ManagementListSkeleton from "../../shared/ui/ManagementListSkeleton";
+import HorizontalDivider from "../../shared/ui/HorizontalDivider";
+import CreateNewEntityLinkButton from "../../shared/ui/CreateNewEntityLinkButton";
 
 function ManageTechniciansPage() {
   const {
@@ -118,74 +125,37 @@ function ManageTechniciansPage() {
   const technicianCount = allTechnicians?.length ?? 0;
 
   if (isPending) {
+    return <ManagementListSkeleton />;
+  }
+
+  if (isError) {
     return (
-      <div className="mx-auto max-w-6xl p-4 md:p-6">
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div className="flex flex-col gap-2">
-              <div className="h-6 w-44 animate-pulse rounded-md bg-zinc-200 dark:bg-zinc-800" />
-              <div className="h-4 w-64 animate-pulse rounded-md bg-zinc-200 dark:bg-zinc-800" />
-            </div>
-            <div className="h-10 w-full animate-pulse rounded-xl bg-zinc-200 md:w-72 dark:bg-zinc-800" />
-          </div>
-          <div className="grid grid-cols-1 gap-2.5 md:grid-cols-3">
-            {[...Array(6)].map((_, i) => (
-              <div
-                key={i}
-                className="h-20 animate-pulse rounded-xl bg-zinc-200 dark:bg-zinc-800"
-              />
-            ))}
-          </div>
-        </div>
+      <div className={centeredContainerStyle}>
+        <ErrorMessage message={error?.message} />
       </div>
     );
   }
 
-  if (isError) {
-    return <ErrorMessage message={error?.message} />;
-  }
-
   return (
-    <div className="mx-auto max-w-6xl p-4 md:p-6">
+    <div className={centeredContainerStyle}>
       <section className={formStyle}>
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div className={pageTitleWithButtonsContainerStyle}>
           <PageHeader
             title="Manage Technicians"
             subtitle="Select a technician to edit the data"
           />
 
-          <div className="flex w-full flex-col gap-2 sm:flex-row md:w-auto md:items-center">
+          <div className={buttonContainerStyle}>
             <OpenArchivedTechniciansDialogButton />
-            <Link to="new" className={createNewTechnicianButtonStyle}>
-              <svg
-                fill="none"
-                className="h-3.5 w-3.5"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2.5}
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 4.5v15m7.5-7.5h-15"
-                />
-              </svg>
-
-              <span className="text-center">Create Technician</span>
-            </Link>
+            <CreateNewEntityLinkButton linkTo="new" label="Create Technician" />
           </div>
         </div>
 
-        {/* Divider */}
-        <div
-          aria-hidden="true"
-          className="h-px w-full bg-zinc-200 dark:bg-zinc-800"
-        />
+        <HorizontalDivider />
 
         {/* List Filter and Search */}
         <div className={`${formStyle} px-2`}>
-          <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
+          <div className={searchRowStyle}>
             <div className="w-full sm:w-auto sm:min-w-75">
               <SegmentedControl
                 ariaLabel="Select technicians filter"
@@ -215,8 +185,8 @@ function ManageTechniciansPage() {
                 : `${technicianCount} technicians`}
             </div>
             <motion.div
-              className="grid grid-cols-1 gap-2.5 md:grid-cols-3"
-              variants={technicianListVariants}
+              className={manageListGridStyle}
+              variants={managementListVariants}
               initial="hidden"
               animate="visible"
               exit="exit"
@@ -227,7 +197,7 @@ function ManageTechniciansPage() {
                     <motion.div
                       key={technician.id}
                       layout
-                      variants={technicianCardVariants}
+                      variants={managementListItemVariants}
                       initial="hidden"
                       animate="visible"
                       exit="exit"
@@ -243,7 +213,7 @@ function ManageTechniciansPage() {
                   <motion.div
                     key="empty"
                     layout
-                    variants={technicianCardVariants}
+                    variants={managementListItemVariants}
                     initial="hidden"
                     animate="visible"
                     exit="exit"

@@ -3,7 +3,9 @@ import { useNavigate } from "react-router";
 import type { Technician } from "../../../../entities/technician/technician.types";
 import { useAuthPermissions } from "../../../auth/model/useAuthPermissions";
 import { useArchiveTechnicianMutation } from "../model/useTechnicianArchiveMutations";
-import ConfirmArchiveTechnicianDialog from "./ConfirmArchiveTechnicianDialog";
+import ConfirmArchiveEntityDialog from "../../../../shared/ui/ConfirmArchiveEntityDialog";
+import ArchiveButton from "../../../../shared/ui/ArchiveButton";
+import { archiveEntityButtonStyle } from "../../../../shared/styles/styles";
 
 interface ArchiveTechnicianWithConfirmationButtonProps {
   technician: Technician;
@@ -18,6 +20,11 @@ function ArchiveTechnicianWithConfirmationButton({
   const archiveMutation = useArchiveTechnicianMutation();
 
   if (!canArchiveTechnicians) return null;
+
+  const handleArchiveButtonClick = () => {
+    archiveMutation.reset();
+    setIsDialogOpen(true);
+  };
 
   const handleClose = () => {
     if (archiveMutation.isPending) return;
@@ -36,31 +43,16 @@ function ArchiveTechnicianWithConfirmationButton({
 
   return (
     <>
-      <button
-        type="button"
-        className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-zinc-300 bg-transparent px-4 py-3 text-xs font-semibold text-zinc-600 transition-[background-color,border-color,color,opacity,transform] hover:border-amber-400 hover:bg-amber-50 hover:text-amber-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 active:scale-[0.98] dark:border-zinc-700 dark:text-zinc-300 dark:hover:border-amber-700 dark:hover:bg-amber-950/25 dark:hover:text-amber-300 dark:focus-visible:ring-offset-zinc-950"
-        onClick={() => {
-          archiveMutation.reset();
-          setIsDialogOpen(true);
-        }}
-        aria-haspopup="dialog"
-      >
-        <svg
-          className="h-3.5 w-3.5"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2}
-          aria-hidden="true"
-        >
-          <path d="M4 7.5h16M6 7.5v11h12v-11M9.5 11.5h5" />
-          <path d="M4 4.5h16v3H4z" />
-        </svg>
-        Archive technician
-      </button>
+      <ArchiveButton
+        label="Archive Technician"
+        handleClick={handleArchiveButtonClick}
+        className={archiveEntityButtonStyle}
+      />
 
-      <ConfirmArchiveTechnicianDialog
-        technician={technician}
+      <ConfirmArchiveEntityDialog
+        entityLabel="technician"
+        entityName={technician.alias}
+        confirmationMessageSubtext=" Service zones, skills, and ignore-list items will be preserved, but the technician will be excluded from jobs matching. You can restore this technician from the archive at any time."
         isOpen={isDialogOpen}
         isPending={archiveMutation.isPending}
         error={archiveMutation.error}

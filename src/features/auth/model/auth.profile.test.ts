@@ -9,6 +9,9 @@ const createProfile = (overrides: Partial<UserProfile> = {}): UserProfile => ({
   alias: "Test",
   role: "user",
   active: true,
+  active_before_archive: null,
+  archived_at: null,
+  archived_by: null,
   created_at: "2026-01-01T00:00:00.000Z",
   updated_at: "2026-01-01T00:00:00.000Z",
   ...overrides,
@@ -50,6 +53,25 @@ describe("validateUserProfile", () => {
       expect(error).toMatchObject({
         code: "inactive_profile",
         message: "Your account is inactive. Please contact an administrator.",
+      });
+    }
+  });
+
+  it("rejects an archived profile even if it is marked active", () => {
+    const archivedProfile = createProfile({
+      active: true,
+      archived_at: "2026-07-24T12:00:00.000Z",
+    });
+
+    expect(() => validateUserProfile(archivedProfile)).toThrow(
+      "Your account is archived. Please contact an owner if you need access restored.",
+    );
+
+    try {
+      validateUserProfile(archivedProfile);
+    } catch (error) {
+      expect(error).toMatchObject({
+        code: "inactive_profile",
       });
     }
   });

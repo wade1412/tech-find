@@ -1,6 +1,6 @@
 import { useState } from "react";
 import PageHeader from "../../shared/ui/PageHeader";
-import EditTechnicianSectionCard from "./EditTechnicianSectionCard";
+import EditSectionCard from "../../shared/ui/EditSectionCard";
 import { useParams } from "react-router";
 import { useTechniciansQuery } from "../../entities/technician/useTechniciansQuery";
 import NotFoundPage from "../NotFoundPage";
@@ -11,11 +11,17 @@ import ErrorMessage from "../../shared/ui/ErrorMessage";
 import SkillsSection from "../../features/technician-management/skills/ui/SkillsSection";
 import IgnoreListSection from "../../features/technician-management/ignore-list/ui/IgnoreListSection";
 import {
-  editSections,
-  type EditSectionId,
+  editTechnicianSections,
+  type EditTechnicianSectionId,
 } from "../../features/technician-management/model/manageTechnicians.constants";
 import EditTechnicianSkeleton from "../../features/technician-management/ui/EditTechnicianSkeleton";
 import ArchiveTechnicianWithConfirmationButton from "../../features/technician-management/archive-technician/ui/ArchiveTechnicianWithConfirmationButton";
+import {
+  centeredContainerStyle,
+  editHeaderWithButtonContainerStyle,
+  editSectionListStyle,
+  formStyle,
+} from "../../shared/styles/styles";
 
 function EditTechnicianPage() {
   const { technicianId } = useParams();
@@ -41,7 +47,7 @@ function EditTechnicianPage() {
   );
 
   const [selectedSectionId, setSelectedSectionId] =
-    useState<EditSectionId>("profile");
+    useState<EditTechnicianSectionId>("profile");
 
   if (isPending) {
     return <EditTechnicianSkeleton />;
@@ -49,7 +55,7 @@ function EditTechnicianPage() {
 
   if (isError) {
     return (
-      <div className="mx-auto max-w-6xl p-4 md:p-6">
+      <div className={centeredContainerStyle}>
         <ErrorMessage message={error?.message} />
       </div>
     );
@@ -63,10 +69,10 @@ function EditTechnicianPage() {
   const subtitle = `ZIP ${selectedTechnician.home_zip_code} · ${zoneNames.join(" - ")}`;
 
   return (
-    <div className="mx-auto max-w-6xl p-4 md:p-6">
-      <section className="flex flex-col gap-4">
+    <div className={centeredContainerStyle}>
+      <section className={formStyle}>
         {/* Header */}
-        <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
+        <div className={editHeaderWithButtonContainerStyle}>
           <PageHeader
             title={selectedTechnician?.alias || "Technician Alias"}
             subtitle={subtitle}
@@ -77,9 +83,9 @@ function EditTechnicianPage() {
         </div>
 
         {/* Sections Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
-          {editSections.map((section) => (
-            <EditTechnicianSectionCard
+        <div className={editSectionListStyle}>
+          {editTechnicianSections.map((section) => (
+            <EditSectionCard
               key={section.id}
               id={section.id}
               title={section.title}

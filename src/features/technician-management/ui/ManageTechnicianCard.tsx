@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import type { Technician } from "../../../entities/technician/technician.types";
+import { cardTagStyle } from "../../../shared/styles/styles";
 
 interface TechnicianCardProps {
   technician: Technician;
@@ -19,9 +20,10 @@ function ManageTechnicianCard({ technician, zones }: TechnicianCardProps) {
       }`}
     >
       {/* --- Main Info, visible always --- */}
-      <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3 px-4 py-3">
+      <div className="grid min-h-20 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3">
         {/* Avatar dot */}
         <span
+          aria-hidden="true"
           className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors ${
             isTechnicianInactive
               ? "bg-zinc-200/70 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-500"
@@ -34,7 +36,7 @@ function ManageTechnicianCard({ technician, zones }: TechnicianCardProps) {
         {/* Name and area info */}
         <div className="min-w-0">
           <p
-            className={`font-heading text-base font-semibold transition-colors ${
+            className={`truncate font-heading text-base font-semibold transition-colors ${
               isTechnicianInactive
                 ? "text-zinc-600 dark:text-zinc-400"
                 : "text-zinc-800 dark:text-zinc-100"
@@ -56,10 +58,10 @@ function ManageTechnicianCard({ technician, zones }: TechnicianCardProps) {
         </div>
 
         {isTechnicianInactive && (
-          <div className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-zinc-200 bg-white/70 px-2.5 py-1 text-xs font-medium text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900/60 dark:text-zinc-400">
+          <span className={cardTagStyle}>
             <span className="h-1.5 w-1.5 rounded-full bg-zinc-400 dark:bg-zinc-500" />
             Inactive
-          </div>
+          </span>
         )}
       </div>
     </Link>

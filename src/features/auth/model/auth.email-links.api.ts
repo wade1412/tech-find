@@ -1,6 +1,7 @@
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "../../../shared/api/supabase/supabaseClient";
 import type {
+  ImplicitEmailLinkParams,
   SecureEmailLinkParams,
 } from "./auth.recovery";
 
@@ -61,6 +62,22 @@ export const verifySecureEmailLink = ({
 
   verificationRequests.set(requestKey, request);
   return request;
+};
+
+export const verifyImplicitEmailLink = async ({
+  accessToken,
+  refreshToken,
+}: ImplicitEmailLinkParams) => {
+  const { data, error } = await supabase.auth.setSession({
+    access_token: accessToken,
+    refresh_token: refreshToken,
+  });
+
+  if (error || !data.session) {
+    throw new Error("This email link is invalid or has expired.");
+  }
+
+  return data.session;
 };
 
 export const getCurrentAuthSession = async () => {

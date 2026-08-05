@@ -10,7 +10,7 @@ import {
 } from "../../../../shared/styles/motionVariants";
 import { noEditValuesStyle } from "../../../../shared/styles/styles";
 import OpenEditorButton from "../../ui/Editor/OpenEditorButton";
-import SectionHeader from "../../ui/SectionHeader";
+import SectionHeader from "../../../../shared/ui/SectionHeader";
 import {
   getIgnoreItemIdentity,
   isDuplicateIgnoreItem,
@@ -19,6 +19,7 @@ import {
 import type { IgnoreItemDraft } from "../model/ignoreList.types";
 import IgnoreItemEditor from "./IgnoreItemEditor";
 import IgnoreListItemCard from "./IgnoreListItemCard";
+import HorizontalDivider from "../../../../shared/ui/HorizontalDivider";
 
 interface IgnoreListFieldsProps {
   items: IgnoreItemDraft[];
@@ -159,10 +160,7 @@ function IgnoreListFields({
         </AnimatePresence>
       </div>
 
-      <div
-        aria-hidden="true"
-        className="h-px w-full bg-zinc-200 dark:bg-zinc-800"
-      />
+      <HorizontalDivider />
 
       <motion.div
         layout
@@ -207,8 +205,8 @@ function IgnoreListFields({
               className={`${noEditValuesStyle} col-span-2`}
               {...fadePresenceMotionProps}
             >
-              No ignore items for this technician. Use "Add Ignore Item" to
-              add one.
+              No ignore items for this technician. Use "Add Ignore Item" to add
+              one.
             </motion.div>
           )}
         </AnimatePresence>

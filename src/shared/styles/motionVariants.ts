@@ -26,14 +26,19 @@ export const heightRevealMotionProps = {
   style: { overflow: "hidden" },
 } as const;
 
-export const technicianListVariants: Variants = {
+export const filtersRevealMotionProps = {
+  ...heightRevealMotionProps,
+  transition: { duration: 0.28, ease: "easeOut" },
+} as const;
+
+export const managementListVariants: Variants = {
   hidden: {},
   visible: {
     transition: { staggerChildren: 0.02 },
   },
 };
 
-export const technicianCardVariants: Variants = {
+export const managementListItemVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -44,3 +49,7 @@ export const technicianCardVariants: Variants = {
     transition: { duration: 0.18, ease: "easeIn" },
   },
 };
+
+// The dispatch list uses the same restrained presence motion as management lists.
+export const technicianListVariants = managementListVariants;
+export const technicianCardVariants = managementListItemVariants;

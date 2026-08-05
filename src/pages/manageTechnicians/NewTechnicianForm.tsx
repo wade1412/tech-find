@@ -8,14 +8,19 @@ import type {
 } from "../../features/technician-management/profile-and-capabilities/model/profile.types";
 import type { SkillDraft } from "../../features/technician-management/skills/model/skills.types";
 import PageHeader from "../../shared/ui/PageHeader";
-import { formStyle, primaryButton } from "../../shared/styles/styles";
+import {
+  centeredContainerStyle,
+  editSectionListStyle,
+  formStyle,
+  primaryButton,
+} from "../../shared/styles/styles";
 import { validateProfileForm } from "../../features/technician-management/profile-and-capabilities/model/profile.validation";
 import {
-  editSections,
-  type EditSectionId,
+  editTechnicianSections,
+  type EditTechnicianSectionId,
 } from "../../features/technician-management/model/manageTechnicians.constants";
-import EditTechnicianSectionCard from "./EditTechnicianSectionCard";
-import TechnicianActiveBar from "../../features/technician-management/profile-and-capabilities/ui/TechnicianActiveBar";
+import EditSectionCard from "../../shared/ui/EditSectionCard";
+import ActiveStatusBar from "../../shared/ui/ActiveStatusBar";
 import ProfileAndCapabilitiesFields from "../../features/technician-management/profile-and-capabilities/ui/ProfileAndCapabilitiesFields";
 import {
   formatJobsPerDayRange,
@@ -63,15 +68,15 @@ function NewTechnicianForm({
   const [newTechnicianDraft, setNewTechnicianDraft] =
     useState<NewTechnicianDraft>(() => createEmptyNewTechnicianDraft());
   const [selectedSectionId, setSelectedSectionId] =
-    useState<EditSectionId>("profile");
+    useState<EditTechnicianSectionId>("profile");
   const navigate = useNavigate();
   const createTechnicianMutation = useCreateTechnicianMutation();
 
   // ----- Profile Section Handlers -----
-  const toggleActive = () =>
+  const setActive = (active: boolean) =>
     setNewTechnicianDraft((prev) => ({
       ...prev,
-      profile: { ...prev.profile, active: !prev.profile.active },
+      profile: { ...prev.profile, active },
     }));
   const onProfileFieldChange = (key: ProfileFieldKey, newValue: string) => {
     setNewTechnicianDraft((prev) => ({
@@ -139,8 +144,8 @@ function NewTechnicianForm({
   };
 
   return (
-    <div className="mx-auto max-w-6xl p-4 md:p-6">
-      <section className="flex flex-col gap-4">
+    <div className={centeredContainerStyle}>
+      <section className={formStyle}>
         {/* Header */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <PageHeader
@@ -169,9 +174,9 @@ function NewTechnicianForm({
         )}
 
         {/* Sections Cards */}
-        <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4">
-          {editSections.map((section) => (
-            <EditTechnicianSectionCard
+        <div className={editSectionListStyle}>
+          {editTechnicianSections.map((section) => (
+            <EditSectionCard
               key={section.id}
               id={section.id}
               title={section.title}
@@ -184,10 +189,13 @@ function NewTechnicianForm({
         {/* Selected Section */}
         {selectedSectionId === "profile" && (
           <div className={formStyle}>
-            <TechnicianActiveBar
+            <ActiveStatusBar
+              label="Technician status"
               isActive={newTechnicianDraft.profile.active}
-              isDisabled={isPending}
-              toggleActive={toggleActive}
+              disabled={isPending}
+              onChange={setActive}
+              activeDescription="This technician can be scheduled for jobs."
+              inactiveDescription="This technician is excluded from scheduling."
             />
             <div className="p-2">
               <ProfileAndCapabilitiesFields

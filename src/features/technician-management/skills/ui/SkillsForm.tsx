@@ -4,8 +4,8 @@ import type { SpecificIssue } from "../../../../entities/specific-issue/specific
 import type { TechnicianSkill } from "../../../../entities/technician-skill-set/technicianSkillSet.types";
 import type { Unit } from "../../../../entities/unit/unit.types";
 import { formWithPaddingStyle } from "../../../../shared/styles/styles";
-import SubmitArea from "../../ui/SubmitArea";
-import SubmitSnackbar from "../../ui/SubmitSnackbar";
+import FormSubmitArea from "../../../../shared/ui/FormSubmitArea";
+import SaveSuccessSnackbar from "../../../../shared/ui/SaveSuccessSnackbar";
 import { createSkillsDraft, createSkillsPatch } from "../model/skills.helpers";
 import type { SkillDraft } from "../model/skills.types";
 import { useUpdateTechnicianSkillsMutation } from "../model/useUpdateTechnicianSkillsMutation";
@@ -87,16 +87,16 @@ function SkillsForm({
         disabled={isPending}
       />
 
-      <SubmitArea
+      <FormSubmitArea
         error={updateTechnicianSkillsMutation.error}
         isDirty={isDirty}
         isPending={isPending}
-        handleDiscardChanges={handleDiscardChanges}
+        onDiscard={handleDiscardChanges}
       />
 
-      <SubmitSnackbar
+      <SaveSuccessSnackbar
         isOpen={isSavedSnackbarOpen}
-        handleClose={() => setIsSavedSnackbarOpen(false)}
+        onClose={() => setIsSavedSnackbarOpen(false)}
       />
     </form>
   );

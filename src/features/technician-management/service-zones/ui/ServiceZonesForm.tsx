@@ -3,8 +3,8 @@ import type { ServiceZone } from "../../../../entities/service-zone/service-zone
 import { useUpdateTechnicianServiceZonesMutation } from "../model/useUpdateTechnicianServiceZonesMutation";
 import { buildTechnicianZonesPatch } from "../model/serviceZones.helpers";
 import { formWithPaddingStyle } from "../../../../shared/styles/styles";
-import SubmitArea from "../../ui/SubmitArea";
-import SubmitSnackbar from "../../ui/SubmitSnackbar";
+import FormSubmitArea from "../../../../shared/ui/FormSubmitArea";
+import SaveSuccessSnackbar from "../../../../shared/ui/SaveSuccessSnackbar";
 import ServiceZoneFields from "./ServiceZoneFields";
 
 interface ServiceZonesFormProps {
@@ -71,17 +71,17 @@ function ServiceZonesForm({
       />
 
       {/* Submit Area */}
-      <SubmitArea
+      <FormSubmitArea
         error={updateTechnicianZonesMutation.error}
         isDirty={isDirty}
         isPending={isPending}
-        handleDiscardChanges={handleDiscardChanges}
+        onDiscard={handleDiscardChanges}
       />
 
       {/* Success Snackbar */}
-      <SubmitSnackbar
+      <SaveSuccessSnackbar
         isOpen={isSavedSnackbarOpen}
-        handleClose={() => setIsSavedSnackbarOpen(false)}
+        onClose={() => setIsSavedSnackbarOpen(false)}
       />
     </form>
   );

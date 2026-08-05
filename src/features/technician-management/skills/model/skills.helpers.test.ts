@@ -9,6 +9,9 @@ const unitsById = new Map<string, Unit>([
   [
     "washer",
     {
+      active_before_archive: null,
+      archived_at: null,
+      archived_by: null,
       id: "washer",
       name: "Washer",
       slug: "washer",
@@ -23,6 +26,9 @@ const unitsById = new Map<string, Unit>([
   [
     "dryer",
     {
+      active_before_archive: null,
+      archived_at: null,
+      archived_by: null,
       id: "dryer",
       name: "Dryer",
       slug: "dryer",
@@ -37,6 +43,9 @@ const unitsById = new Map<string, Unit>([
   [
     "oven",
     {
+      active_before_archive: null,
+      archived_at: null,
+      archived_by: null,
       id: "oven",
       name: "Wall Oven",
       slug: "wall-oven",
@@ -59,6 +68,9 @@ const brandGroupsById = new Map<string, BrandGroup>([
       slug: "standard",
       active: true,
       display_order: 1,
+      active_before_archive: null,
+      archived_at: null,
+      archived_by: null,
     },
   ],
   [
@@ -69,6 +81,9 @@ const brandGroupsById = new Map<string, BrandGroup>([
       slug: "high-end",
       active: true,
       display_order: 2,
+      active_before_archive: null,
+      archived_at: null,
+      archived_by: null,
     },
   ],
 ]);
@@ -82,6 +97,9 @@ const specificIssuesById = new Map<string, SpecificIssue>([
       slug: "no-heat",
       unit_id: "oven",
       active: true,
+      active_before_archive: null,
+      archived_at: null,
+      archived_by: null,
     },
   ],
 ]);

@@ -1,6 +1,6 @@
 import type {
   CapabilityFieldConfig,
-  EditableKey,
+  EditableKey as EditableTechnicianProfileKey,
   ProfileFieldConfig,
 } from "./profile.types";
 
@@ -25,8 +25,9 @@ export const CAPABILITY_FIELDS: CapabilityFieldConfig[] = [
   { key: "can_service_built_in", label: "Built-In (Lift)" },
 ];
 
-export const EDITABLE_KEYS: EditableKey[] = [
-  "active",
-  ...PROFILE_FIELDS.map((field) => field.key),
-  ...CAPABILITY_FIELDS.map((field) => field.key),
-];
+export const EDITABLE_TECHNICIAN_PROFILE_KEYS: EditableTechnicianProfileKey[] =
+  [
+    "active",
+    ...PROFILE_FIELDS.map((field) => field.key),
+    ...CAPABILITY_FIELDS.map((field) => field.key),
+  ];
