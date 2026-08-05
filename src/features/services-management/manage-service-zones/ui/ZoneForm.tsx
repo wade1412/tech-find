@@ -24,7 +24,7 @@ import SaveSuccessSnackbar from "../../../../shared/ui/SaveSuccessSnackbar";
 import EditZoneFields from "./EditZoneFields";
 
 interface ZoneFormProps {
-  zone: ServiceZone;
+  zone?: ServiceZone;
 }
 
 function ZoneForm({ zone }: ZoneFormProps) {

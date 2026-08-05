@@ -1,5 +1,20 @@
+import ZoneForm from "../../features/services-management/manage-service-zones/ui/ZoneForm";
+import { centeredContainerStyle, formStyle } from "../../shared/styles/styles";
+import PageHeader from "../../shared/ui/PageHeader";
+
 function NewZonePage() {
-  return <div>NewZonePage</div>;
+  return (
+    <div className={centeredContainerStyle}>
+      <section className={formStyle}>
+        <PageHeader
+          title="New Service Zone"
+          subtitle="Create a service and configure its profile"
+        />
+
+        <ZoneForm />
+      </section>
+    </div>
+  );
 }
 
 export default NewZonePage;
