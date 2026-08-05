@@ -28,6 +28,7 @@ import {
 } from "../../../../shared/styles/motionVariants";
 import ManageZoneCard from "./ManageZoneCard";
 import { filterServiceZones } from "../model/filterZones";
+import OpenArchivedZonesDialog from "./OpenArchivedZonesDialog";
 
 interface ManageServiceZonesSectionProps {
   zones: ServiceZone[];
@@ -115,7 +116,7 @@ function ManageServiceZonesSection({ zones }: ManageServiceZonesSectionProps) {
         />
 
         <div className={buttonContainerStyle}>
-          <button>Open Archive</button>
+          <OpenArchivedZonesDialog />
           <CreateNewEntityLinkButton linkTo="zones/new" label="Create Zone" />
         </div>
       </div>
