@@ -65,8 +65,6 @@ const NewSpecificIssuePage = lazy(
 const EditZonePage = lazy(() => import("../pages/manageServices/EditZonePage"));
 const NewZonePage = lazy(() => import("../pages/manageServices/NewZonePage"));
 
-const OwnerToolsPage = lazy(() => import("../pages/OwnerToolsPage"));
-
 function App() {
   return (
     <Routes>
@@ -176,15 +174,6 @@ function App() {
           <Route path=":userId/edit" element={<EditUserPage />} />
           <Route path="new" element={<NewUserPage />} />
         </Route>
-        <Route
-          path="owner"
-          element={
-            <PermissionRoute permission="canUseOwnerTools">
-              <OwnerToolsPage />
-            </PermissionRoute>
-          }
-        />
-
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

@@ -90,7 +90,6 @@ describe("auth.permissions", () => {
         canArchiveServices: false,
         canPurgeServices: false,
 
-        canUseOwnerTools: false,
       });
     });
 
@@ -112,7 +111,6 @@ describe("auth.permissions", () => {
         canManageServices: false,
         canArchiveServices: false,
         canPurgeServices: false,
-        canUseOwnerTools: false,
       });
     });
 
@@ -134,7 +132,6 @@ describe("auth.permissions", () => {
         canManageServices: false,
         canArchiveServices: false,
         canPurgeServices: false,
-        canUseOwnerTools: false,
       });
     });
 
@@ -156,7 +153,6 @@ describe("auth.permissions", () => {
         canManageServices: false,
         canArchiveServices: false,
         canPurgeServices: false,
-        canUseOwnerTools: false,
       });
     });
 
@@ -178,7 +174,6 @@ describe("auth.permissions", () => {
         canManageServices: true,
         canArchiveServices: true,
         canPurgeServices: false,
-        canUseOwnerTools: false,
       });
     });
 
@@ -200,7 +195,6 @@ describe("auth.permissions", () => {
         canManageServices: true,
         canArchiveServices: true,
         canPurgeServices: true,
-        canUseOwnerTools: true,
       });
     });
   });
