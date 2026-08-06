@@ -20,7 +20,10 @@ import type {
   UnitProfileFieldKey,
   UnitPropertyFieldKey,
 } from "../model/manage-units.types";
-import { validateUnitForm } from "../model/manage-units.validation";
+import {
+  getUnitSaveErrorMessage,
+  validateUnitForm,
+} from "../model/manage-units.validation";
 import {
   useCreateUnitMutation,
   useUpdateUnitMutation,
@@ -126,11 +129,7 @@ function UnitForm({ unit }: UnitFormProps) {
         <FormSubmitArea
           discardLabel={unit ? "Discard changes" : "Clear form"}
           error={mutation.error}
-          errorMessage={
-            mutation.error?.message.includes("duplicate key")
-              ? "A unit with this name or slug already exists."
-              : mutation.error?.message
-          }
+          errorMessage={getUnitSaveErrorMessage(mutation.error)}
           isDirty={isDirty}
           isPending={isPending}
           onDiscard={handleDiscard}

@@ -29,3 +29,35 @@ export const validateUnitForm = (formState: UnitFormState): UnitFormErrors => {
           : undefined,
   };
 };
+
+type DatabaseError = Error & {
+  code?: string;
+  constraint?: string;
+  details?: string;
+};
+
+export const getUnitSaveErrorMessage = (error: Error | null) => {
+  if (!error) return undefined;
+
+  const databaseError = error as DatabaseError;
+  if (databaseError.code !== "23505") return error.message;
+
+  const constraintText =
+    `${databaseError.constraint ?? ""} ${databaseError.details ?? ""}`.toLowerCase();
+
+  if (
+    constraintText.includes("unit_name") ||
+    constraintText.includes("key (name)")
+  ) {
+    return "A unit with this name already exists.";
+  }
+
+  if (
+    constraintText.includes("unit_slug") ||
+    constraintText.includes("key (slug)")
+  ) {
+    return "A unit with this slug already exists.";
+  }
+
+  return "A unit with this name or slug already exists.";
+};
