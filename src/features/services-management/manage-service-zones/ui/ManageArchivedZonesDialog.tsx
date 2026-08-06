@@ -52,7 +52,7 @@ function ManageArchivedZonesDialog({
         status={{
           isLoading: archivedQuery.isPending,
           errorMessage: archivedQuery.isError
-            ? "Failed to load archived service zones ."
+            ? "Failed to load archived service zones."
             : undefined,
         }}
       >
@@ -69,9 +69,9 @@ function ManageArchivedZonesDialog({
             restoreMutation.reset();
             restoreMutation.mutate(id);
           }}
-          renderDetails={(unit) => (
+          renderDetails={(zone) => (
             <p className="mt-0.5 truncate text-xs text-zinc-500 dark:text-zinc-400">
-              {unit.slug} · Filter order {unit.display_order}
+              {zone.slug} · Filter order {zone.display_order}
             </p>
           )}
           state={{

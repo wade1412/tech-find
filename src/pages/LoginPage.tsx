@@ -113,33 +113,11 @@ function LoginPage() {
 
           <label className={labelStyle}>
             Password
-            <AnimatePresence initial={false}>
-              {password.length > 0 && password.length < 6 && (
-                <motion.div
-                  key="password-warning"
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.18, ease: "easeOut" }}
-                  style={{ overflow: "hidden" }}
-                >
-                  <p
-                    id="password-help"
-                    aria-live="polite"
-                    className="text-xs font-normal text-zinc-400 dark:text-zinc-500"
-                  >
-                    Must have at least 6 characters
-                  </p>
-                </motion.div>
-              )}
-            </AnimatePresence>
             <input
               value={password}
-              minLength={6}
               disabled={isSubmitDisabled}
               onChange={(e) => setPassword(e.target.value)}
               type="password"
-              aria-describedby="password-help"
               autoComplete="current-password"
               required
               className="focus:border-main-500 focus:ring-main-500/20 dark:focus:border-main-500 mt-1.5 rounded-xl border border-zinc-200 bg-zinc-50/50 px-3.5 py-2 text-zinc-900 transition-[border-color,background-color,box-shadow] outline-none focus:bg-white focus:ring-2 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:bg-zinc-950"

@@ -8,7 +8,7 @@ function NewZonePage() {
       <section className={formStyle}>
         <PageHeader
           title="New Service Zone"
-          subtitle="Create a service and configure its profile"
+          subtitle="Create a service zone and configure its profile"
         />
 
         <ZoneForm />

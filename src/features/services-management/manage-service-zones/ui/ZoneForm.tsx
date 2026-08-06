@@ -13,7 +13,10 @@ import {
   useCreateServiceZoneMutation,
   useUpdateServiceZoneMutation,
 } from "../model/useServiceZoneMutations";
-import { validateZoneForm } from "../model/manage-zones.validation";
+import {
+  getZoneSaveErrorMessage,
+  validateZoneForm,
+} from "../model/manage-zones.validation";
 import {
   formStyle,
   formWithPaddingStyle,
@@ -96,7 +99,7 @@ function ZoneForm({ zone }: ZoneFormProps) {
     <form className={formStyle} onSubmit={handleSubmit} noValidate>
       <ActiveStatusBar
         label="Zone status"
-        activeDescription="Active zone are available in filters and technician configuration."
+        activeDescription="Active zones are available in filters and technician configuration."
         inactiveDescription="Inactive zones stay configured but are hidden from active workflows."
         isActive={formState.active}
         disabled={isPending}
@@ -117,11 +120,7 @@ function ZoneForm({ zone }: ZoneFormProps) {
         <FormSubmitArea
           discardLabel={zone ? "Discard changes" : "Clear form"}
           error={mutation.error}
-          errorMessage={
-            mutation.error?.message.includes("duplicate key")
-              ? "A zone with this name or slug already exists."
-              : mutation.error?.message
-          }
+          errorMessage={getZoneSaveErrorMessage(mutation.error)}
           isDirty={isDirty}
           isPending={isPending}
           onDiscard={handleDiscard}

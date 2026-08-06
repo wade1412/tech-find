@@ -29,3 +29,35 @@ export const validateZoneForm = (formState: ZoneFormState): ZoneFormErrors => {
           : undefined,
   };
 };
+
+type DatabaseError = Error & {
+  code?: string;
+  constraint?: string;
+  details?: string;
+};
+
+export const getZoneSaveErrorMessage = (error: Error | null) => {
+  if (!error) return undefined;
+
+  const databaseError = error as DatabaseError;
+  if (databaseError.code !== "23505") return error.message;
+
+  const constraintText =
+    `${databaseError.constraint ?? ""} ${databaseError.details ?? ""}`.toLowerCase();
+
+  if (
+    constraintText.includes("service_zone_name") ||
+    constraintText.includes("key (name)")
+  ) {
+    return "A service zone with this name already exists.";
+  }
+
+  if (
+    constraintText.includes("service_zone_slug") ||
+    constraintText.includes("key (slug)")
+  ) {
+    return "A service zone with this slug already exists.";
+  }
+
+  return "A service zone with this name or slug already exists.";
+};

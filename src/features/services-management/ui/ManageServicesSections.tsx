@@ -3,9 +3,15 @@ import { useBrandsQuery } from "../../../entities/brand/useBrandsQuery";
 import { useServiceZonesQuery } from "../../../entities/service-zone/useServiceZonesQuery";
 import { useSpecificIssuesQuery } from "../../../entities/specific-issue/useSpecificIssuesQuery";
 import { useUnitsQuery } from "../../../entities/unit/useUnitsQuery";
-import { editSectionListStyle, formStyle } from "../../../shared/styles/styles";
+import {
+  editSectionListStyle,
+  formStyle,
+  formWithPaddingStyle,
+  manageListGridStyle,
+} from "../../../shared/styles/styles";
 import EditSectionCard from "../../../shared/ui/EditSectionCard";
 import ErrorMessage from "../../../shared/ui/ErrorMessage";
+import HorizontalDivider from "../../../shared/ui/HorizontalDivider";
 import ManageBrandsSection from "../manage-brands/ui/ManageBrandsSection";
 import ManageServiceZonesSection from "../manage-service-zones/ui/ManageServiceZonesSection";
 import ManageSpecificIssuesSection from "../manage-specific-issues/ui/ManageSpecificIssuesSection";
@@ -31,15 +37,48 @@ function SectionLoadingState() {
     <div
       role="status"
       aria-label="Loading service section"
-      className="grid grid-cols-1 gap-2.5 md:grid-cols-3"
+      aria-busy="true"
+      className={formWithPaddingStyle}
     >
-      {Array.from({ length: 6 }, (_, index) => (
-        <div
-          key={index}
-          aria-hidden="true"
-          className="h-20 animate-pulse rounded-xl bg-zinc-200 dark:bg-zinc-800"
-        />
-      ))}
+      <div aria-hidden="true" className={formStyle}>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="space-y-2">
+            <div className="h-4 w-44 animate-pulse rounded-md bg-zinc-200 dark:bg-zinc-800" />
+            <div className="h-3 w-80 max-w-[75vw] animate-pulse rounded-md bg-zinc-200 dark:bg-zinc-800" />
+          </div>
+
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+            <div className="h-10 w-full animate-pulse rounded-xl bg-zinc-200 sm:w-40 dark:bg-zinc-800" />
+            <div className="h-10 w-full animate-pulse rounded-xl bg-zinc-200 sm:w-40 dark:bg-zinc-800" />
+          </div>
+        </div>
+
+        <HorizontalDivider />
+
+        <div className={formWithPaddingStyle}>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="h-10 w-full animate-pulse rounded-xl bg-zinc-200 sm:w-75 dark:bg-zinc-800" />
+            <div className="h-10 w-full animate-pulse rounded-xl bg-zinc-200 sm:w-80 dark:bg-zinc-800" />
+          </div>
+
+          <div className="h-3 w-16 animate-pulse rounded-md bg-zinc-200 dark:bg-zinc-800" />
+
+          <div className={manageListGridStyle}>
+            {Array.from({ length: 6 }, (_, index) => (
+              <div
+                key={index}
+                className="flex min-h-24 items-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/60"
+              >
+                <div className="h-8 w-8 shrink-0 animate-pulse rounded-full bg-zinc-200 dark:bg-zinc-800" />
+                <div className="min-w-0 flex-1 space-y-2">
+                  <div className="h-4 w-36 max-w-full animate-pulse rounded-md bg-zinc-200 dark:bg-zinc-800" />
+                  <div className="h-3 w-24 max-w-full animate-pulse rounded-md bg-zinc-200 dark:bg-zinc-800" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
