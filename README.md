@@ -2,6 +2,8 @@
 
 TechFind is a React and TypeScript application that helps appliance-repair dispatchers find technicians who match a service request.
 
+The production-readiness implementation plan is tracked in [docs/PRODUCTION_ROADMAP.md](docs/PRODUCTION_ROADMAP.md).
+
 Matching is based on appliance units, service zones, brands, specific issues, job requirements, technician skills, capabilities, and technician-specific ignore rules. The project is built as a portfolio and learning application around realistic business rules, frontend architecture, authentication, authorization, and Supabase-backed data.
 
 ## 🔁 Core Workflows
