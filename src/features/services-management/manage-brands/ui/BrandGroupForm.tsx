@@ -22,6 +22,8 @@ import ActiveStatusBar from "../../../../shared/ui/ActiveStatusBar";
 import FormSubmitArea from "../../../../shared/ui/FormSubmitArea";
 import SaveSuccessSnackbar from "../../../../shared/ui/SaveSuccessSnackbar";
 import EditBrandGroupFields from "./EditBrandGroupFields";
+import { useUnsavedChangesGuard } from "../../../../shared/hooks/useUnsavedChangesGuard";
+import UnsavedChangesDialog from "../../../../shared/ui/UnsavedChangesDialog";
 
 interface BrandGroupFormProps {
   brandGroup?: BrandGroup;
@@ -50,6 +52,7 @@ function BrandGroupForm({ brandGroup }: BrandGroupFormProps) {
     ? Object.keys(patch ?? {}).length > 0
     : isNewBrandGroupFormDirty(formState);
   const isPending = mutation.isPending;
+  const unsavedChanges = useUnsavedChangesGuard(isDirty);
 
   const setField = (
     key: Exclude<keyof BrandGroupFormState, "active">,
@@ -86,9 +89,11 @@ function BrandGroupForm({ brandGroup }: BrandGroupFormProps) {
         const createdBrandGroup = await createMutation.mutateAsync(
           normalizeBrandGroupFormState(formState),
         );
-        navigate(`/services/brand-groups/${createdBrandGroup.id}/edit`, {
-          replace: true,
-        });
+        unsavedChanges.proceedWithoutPrompt(() =>
+          navigate(`/services/brand-groups/${createdBrandGroup.id}/edit`, {
+            replace: true,
+          }),
+        );
       }
     } catch {
       // Submit area renders errors
@@ -96,7 +101,8 @@ function BrandGroupForm({ brandGroup }: BrandGroupFormProps) {
   };
 
   return (
-    <form className={formStyle} onSubmit={handleSubmit} noValidate>
+    <>
+      <form className={formStyle} onSubmit={handleSubmit} noValidate>
       <ActiveStatusBar
         label="Brand Group status"
         activeDescription="Active brand groups and brands related to those groups are available in the brand filters and technician skills configuration."
@@ -132,7 +138,14 @@ function BrandGroupForm({ brandGroup }: BrandGroupFormProps) {
         isOpen={isSavedSnackbarOpen}
         onClose={() => setIsSavedSnackbarOpen(false)}
       />
-    </form>
+      </form>
+
+      <UnsavedChangesDialog
+        isOpen={unsavedChanges.isDialogOpen}
+        onLeave={unsavedChanges.leave}
+        onStay={unsavedChanges.stay}
+      />
+    </>
   );
 }
 

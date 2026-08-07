@@ -29,6 +29,8 @@ import {
   useUpdateUnitMutation,
 } from "../model/useUnitMutations";
 import EditUnitFields from "./EditUnitFields";
+import { useUnsavedChangesGuard } from "../../../../shared/hooks/useUnsavedChangesGuard";
+import UnsavedChangesDialog from "../../../../shared/ui/UnsavedChangesDialog";
 
 interface UnitFormProps {
   unit?: Unit;
@@ -55,6 +57,7 @@ function UnitForm({ unit }: UnitFormProps) {
     ? Object.keys(patch ?? {}).length > 0
     : isNewUnitFormDirty(formState);
   const isPending = mutation.isPending;
+  const unsavedChanges = useUnsavedChangesGuard(isDirty);
 
   const setProfileField = (key: UnitProfileFieldKey, value: string) => {
     mutation.reset();
@@ -94,9 +97,11 @@ function UnitForm({ unit }: UnitFormProps) {
         const createdUnit = await createMutation.mutateAsync(
           normalizeUnitFormState(formState),
         );
-        navigate(`/services/units/${createdUnit.id}/edit`, {
-          replace: true,
-        });
+        unsavedChanges.proceedWithoutPrompt(() =>
+          navigate(`/services/units/${createdUnit.id}/edit`, {
+            replace: true,
+          }),
+        );
       }
     } catch {
       // The shared submit area renders the mutation error.
@@ -104,7 +109,8 @@ function UnitForm({ unit }: UnitFormProps) {
   };
 
   return (
-    <form className={formStyle} onSubmit={handleSubmit} noValidate>
+    <>
+      <form className={formStyle} onSubmit={handleSubmit} noValidate>
       <ActiveStatusBar
         label="Unit status"
         activeDescription="Active units are available in filters and technician skill configuration."
@@ -142,7 +148,14 @@ function UnitForm({ unit }: UnitFormProps) {
         isOpen={isSavedSnackbarOpen}
         onClose={() => setIsSavedSnackbarOpen(false)}
       />
-    </form>
+      </form>
+
+      <UnsavedChangesDialog
+        isOpen={unsavedChanges.isDialogOpen}
+        onLeave={unsavedChanges.leave}
+        onStay={unsavedChanges.stay}
+      />
+    </>
   );
 }
 

@@ -462,12 +462,12 @@ Implemented:
 - unit, brand-group, brand, specific-issue, and service-zone management;
 - reversible service archive workflows and owner-only purge;
 - owner-profile isolation and archived-user access hardening at the database boundary;
+- unsaved-change protection for management forms and technician edit sections;
 - transactional RPCs for multi-step technician writes;
 - unit, component, and SQL integration tests for core business rules and destructive workflows.
 
 Next improvements:
 
-- unsaved-change navigation guards for management forms;
 - automated off-site database backups and regular restore drills;
 - technician-result image export;
 - accessibility and responsive UI polish;

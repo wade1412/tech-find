@@ -17,6 +17,8 @@ import { useUpdateUserMutation } from "../model/useUpdateUserMutation";
 import EditUserFields from "./EditUserFields";
 import { formStyle, formWithPaddingStyle } from "../../../shared/styles/styles";
 import SectionHeader from "../../../shared/ui/SectionHeader";
+import { useUnsavedChangesGuard } from "../../../shared/hooks/useUnsavedChangesGuard";
+import UnsavedChangesDialog from "../../../shared/ui/UnsavedChangesDialog";
 
 function EditUserForm({ user }: { user: User }) {
   const { profile, retryProfile } = useAuth();
@@ -36,6 +38,9 @@ function EditUserForm({ user }: { user: User }) {
   const hasValidationErrors = Object.values(formErrors).some(Boolean);
   const isDirty = isUserFormDirty(user, formState);
   const isPending = updateUserMutation.isPending;
+  const unsavedChanges = useUnsavedChangesGuard(
+    isDirty && capabilities.canEditProfile,
+  );
 
   const handleTextChange = (key: EditableUserTextField, value: string) => {
     updateUserMutation.reset();
@@ -99,7 +104,8 @@ function EditUserForm({ user }: { user: User }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} noValidate className={formStyle}>
+    <>
+      <form onSubmit={handleSubmit} noValidate className={formStyle}>
       <div className="flex flex-col gap-2">
         <ActiveStatusBar
           label="User access"
@@ -147,7 +153,14 @@ function EditUserForm({ user }: { user: User }) {
         isOpen={isSavedSnackbarOpen}
         onClose={() => setIsSavedSnackbarOpen(false)}
       />
-    </form>
+      </form>
+
+      <UnsavedChangesDialog
+        isOpen={unsavedChanges.isDialogOpen}
+        onLeave={unsavedChanges.leave}
+        onStay={unsavedChanges.stay}
+      />
+    </>
   );
 }
 

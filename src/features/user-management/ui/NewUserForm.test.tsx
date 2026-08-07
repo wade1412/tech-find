@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter, Route, Routes } from "react-router";
+import { createMemoryRouter, RouterProvider } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { User } from "../../../entities/user/user.types";
 import type { AuthContextValue } from "../../auth/model/auth.types";
@@ -49,19 +49,18 @@ function renderForm() {
     signOut: vi.fn(),
     user: null,
   };
+  const router = createMemoryRouter(
+    [
+      { path: "/users/new", element: <NewUserForm /> },
+      { path: "/users/:userId/edit", element: <p>User created</p> },
+    ],
+    { initialEntries: ["/users/new"] },
+  );
 
   render(
     <QueryClientProvider client={queryClient}>
       <AuthContext.Provider value={authValue}>
-        <MemoryRouter initialEntries={["/users/new"]}>
-          <Routes>
-            <Route path="/users/new" element={<NewUserForm />} />
-            <Route
-              path="/users/:userId/edit"
-              element={<p>User created</p>}
-            />
-          </Routes>
-        </MemoryRouter>
+        <RouterProvider router={router} />
       </AuthContext.Provider>
     </QueryClientProvider>,
   );

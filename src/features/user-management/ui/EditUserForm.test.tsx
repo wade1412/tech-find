@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { createMemoryRouter, RouterProvider } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { User } from "../../../entities/user/user.types";
 import type { AuthContextValue } from "../../auth/model/auth.types";
@@ -64,11 +65,15 @@ function renderForm({
     signOut: vi.fn(),
     user: null,
   };
+  const router = createMemoryRouter(
+    [{ path: "/users/:userId/edit", element: <EditUserForm user={user} /> }],
+    { initialEntries: [`/users/${user.id}/edit`] },
+  );
 
   render(
     <QueryClientProvider client={queryClient}>
       <AuthContext.Provider value={authValue}>
-        <EditUserForm user={user} />
+        <RouterProvider router={router} />
       </AuthContext.Provider>
     </QueryClientProvider>,
   );
