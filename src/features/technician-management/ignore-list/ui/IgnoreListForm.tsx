@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Brand } from "../../../../entities/brand/brand.types";
 import type { SpecificIssue } from "../../../../entities/specific-issue/specific-issue.types";
 import type { TechnicianIgnoreList } from "../../../../entities/technician-ignore-list/technicianIgnoreList.types";
@@ -23,6 +23,7 @@ interface IgnoreListFormProps {
   brandsById: Map<string, Brand>;
   specificIssues: SpecificIssue[];
   specificIssuesById: Map<string, SpecificIssue>;
+  onDirtyChange?: (isDirty: boolean) => void;
 }
 
 function IgnoreListForm({
@@ -34,6 +35,7 @@ function IgnoreListForm({
   brandsById,
   specificIssues,
   specificIssuesById,
+  onDirtyChange,
 }: IgnoreListFormProps) {
   const initialItems = useMemo(
     () => technicianIgnoreList.map(createIgnoreItemDraft),
@@ -53,6 +55,10 @@ function IgnoreListForm({
   const isDirty =
     patch.addedItems.length > 0 || patch.removedItemIds.length > 0;
   const isPending = updateTechnicianIgnoreListMutation.isPending;
+
+  useEffect(() => {
+    onDirtyChange?.(isDirty);
+  }, [isDirty, onDirtyChange]);
 
   const handleDiscardChanges = () => {
     setItemsDraft(initialItems);

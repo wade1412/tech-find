@@ -7,9 +7,13 @@ import ServiceZonesForm from "./ServiceZonesForm";
 
 interface ServiceZonesSectionProps {
   technician: Technician;
+  onDirtyChange?: (isDirty: boolean) => void;
 }
 
-function ServiceZonesSection({ technician }: ServiceZonesSectionProps) {
+function ServiceZonesSection({
+  technician,
+  onDirtyChange,
+}: ServiceZonesSectionProps) {
   const {
     data: technicianZones,
     isPending: isTechnicianZonesPending,
@@ -43,6 +47,7 @@ function ServiceZonesSection({ technician }: ServiceZonesSectionProps) {
       technicianId={technician.id}
       zones={zones}
       initialZoneIds={initialZoneIds}
+      onDirtyChange={onDirtyChange}
     />
   );
 }

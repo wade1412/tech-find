@@ -22,6 +22,8 @@ import {
   editSectionListStyle,
   formStyle,
 } from "../../shared/styles/styles";
+import { useUnsavedChangesGuard } from "../../shared/hooks/useUnsavedChangesGuard";
+import UnsavedChangesDialog from "../../shared/ui/UnsavedChangesDialog";
 
 function EditTechnicianPage() {
   const { technicianId } = useParams();
@@ -48,6 +50,17 @@ function EditTechnicianPage() {
 
   const [selectedSectionId, setSelectedSectionId] =
     useState<EditTechnicianSectionId>("profile");
+  const [activeSectionIsDirty, setActiveSectionIsDirty] = useState(false);
+  const unsavedChanges = useUnsavedChangesGuard(activeSectionIsDirty);
+
+  const handleSectionChange = (sectionId: EditTechnicianSectionId) => {
+    if (sectionId === selectedSectionId) return;
+
+    unsavedChanges.requestAction(() => {
+      setActiveSectionIsDirty(false);
+      setSelectedSectionId(sectionId);
+    });
+  };
 
   if (isPending) {
     return <EditTechnicianSkeleton />;
@@ -69,7 +82,8 @@ function EditTechnicianPage() {
   const subtitle = `ZIP ${selectedTechnician.home_zip_code} · ${zoneNames.join(" - ")}`;
 
   return (
-    <div className={centeredContainerStyle}>
+    <>
+      <div className={centeredContainerStyle}>
       <section className={formStyle}>
         {/* Header */}
         <div className={editHeaderWithButtonContainerStyle}>
@@ -90,7 +104,7 @@ function EditTechnicianPage() {
               id={section.id}
               title={section.title}
               selectedSectionId={selectedSectionId}
-              onClick={() => setSelectedSectionId(section.id)}
+              onClick={() => handleSectionChange(section.id)}
             />
           ))}
         </div>
@@ -100,6 +114,7 @@ function EditTechnicianPage() {
           <ProfileAndCapabilitiesSection
             key={selectedTechnician.id}
             technician={selectedTechnician}
+            onDirtyChange={setActiveSectionIsDirty}
           />
         )}
 
@@ -107,6 +122,7 @@ function EditTechnicianPage() {
           <ServiceZonesSection
             key={selectedTechnician.id}
             technician={selectedTechnician}
+            onDirtyChange={setActiveSectionIsDirty}
           />
         )}
 
@@ -114,6 +130,7 @@ function EditTechnicianPage() {
           <SkillsSection
             key={selectedTechnician.id}
             technician={selectedTechnician}
+            onDirtyChange={setActiveSectionIsDirty}
           />
         )}
 
@@ -121,10 +138,18 @@ function EditTechnicianPage() {
           <IgnoreListSection
             key={selectedTechnician.id}
             technician={selectedTechnician}
+            onDirtyChange={setActiveSectionIsDirty}
           />
         )}
       </section>
-    </div>
+      </div>
+
+      <UnsavedChangesDialog
+        isOpen={unsavedChanges.isDialogOpen}
+        onLeave={unsavedChanges.leave}
+        onStay={unsavedChanges.stay}
+      />
+    </>
   );
 }
 

@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import type { NewTechnicianDraft } from "./newTechnician.types";
-import { buildCreateTechnicianInput } from "./newTechnician.helpers";
+import {
+  buildCreateTechnicianInput,
+  createEmptyNewTechnicianDraft,
+  isNewTechnicianDraftDirty,
+} from "./newTechnician.helpers";
 
 const createDraft = (): NewTechnicianDraft => ({
   profile: {
@@ -35,6 +39,24 @@ const createDraft = (): NewTechnicianDraft => ({
       specific_issue_id: "issue-1",
     },
   ],
+});
+
+describe("isNewTechnicianDraftDirty", () => {
+  it("tracks changes in every draft section", () => {
+    const emptyDraft = createEmptyNewTechnicianDraft();
+
+    expect(isNewTechnicianDraftDirty(emptyDraft)).toBe(false);
+    expect(
+      isNewTechnicianDraftDirty({
+        ...emptyDraft,
+        profile: { ...emptyDraft.profile, alias: "Alex" },
+      }),
+    ).toBe(true);
+    expect(
+      isNewTechnicianDraftDirty({ ...emptyDraft, zoneIds: ["zone-1"] }),
+    ).toBe(true);
+    expect(isNewTechnicianDraftDirty(createDraft())).toBe(true);
+  });
 });
 
 describe("buildCreateTechnicianInput", () => {

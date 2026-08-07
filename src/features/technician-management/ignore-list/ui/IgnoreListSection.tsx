@@ -6,9 +6,13 @@ import IgnoreListForm from "./IgnoreListForm";
 
 interface IgnoreListSectionProps {
   technician: Technician;
+  onDirtyChange?: (isDirty: boolean) => void;
 }
 
-function IgnoreListSection({ technician }: IgnoreListSectionProps) {
+function IgnoreListSection({
+  technician,
+  onDirtyChange,
+}: IgnoreListSectionProps) {
   const {
     technicianIgnoreList,
     units,
@@ -40,6 +44,7 @@ function IgnoreListSection({ technician }: IgnoreListSectionProps) {
       brandsById={brandsById}
       specificIssues={specificIssues || []}
       specificIssuesById={specificIssuesById}
+      onDirtyChange={onDirtyChange}
     />
   );
 }
