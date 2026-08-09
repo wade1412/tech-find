@@ -37,8 +37,8 @@ function EditZoneFields({
   return (
     <fieldset disabled={disabled} className="flex flex-col gap-5">
       <SectionHeader
-        label="Brand Group Profile"
-        subtext="Edit the group name, stable slug and display order"
+        label="Service Zone Profile"
+        subtext="Edit the zone name, stable slug and display order"
       />
 
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">

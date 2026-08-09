@@ -27,3 +27,8 @@ dist-ssr
 # Bundle analyzer report
 bundle-report.html
 stats.html
+
+# Playwright
+playwright-report/
+test-results/
+playwright/.auth/
