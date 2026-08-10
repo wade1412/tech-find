@@ -13,6 +13,7 @@ if (!supabaseUrl || !serviceRoleKey || !email || !password) {
   throw new Error("Missing E2E environment variables");
 }
 
+// Exit early on not local instance of DB
 const supabaseEndpoint = new URL(supabaseUrl);
 const isLocalSupabase =
   ["127.0.0.1", "localhost"].includes(supabaseEndpoint.hostname) &&
@@ -31,6 +32,7 @@ const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, {
   },
 });
 
+// Check for E2E user, if exists - delete; create new E2E user
 const { data: existingUsers, error: listUsersError } =
   await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1000 });
 
@@ -43,8 +45,9 @@ const existingUser = existingUsers.users.find(
 );
 
 if (existingUser) {
-  const { error: deleteUserError } =
-    await supabaseAdmin.auth.admin.deleteUser(existingUser.id);
+  const { error: deleteUserError } = await supabaseAdmin.auth.admin.deleteUser(
+    existingUser.id,
+  );
 
   if (deleteUserError) {
     throw deleteUserError;
@@ -63,6 +66,7 @@ if (error) {
 
 const user = data.user;
 
+// Created user with owner role, because currently only owner can purge records
 const { error: profileError } = await supabaseAdmin
   .from("user_profile")
   .upsert({
