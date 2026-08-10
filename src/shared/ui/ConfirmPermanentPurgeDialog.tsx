@@ -1,4 +1,4 @@
-import { useState, type SubmitEvent } from "react";
+import { useId, useState, type SubmitEvent } from "react";
 import { Dialog, TextField } from "@mui/material";
 import { destructiveButton, secondaryButton } from "../styles/styles";
 
@@ -23,6 +23,10 @@ function ConfirmPermanentPurgeDialog({
   onClose,
   onConfirm,
 }: ConfirmPermanentPurgeDialogProps) {
+  const dialogId = useId();
+  const titleId = `${dialogId}-title`;
+  const descriptionId = `${dialogId}-description`;
+  const confirmationInputId = `${dialogId}-confirmation`;
   const [confirmationValue, setConfirmationValue] = useState("");
   const normalizedEntityLabel = entityLabel.toLowerCase();
   const canConfirm =
@@ -44,8 +48,8 @@ function ConfirmPermanentPurgeDialog({
     <Dialog
       open={Boolean(entityName)}
       onClose={handleClose}
-      aria-labelledby={`purge-${normalizedEntityLabel}-title`}
-      aria-describedby={`purge-${normalizedEntityLabel}-description`}
+      aria-labelledby={titleId}
+      aria-describedby={descriptionId}
       slotProps={{
         paper: {
           sx: {
@@ -62,13 +66,13 @@ function ConfirmPermanentPurgeDialog({
       <form className="flex flex-col" onSubmit={handleSubmit} noValidate>
         <div className="border-b border-zinc-200 px-5 py-4 dark:border-zinc-800">
           <h2
-            id={`purge-${normalizedEntityLabel}-title`}
+            id={titleId}
             className="font-heading text-base font-semibold text-zinc-900 dark:text-zinc-50"
           >
             Permanently purge {normalizedEntityLabel}?
           </h2>
           <p
-            id={`purge-${normalizedEntityLabel}-description`}
+            id={descriptionId}
             className="mt-1 text-xs leading-5 text-zinc-500 dark:text-zinc-400"
           >
             This owner-only action cannot be undone.
@@ -82,13 +86,13 @@ function ConfirmPermanentPurgeDialog({
 
           <div>
             <label
-              htmlFor={`purge-${normalizedEntityLabel}-confirmation`}
+              htmlFor={confirmationInputId}
               className="mb-2 block text-xs font-medium text-zinc-600 dark:text-zinc-300"
             >
               Type <strong>{entityName}</strong> to confirm
             </label>
             <TextField
-              id={`purge-${normalizedEntityLabel}-confirmation`}
+              id={confirmationInputId}
               value={confirmationValue}
               onChange={(event) => setConfirmationValue(event.target.value)}
               disabled={isPending}

@@ -1,4 +1,5 @@
 import { Dialog } from "@mui/material";
+import { useId } from "react";
 import { primaryButton, secondaryButton } from "../styles/styles";
 
 interface ConfirmArchiveEntityDialogProps {
@@ -22,12 +23,16 @@ function ConfirmArchiveEntityDialog({
   onClose,
   onConfirm,
 }: ConfirmArchiveEntityDialogProps) {
+  const dialogId = useId();
+  const titleId = `${dialogId}-title`;
+  const descriptionId = `${dialogId}-description`;
+
   return (
     <Dialog
       open={isOpen}
       onClose={isPending ? undefined : onClose}
-      aria-labelledby={`archive-${entityLabel}-title`}
-      aria-describedby={`archive-${entityLabel}-description`}
+      aria-labelledby={titleId}
+      aria-describedby={descriptionId}
       slotProps={{
         paper: {
           sx: {
@@ -44,13 +49,13 @@ function ConfirmArchiveEntityDialog({
       <div className="flex flex-col">
         <div className="border-b border-zinc-200 px-5 py-4 dark:border-zinc-800">
           <h2
-            id={`archive-${entityLabel}-title`}
+            id={titleId}
             className="font-heading text-base font-semibold text-zinc-900 dark:text-zinc-50"
           >
             {`Archive ${entityLabel}?`}
           </h2>
           <p
-            id={`archive-${entityLabel}-description`}
+            id={descriptionId}
             className="mt-1 text-xs leading-5 text-zinc-500 dark:text-zinc-400"
           >
             {`${entityName} will be removed from ${entityLabel} lists.`}
