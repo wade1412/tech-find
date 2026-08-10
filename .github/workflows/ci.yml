@@ -29,15 +29,15 @@ jobs:
       # Repository
       # -----------------------------
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # -----------------------------
       # Frontend
       # -----------------------------
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
 
       - name: Install dependencies
@@ -60,7 +60,7 @@ jobs:
         run: npx supabase start
 
       - name: Lint database
-        run: npx supabase db lint --level warning --fail-on error
+        run: npx supabase db lint --local --level warning --fail-on error
 
       - name: Run SQL integration tests
         shell: bash
@@ -84,6 +84,57 @@ jobs:
                 -d postgres \
               < "${test_file}"
           done
+
+      - name: Stop local Supabase
+        if: ${{ always() && steps.supabase_start.outcome != 'skipped' }}
+        continue-on-error: true
+        run: npx supabase stop --no-backup
+
+  e2e-smoke:
+    name: e2e-smoke
+    needs: quality-gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Start local Supabase
+        id: supabase_start
+        run: npx supabase start
+
+      - name: Prepare local E2E environment
+        run: npm run test:e2e:prepare
+
+      - name: Create local E2E owner
+        run: npm run test:e2e:setup
+
+      - name: Run Playwright smoke test
+        run: npm run test:e2e:smoke
+
+      - name: Upload Playwright failure artifacts
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report-${{ github.run_attempt }}
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: warn
+          retention-days: 7
 
       - name: Stop local Supabase
         if: ${{ always() && steps.supabase_start.outcome != 'skipped' }}
