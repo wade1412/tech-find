@@ -32,6 +32,15 @@ const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, {
   },
 });
 
+const { error: staleZonesError } = await supabaseAdmin
+  .from("service_zone")
+  .delete()
+  .like("slug", "e2e-zone-%");
+
+if (staleZonesError) {
+  throw staleZonesError;
+}
+
 // Check for E2E user, if exists - delete; create new E2E user
 const { data: existingUsers, error: listUsersError } =
   await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1000 });
@@ -82,4 +91,4 @@ if (profileError) {
   throw profileError;
 }
 
-console.log(`Created E2E user: ${email}`);
+console.log(`Prepared local E2E state for: ${email}`);
