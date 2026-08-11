@@ -62,7 +62,7 @@ function ManageArchivedUnitsDialog({
             emptyDescription: "Archived units will appear here.",
             entityLabel: "unit",
             purgeDescription:
-              "Owner-only permanent purge removes the unit and cascades to its specific issues, technician skills, and ignore-list references. It cannot be undone.",
+              "Permanent purge removes the unit and cascades to its specific issues, technician skills, and ignore-list references. It cannot be undone.",
           }}
           items={archivedQuery.data ?? []}
           onPurgeRequest={setPurgeTarget}

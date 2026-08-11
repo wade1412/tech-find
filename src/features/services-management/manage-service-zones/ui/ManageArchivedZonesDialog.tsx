@@ -61,7 +61,7 @@ function ManageArchivedZonesDialog({
             emptyDescription: "Archived service zones will appear here.",
             entityLabel: "service zone",
             purgeDescription:
-              "Owner-only permanent purge removes the service zone and cascades to its technician relations. It cannot be undone.",
+              "Permanent purge removes the service zone and cascades to its technician relations. It cannot be undone.",
           }}
           items={archivedQuery.data ?? []}
           onPurgeRequest={setPurgeTarget}

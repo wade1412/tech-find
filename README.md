@@ -62,7 +62,7 @@ The technician lifecycle separates reversible archive operations from permanent 
 - archived technicians are excluded from matching and regular management lists;
 - the previous active status is restored when a technician leaves the archive;
 - service zones, skills, and ignore-list items remain intact while archived;
-- only `owner` can permanently purge an already archived technician;
+- `main_admin` and `owner` can permanently purge an already archived technician;
 - permanent purge remains an explicit cascade delete in a separate danger zone.
 
 Permissions and lifecycle invariants are enforced in PostgreSQL, not only in the frontend.
@@ -78,7 +78,7 @@ Permissions and lifecycle invariants are enforced in PostgreSQL, not only in the
 - status filters and normalized multi-term search for every section;
 - create and edit forms with normalized values, field validation, and duplicate-conflict messages;
 - reversible archive and restore workflows;
-- owner-only permanent purge.
+- permanent purge for `main_admin` and `owner`.
 
 Inactive entities remain configured but are excluded from active workflows. Archived entities are removed from normal management lists while their previous active state and dependent relationships are preserved where restoration requires them. Brand availability is derived from both the brand and its parent group, and specific-issue availability also depends on its parent unit.
 
@@ -93,7 +93,8 @@ Role boundaries are enforced in the Edge Functions and PostgreSQL RPCs:
 - users cannot change their own role or active status;
 - non-owners cannot read or mutate an owner account;
 - archiving immediately deactivates and bans the Auth account;
-- only an owner can permanently purge an archived account.
+- main admins can permanently purge archived lower-role accounts;
+- owner accounts remain hidden and unreachable to non-owners.
 
 The current user's account is placed first in the management list and identified with a dedicated tag.
 
@@ -127,7 +128,7 @@ Current permissions:
 | Archive or restore technicians            | `main_admin`      |
 | Create, edit, archive, or restore services | `main_admin`      |
 | Create, edit, archive, or restore users   | `main_admin`      |
-| Permanently purge archived entities       | `owner`           |
+| Permanently purge archived entities       | `main_admin`      |
 
 Frontend permission checks control navigation and route access. Supabase Row Level Security, column grants, constraints, and permission-aware RPCs form the database security boundary.
 
@@ -294,7 +295,7 @@ Relationship tables use database IDs internally. For example, `technician_servic
 
 Technician creation and relationship editing use database functions to keep multi-step writes atomic. Archive-aware entities store when and by whom they were archived together with the active state that should be restored. Database constraints prevent an archived user profile from remaining active, while RLS and `current_app_role()` fail closed for inactive or archived accounts.
 
-All public tables have Row Level Security enabled. Lifecycle metadata is controlled through permission-aware RPCs rather than direct client writes. Destructive purge operations require an archived target and the `owner` role.
+All public tables have Row Level Security enabled. Lifecycle metadata is controlled through permission-aware RPCs rather than direct client writes. Destructive purge operations require an archived target and the `main_admin` role. User purge additionally enforces role hierarchy so customer administrators cannot purge peers, themselves, or hidden owner accounts.
 
 ## Routes
 
@@ -459,10 +460,10 @@ Implemented:
 - animated technician and management lists;
 - technician creation with profile, zones, skills, templates, and optional ignore rules;
 - profile, capability, service-zone, skill, and ignore-list editing;
-- technician archive, restore, and owner-only permanent purge;
-- user invitation, editing, deactivation, archive, restore, audit, and owner-only purge;
+- technician archive, restore, and restricted permanent purge;
+- user invitation, editing, deactivation, archive, restore, audit, and role-aware purge;
 - unit, brand-group, brand, specific-issue, and service-zone management;
-- reversible service archive workflows and owner-only purge;
+- reversible service archive workflows and restricted purge;
 - owner-profile isolation and archived-user access hardening at the database boundary;
 - unsaved-change protection for management forms and technician edit sections;
 - transactional RPCs for multi-step technician writes;

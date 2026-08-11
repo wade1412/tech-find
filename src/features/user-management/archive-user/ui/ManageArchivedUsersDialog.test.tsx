@@ -96,7 +96,7 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("ManageArchivedUsersDialog", () => {
-  it("lets a main admin restore a lower-role archived user without exposing purge", async () => {
+  it("lets a main admin restore and purge a lower-role archived user", async () => {
     const user = userEvent.setup();
     const restoreMutation = createMutation();
     mockedUseRestoreUserMutation.mockReturnValue(
@@ -105,11 +105,18 @@ describe("ManageArchivedUsersDialog", () => {
 
     renderDialog("main_admin");
 
-    expect(screen.queryByText("Danger zone")).toBeNull();
     await user.click(screen.getByRole("button", { name: "Restore" }));
     expect(restoreMutation.mutate).toHaveBeenCalledWith(
       "22222222-2222-4222-8222-222222222222",
     );
+
+    await user.click(screen.getByText("Danger zone"));
+    await user.click(
+      screen.getByRole("button", { name: "Purge permanently" }),
+    );
+    expect(
+      screen.getByRole("textbox", { name: "User alias confirmation" }),
+    ).not.toBeNull();
   });
 
   it("shows peer main admins as view only", () => {
@@ -123,9 +130,10 @@ describe("ManageArchivedUsersDialog", () => {
 
     expect(screen.getByText("View only")).not.toBeNull();
     expect(screen.queryByRole("button", { name: "Restore" })).toBeNull();
+    expect(screen.queryByText("Danger zone")).toBeNull();
   });
 
-  it("lets an owner start permanent purge from the danger zone", async () => {
+  it("lets an authorized admin start permanent purge from the danger zone", async () => {
     const user = userEvent.setup();
 
     renderDialog("owner");

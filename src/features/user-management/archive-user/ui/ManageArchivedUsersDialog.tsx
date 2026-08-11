@@ -31,8 +31,7 @@ function ManageArchivedUsersDialog({
   onClose,
 }: ManageArchivedUsersDialogProps) {
   const { profile } = useAuth();
-  const { role } = useAuthPermissions();
-  const canPurgeUsers = role === "owner";
+  const { canPurgeUsers, role } = useAuthPermissions();
   const [purgeTarget, setPurgeTarget] = useState<User | null>(null);
   const [isDangerZoneOpen, setIsDangerZoneOpen] = useState(false);
   const archivedQuery = useUsersQuery("archived", isOpen);
@@ -46,6 +45,9 @@ function ManageArchivedUsersDialog({
       actorRole: role,
       target: user,
     }).canEditAccess;
+
+  const purgeableUsers =
+    archivedQuery.data?.filter((user) => canRestoreUser(user)) ?? [];
 
   const handleClose = () => {
     if (isMutating) return;
@@ -189,7 +191,7 @@ function ManageArchivedUsersDialog({
               </div>
             )}
 
-            {canPurgeUsers && Boolean(archivedQuery.data?.length) && (
+            {canPurgeUsers && purgeableUsers.length > 0 && (
               <details
                 open={isDangerZoneOpen}
                 onToggle={(event) =>
@@ -206,7 +208,7 @@ function ManageArchivedUsersDialog({
                     cannot be undone.
                   </p>
                   <ul className="flex flex-col gap-2">
-                    {archivedQuery.data?.map((user) => (
+                    {purgeableUsers.map((user) => (
                       <li
                         key={user.id}
                         className="flex items-center justify-between gap-3 rounded-lg border border-red-200/70 bg-white/70 px-3 py-2 dark:border-red-900/40 dark:bg-zinc-950/30"

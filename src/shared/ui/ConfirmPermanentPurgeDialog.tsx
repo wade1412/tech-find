@@ -75,7 +75,7 @@ function ConfirmPermanentPurgeDialog({
             id={descriptionId}
             className="mt-1 text-xs leading-5 text-zinc-500 dark:text-zinc-400"
           >
-            This owner-only action cannot be undone.
+            This privileged action cannot be undone.
           </p>
         </div>
 
