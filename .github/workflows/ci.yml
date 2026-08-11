@@ -119,7 +119,7 @@ jobs:
       - name: Prepare local E2E environment
         run: npm run test:e2e:prepare
 
-      - name: Create local E2E owner
+      - name: Create local E2E main dmin
         run: npm run test:e2e:setup
 
       - name: Run Playwright smoke test
