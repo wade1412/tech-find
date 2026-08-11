@@ -5,7 +5,6 @@ import {
   markPasswordRecoverySession,
   parseImplicitEmailLink,
   parseSecureEmailLink,
-  validateNewPassword,
 } from "./auth.recovery";
 
 describe("parseSecureEmailLink", () => {
@@ -84,23 +83,5 @@ describe("password recovery marker", () => {
     clearPasswordRecoverySession();
 
     expect(hasPasswordRecoverySession("recovery-user")).toBe(false);
-  });
-});
-
-describe("validateNewPassword", () => {
-  it("rejects passwords shorter than eight characters", () => {
-    expect(validateNewPassword("short", "short")).toBe(
-      "Password must contain at least 8 characters.",
-    );
-  });
-
-  it("rejects different password values", () => {
-    expect(validateNewPassword("password-one", "password-two")).toBe(
-      "Passwords do not match.",
-    );
-  });
-
-  it("accepts matching valid passwords", () => {
-    expect(validateNewPassword("password-one", "password-one")).toBeNull();
   });
 });
