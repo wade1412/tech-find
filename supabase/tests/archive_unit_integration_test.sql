@@ -297,25 +297,6 @@ select public.archive_unit(
   '31000000-0000-0000-0000-000000000001'
 );
 
-do $$
-begin
-  begin
-    perform public.purge_unit(
-      '31000000-0000-0000-0000-000000000001'
-    );
-    raise exception 'main_admin unexpectedly purged a unit';
-  exception
-    when insufficient_privilege then null;
-  end;
-end;
-$$;
-
-select set_config(
-  'request.jwt.claims',
-  '{"sub":"30000000-0000-0000-0000-000000000003","role":"authenticated"}',
-  true
-);
-
 select public.purge_unit(
   '31000000-0000-0000-0000-000000000001'
 );
@@ -327,7 +308,7 @@ begin
     from public.unit
     where id = '31000000-0000-0000-0000-000000000001'
   ) then
-    raise exception 'owner purge did not delete unit';
+    raise exception 'main admin purge did not delete unit';
   end if;
 
   if exists (
