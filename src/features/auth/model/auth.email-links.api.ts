@@ -1,4 +1,4 @@
-import type { Session } from "@supabase/supabase-js";
+import { isAuthWeakPasswordError, type Session } from "@supabase/supabase-js";
 import { supabase } from "../../../shared/api/supabase/supabaseClient";
 import type {
   ImplicitEmailLinkParams,
@@ -94,7 +94,19 @@ export const updateRecoveryPassword = async (password: string) => {
   const { error } = await supabase.auth.updateUser({ password });
 
   if (error) {
-    throw new Error("We could not update your password. Please try again.");
+    if (isAuthWeakPasswordError(error)) {
+      if (error.reasons.includes("length"))
+        throw new Error("Password must contain at least 12 characters.");
+
+      if (error.reasons.includes("characters"))
+        throw new Error("Include lowercase, uppercase and a number");
+
+      if (error.reasons.includes("pwned"))
+        throw new Error(
+          "This password has appeared in a known data breach. Choose a different password.",
+        );
+    } else
+      throw new Error("We could not update your password. Please try again.");
   }
 };
 
