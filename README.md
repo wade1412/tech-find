@@ -2,6 +2,8 @@
 
 TechFind is a React and TypeScript application that helps appliance-repair dispatchers find technicians who match a service request.
 
+The production-readiness implementation plan is tracked in [docs/PRODUCTION_ROADMAP.md](docs/PRODUCTION_ROADMAP.md).
+
 Matching is based on appliance units, service zones, brands, specific issues, job requirements, technician skills, capabilities, and technician-specific ignore rules. The project is built as a portfolio and learning application around realistic business rules, frontend architecture, authentication, authorization, and Supabase-backed data.
 
 ## 🔁 Core Workflows
@@ -26,9 +28,11 @@ Matching results support:
 - sorting by technician name;
 - sorting by home ZIP code;
 - ascending and descending directions;
-- temporary drag-and-drop reordering.
+- temporary drag-and-drop reordering on desktop.
 
 Changing the filters or selected sort resets the custom order to the corresponding sorted result.
+
+Drag reordering is disabled on mobile to preserve predictable touch scrolling.
 
 ### ⚙️ Technician Management
 
@@ -58,10 +62,41 @@ The technician lifecycle separates reversible archive operations from permanent 
 - archived technicians are excluded from matching and regular management lists;
 - the previous active status is restored when a technician leaves the archive;
 - service zones, skills, and ignore-list items remain intact while archived;
-- only `owner` can permanently purge an already archived technician;
+- `main_admin` and `owner` can permanently purge an already archived technician;
 - permanent purge remains an explicit cascade delete in a separate danger zone.
 
 Permissions and lifecycle invariants are enforced in PostgreSQL, not only in the frontend.
+
+### 🧰 Service Catalog Management
+
+`main_admin` and `owner` can manage the complete service catalog from one sectioned workspace:
+
+- units and their built-in, gas, commercial, and stacked capabilities;
+- brand groups and the brands assigned to them;
+- unit-specific issues;
+- service zones;
+- status filters and normalized multi-term search for every section;
+- create and edit forms with normalized values, field validation, and duplicate-conflict messages;
+- reversible archive and restore workflows;
+- permanent purge for `main_admin` and `owner`.
+
+Inactive entities remain configured but are excluded from active workflows. Archived entities are removed from normal management lists while their previous active state and dependent relationships are preserved where restoration requires them. Brand availability is derived from both the brand and its parent group, and specific-issue availability also depends on its parent unit.
+
+### 👥 User Management
+
+`main_admin` and `owner` can search, filter, create, edit, deactivate, archive, and restore user accounts. New users receive a secure email invitation to create a password. Profile updates use optimistic-concurrency timestamps and write audit records for success, conflict, failure, and reconciliation cases.
+
+Role boundaries are enforced in the Edge Functions and PostgreSQL RPCs:
+
+- a main admin can create and manage `user` and `secondary_admin` accounts;
+- an owner can manage every role;
+- users cannot change their own role or active status;
+- non-owners cannot read or mutate an owner account;
+- archiving immediately deactivates and bans the Auth account;
+- main admins can permanently purge archived lower-role accounts;
+- owner accounts remain hidden and unreachable to non-owners.
+
+The current user's account is placed first in the management list and identified with a dedicated tag.
 
 ### 🔒 Authentication and Authorization
 
@@ -86,15 +121,14 @@ Protected and permission-aware routes separate general application access from a
 
 Current permissions:
 
-| Capability                     | Minimum role      |
-| ------------------------------ | ----------------- |
-| View the application           | Active user       |
-| Manage technicians             | `secondary_admin` |
-| Archive or restore technicians | `main_admin`      |
-| Permanently purge technicians  | `owner`           |
-| Manage services                | `main_admin`      |
-| Manage users                   | `main_admin`      |
-| Use owner tools                | `owner`           |
+| Capability                                | Minimum role      |
+| ----------------------------------------- | ----------------- |
+| View the application                      | Active user       |
+| Create or edit technicians                | `secondary_admin` |
+| Archive or restore technicians            | `main_admin`      |
+| Create, edit, archive, or restore services | `main_admin`      |
+| Create, edit, archive, or restore users   | `main_admin`      |
+| Permanently purge archived entities       | `main_admin`      |
 
 Frontend permission checks control navigation and route access. Supabase Row Level Security, column grants, constraints, and permission-aware RPCs form the database security boundary.
 
@@ -135,7 +169,7 @@ This makes filter state:
 
 URL parameters use readable slugs. Database comparisons use UUIDs after entity data is resolved.
 
-The technician-management page also stores its search query and status filter in the URL, so list context survives navigation to an edit page and back.
+Technician, user, and service-management lists also store the selected section, search query, and status filter in the URL where applicable, so list context survives navigation and can be shared or restored.
 
 ## 🛠️ Tech Stack
 
@@ -188,9 +222,16 @@ src/
     technician-service-zone/
     technician-skill-set/
     unit/
+    user/
 
   features/
     auth/
+    services-management/
+      archive-service-entity/
+      manage-brands/
+      manage-service-zones/
+      manage-specific-issues/
+      manage-units/
     technician-filter/
     technician-management/
       archive-technician/
@@ -201,10 +242,13 @@ src/
       skills/
     technician-sort/
     theme/
+    user-management/
 
   layouts/
   pages/
     manageTechnicians/
+    manageServices/
+    manageUsers/
 
   shared/
     api/
@@ -213,8 +257,10 @@ src/
     ui/
 
 supabase/
+  functions/
   migrations/
   templates/
+  tests/
 ```
 
 ### 📐 Architecture Principles
@@ -243,10 +289,13 @@ supabase/
 - `technician_ignore_list`
 - `technician_service_zone`
 - `user_profile`
+- `user_management_audit`
 
 Relationship tables use database IDs internally. For example, `technician_service_zone` has a composite primary key on `(technician_id, zone_id)` and foreign keys with cascading deletes.
 
-Technician creation and relationship editing use database functions to keep multi-step writes atomic. Technician archive metadata stores when and by whom a technician was archived, together with the active state that should be restored.
+Technician creation and relationship editing use database functions to keep multi-step writes atomic. Archive-aware entities store when and by whom they were archived together with the active state that should be restored. Database constraints prevent an archived user profile from remaining active, while RLS and `current_app_role()` fail closed for inactive or archived accounts.
+
+All public tables have Row Level Security enabled. Lifecycle metadata is controlled through permission-aware RPCs rather than direct client writes. Destructive purge operations require an archived target and the `main_admin` role. User purge additionally enforces role hierarchy so customer administrators cannot purge peers, themselves, or hidden owner accounts.
 
 ## Routes
 
@@ -262,10 +311,21 @@ Technician creation and relationship editing use database functions to keep mult
 | `/technicians/new`                | Create a technician                |
 | `/technicians/:technicianId/edit` | Technician editor                  |
 | `/services`                       | Service management                 |
+| `/services/units/new`             | Create a unit                      |
+| `/services/units/:unitId/edit`    | Unit editor                        |
+| `/services/brands/new`            | Create a brand                     |
+| `/services/brands/:brandId/edit`  | Brand editor                       |
+| `/services/brand-groups/new`      | Create a brand group               |
+| `/services/brand-groups/:brandGroupId/edit` | Brand-group editor        |
+| `/services/specific-issues/new`   | Create a specific issue            |
+| `/services/specific-issues/:specificIssueId/edit` | Specific-issue editor |
+| `/services/zones/new`             | Create a service zone              |
+| `/services/zones/:zoneId/edit`    | Service-zone editor                |
 | `/users`                          | User management                    |
-| `/owner`                          | Owner-only tools                   |
+| `/users/new`                      | Invite a new user                  |
+| `/users/:userId/edit`             | User editor                        |
 
-The service, user, and owner management pages currently have protected routes, but their full workflows are still under development.
+The service and user management pages are protected by role-aware routes and database permissions.
 
 ## Testing
 
@@ -277,10 +337,13 @@ The current test suite covers:
 - technician sorting and sort-parameter parsing;
 - punctuation-tolerant technician and skill search;
 - auth errors, profile loading decisions, recovery routes, and permissions;
+- user visibility, role hierarchy, dirty-state helpers, validation, and forms;
 - technician service-zone mapping and patch generation;
 - profile form state, patch generation, and validation;
 - skill templates and duplicate prevention;
-- archive purge confirmation behavior.
+- unit, brand, brand-group, specific-issue, and service-zone search and validation;
+- management cards, archived-entity dialogs, and purge confirmations;
+- PostgreSQL archive, restore, purge, cascade, RLS, and owner-isolation integration paths.
 
 Run all tests once:
 
@@ -294,7 +357,20 @@ Run Vitest in watch mode:
 npm test
 ```
 
-Current local result: 17 test files and 142 tests passing.
+Validate the local database schema:
+
+```bash
+npx supabase db lint
+```
+
+Transactional SQL integration tests live in `supabase/tests`. They insert isolated fixtures, exercise requests as real `authenticated` roles, and roll back their data after each run. On PowerShell, run the complete set against the local Supabase database with:
+
+```powershell
+Get-ChildItem .\supabase\tests\*_integration_test.sql | Sort-Object Name | ForEach-Object {
+  Get-Content -Raw $_.FullName |
+    docker exec -i supabase_db_tech-find psql -v ON_ERROR_STOP=1 -U postgres -d postgres
+}
+```
 
 ## Local Setup
 
@@ -322,11 +398,40 @@ npx supabase start
 npx supabase migration up --local
 ```
 
+Do not expose a service-role or secret key through a `VITE_` environment variable. Browser code uses only the publishable key; privileged user-management operations remain inside Supabase Edge Functions.
+
 ### 3. Start the development server
 
 ```bash
 npm run dev
 ```
+
+## Database Change and Deployment Workflow
+
+Schema changes must be introduced through a new migration rather than manual Dashboard edits. Use this order:
+
+1. Create and apply the migration locally.
+2. Run database lint and the relevant SQL integration tests.
+3. Regenerate `database.types.ts` when tables, columns, enums, or RPC signatures change.
+4. Deploy migrations before any frontend that reads the new schema.
+5. Deploy changed Edge Functions.
+6. Build and deploy the frontend last.
+
+Typical commands:
+
+```bash
+npx supabase migration up --local
+npx supabase db lint
+npx supabase gen types typescript --local > src/shared/api/supabase/database.types.ts
+
+npx supabase db push
+npx supabase functions deploy create-user
+npx supabase functions deploy update-user
+
+npm run build
+```
+
+Deploying the database first is required because generated TypeScript types provide compile-time safety only; they cannot make a missing production column or RPC available at runtime.
 
 ## Available Scripts
 
@@ -350,21 +455,24 @@ Implemented:
 - URL-driven technician matching filters and management search;
 - service-zone, unit, brand, issue, and job-option filtering;
 - technician skill and ignore-list matching;
-- sorting and drag-and-drop custom ordering;
+- sorting and desktop drag-and-drop custom ordering;
 - light and dark themes;
 - animated technician and management lists;
 - technician creation with profile, zones, skills, templates, and optional ignore rules;
 - profile, capability, service-zone, skill, and ignore-list editing;
-- technician archive, restore, and owner-only permanent purge;
+- technician archive, restore, and restricted permanent purge;
+- user invitation, editing, deactivation, archive, restore, audit, and role-aware purge;
+- unit, brand-group, brand, specific-issue, and service-zone management;
+- reversible service archive workflows and restricted purge;
+- owner-profile isolation and archived-user access hardening at the database boundary;
+- unsaved-change protection for management forms and technician edit sections;
 - transactional RPCs for multi-step technician writes;
-- unit and component tests for core business logic and destructive confirmations.
+- unit, component, and SQL integration tests for core business rules and destructive workflows.
 
-In progress:
+Next improvements:
 
-- collapsible technician-matching filters on mobile;
-- mobile burger navigation for the authenticated admin header;
-- service and user management workflows;
-- owner tools;
+- automated off-site database backups and regular restore drills;
+- technician-result image export;
 - accessibility and responsive UI polish;
-- broader component and end-to-end test coverage;
+- CI-backed database integration and end-to-end smoke tests;
 - bundle-size and route-level loading optimization.

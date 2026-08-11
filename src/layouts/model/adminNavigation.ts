@@ -24,11 +24,6 @@ const adminNavigationItems = [
     to: "/services",
     label: "Services",
   },
-  {
-    permission: "canUseOwnerTools",
-    to: "/owner",
-    label: "Owner Tools",
-  },
 ] as const satisfies ReadonlyArray<{
   permission: AdminPermission;
   to: string;

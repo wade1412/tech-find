@@ -181,7 +181,7 @@ describe("ManageArchivedBrandsDialog", () => {
     expect(restoreBrandMutation.mutate).toHaveBeenCalledWith("brand-3");
   });
 
-  it("warns an owner about the complete group purge impact", async () => {
+  it("warns an authorized admin about the complete group purge impact", async () => {
     mockedUseAuthPermissions.mockReturnValue({
       canPurgeServices: true,
     } as ReturnType<typeof useAuthPermissions>);

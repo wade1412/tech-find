@@ -432,28 +432,8 @@ select public.archive_brand(
   '42000000-0000-4000-8000-000000000004'
 );
 
-do $$
-begin
-  begin
-    perform public.purge_brand(
-      '42000000-0000-4000-8000-000000000004'
-    );
-
-    raise exception 'main admin unexpectedly purged a brand';
-  exception
-    when insufficient_privilege then null;
-  end;
-end;
-$$;
-
 select public.archive_brand_group(
   '41000000-0000-4000-8000-000000000003'
-);
-
-select set_config(
-  'request.jwt.claims',
-  '{"sub":"40000000-0000-4000-8000-000000000003","role":"authenticated"}',
-  true
 );
 
 select public.purge_brand(

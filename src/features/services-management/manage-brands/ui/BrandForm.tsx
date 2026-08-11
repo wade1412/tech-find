@@ -26,6 +26,8 @@ import {
 import SaveSuccessSnackbar from "../../../../shared/ui/SaveSuccessSnackbar";
 import FormSubmitArea from "../../../../shared/ui/FormSubmitArea";
 import EditBrandFields from "./EditBrandFields";
+import { useUnsavedChangesGuard } from "../../../../shared/hooks/useUnsavedChangesGuard";
+import UnsavedChangesDialog from "../../../../shared/ui/UnsavedChangesDialog";
 
 interface BrandFormProps {
   brand?: Brand;
@@ -54,6 +56,7 @@ function BrandForm({ brand, brandGroups }: BrandFormProps) {
     ? Object.keys(patch ?? {}).length > 0
     : isNewBrandFormDirty(formState);
   const isPending = mutation.isPending;
+  const unsavedChanges = useUnsavedChangesGuard(isDirty);
 
   const setField = (key: keyof BrandFormState, value: string) => {
     mutation.reset();
@@ -85,9 +88,11 @@ function BrandForm({ brand, brandGroups }: BrandFormProps) {
         const createdBrand = await createMutation.mutateAsync(
           normalizeBrandFormState(formState),
         );
-        navigate(`/services/brands/${createdBrand.id}/edit`, {
-          replace: true,
-        });
+        unsavedChanges.proceedWithoutPrompt(() =>
+          navigate(`/services/brands/${createdBrand.id}/edit`, {
+            replace: true,
+          }),
+        );
       }
     } catch {
       // The shared submit area renders the mutation error.
@@ -95,7 +100,8 @@ function BrandForm({ brand, brandGroups }: BrandFormProps) {
   };
 
   return (
-    <form className={formStyle} onSubmit={handleSubmit} noValidate>
+    <>
+      <form className={formStyle} onSubmit={handleSubmit} noValidate>
       <ActiveStatusBar
         label="Brand status"
         activeDescription="Active brands are available in brand filters and technician ignore list configuration."
@@ -132,7 +138,14 @@ function BrandForm({ brand, brandGroups }: BrandFormProps) {
         isOpen={isSavedSnackbarOpen}
         onClose={() => setIsSavedSnackbarOpen(false)}
       />
-    </form>
+      </form>
+
+      <UnsavedChangesDialog
+        isOpen={unsavedChanges.isDialogOpen}
+        onLeave={unsavedChanges.leave}
+        onStay={unsavedChanges.stay}
+      />
+    </>
   );
 }
 

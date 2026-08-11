@@ -20,7 +20,8 @@ export default defineConfig({
       }),
   ],
   test: {
-    environment: "jsdom",
     clearMocks: true,
+    environment: "jsdom",
+    include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
   },
 });

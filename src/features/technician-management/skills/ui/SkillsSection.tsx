@@ -6,9 +6,10 @@ import { useTechnicianSkillEditorData } from "../model/useTechnicianSkillEditorD
 
 interface SkillSectionProps {
   technician: Technician;
+  onDirtyChange?: (isDirty: boolean) => void;
 }
 
-function SkillsSection({ technician }: SkillSectionProps) {
+function SkillsSection({ technician, onDirtyChange }: SkillSectionProps) {
   const {
     technicianSkills,
     units,
@@ -40,6 +41,7 @@ function SkillsSection({ technician }: SkillSectionProps) {
       brandGroupById={brandGroupById}
       specificIssues={specificIssues ?? []}
       specificIssuesById={specificIssuesById}
+      onDirtyChange={onDirtyChange}
     />
   );
 }

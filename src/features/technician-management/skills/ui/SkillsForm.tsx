@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { BrandGroup } from "../../../../entities/brandGroup/brandGroup.types";
 import type { SpecificIssue } from "../../../../entities/specific-issue/specific-issue.types";
 import type { TechnicianSkill } from "../../../../entities/technician-skill-set/technicianSkillSet.types";
@@ -20,6 +20,7 @@ interface SkillsFormProps {
   brandGroupById: Map<string, BrandGroup>;
   specificIssues: SpecificIssue[];
   specificIssuesById: Map<string, SpecificIssue>;
+  onDirtyChange?: (isDirty: boolean) => void;
 }
 
 function SkillsForm({
@@ -31,6 +32,7 @@ function SkillsForm({
   brandGroupById,
   specificIssues,
   specificIssuesById,
+  onDirtyChange,
 }: SkillsFormProps) {
   const initialSkills = useMemo(
     () => createSkillsDraft(technicianSkills),
@@ -49,6 +51,10 @@ function SkillsForm({
   const isDirty =
     patch.addedSkills.length > 0 || patch.removedSkillIds.length > 0;
   const isPending = updateTechnicianSkillsMutation.isPending;
+
+  useEffect(() => {
+    onDirtyChange?.(isDirty);
+  }, [isDirty, onDirtyChange]);
 
   const handleDiscardChanges = () => {
     setSkillsDraft(initialSkills);

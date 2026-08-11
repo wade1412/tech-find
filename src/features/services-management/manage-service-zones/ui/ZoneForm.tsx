@@ -13,7 +13,10 @@ import {
   useCreateServiceZoneMutation,
   useUpdateServiceZoneMutation,
 } from "../model/useServiceZoneMutations";
-import { validateZoneForm } from "../model/manage-zones.validation";
+import {
+  getZoneSaveErrorMessage,
+  validateZoneForm,
+} from "../model/manage-zones.validation";
 import {
   formStyle,
   formWithPaddingStyle,
@@ -22,6 +25,8 @@ import ActiveStatusBar from "../../../../shared/ui/ActiveStatusBar";
 import FormSubmitArea from "../../../../shared/ui/FormSubmitArea";
 import SaveSuccessSnackbar from "../../../../shared/ui/SaveSuccessSnackbar";
 import EditZoneFields from "./EditZoneFields";
+import { useUnsavedChangesGuard } from "../../../../shared/hooks/useUnsavedChangesGuard";
+import UnsavedChangesDialog from "../../../../shared/ui/UnsavedChangesDialog";
 
 interface ZoneFormProps {
   zone?: ServiceZone;
@@ -49,6 +54,7 @@ function ZoneForm({ zone }: ZoneFormProps) {
     ? Object.keys(patch ?? {}).length > 0
     : isNewZoneFormDirty(formState);
   const isPending = mutation.isPending;
+  const unsavedChanges = useUnsavedChangesGuard(isDirty);
 
   const setZoneField = (key: ZoneFieldKey, value: string) => {
     mutation.reset();
@@ -83,9 +89,11 @@ function ZoneForm({ zone }: ZoneFormProps) {
         const createZone = await createMutation.mutateAsync(
           normalizeZoneFormState(formState),
         );
-        navigate(`/services/zones/${createZone.id}/edit`, {
-          replace: true,
-        });
+        unsavedChanges.proceedWithoutPrompt(() =>
+          navigate(`/services/zones/${createZone.id}/edit`, {
+            replace: true,
+          }),
+        );
       }
     } catch {
       // The shared submit area renders the mutation error.
@@ -93,10 +101,11 @@ function ZoneForm({ zone }: ZoneFormProps) {
   };
 
   return (
-    <form className={formStyle} onSubmit={handleSubmit} noValidate>
+    <>
+      <form className={formStyle} onSubmit={handleSubmit} noValidate>
       <ActiveStatusBar
         label="Zone status"
-        activeDescription="Active zone are available in filters and technician configuration."
+        activeDescription="Active zones are available in filters and technician configuration."
         inactiveDescription="Inactive zones stay configured but are hidden from active workflows."
         isActive={formState.active}
         disabled={isPending}
@@ -117,11 +126,7 @@ function ZoneForm({ zone }: ZoneFormProps) {
         <FormSubmitArea
           discardLabel={zone ? "Discard changes" : "Clear form"}
           error={mutation.error}
-          errorMessage={
-            mutation.error?.message.includes("duplicate key")
-              ? "A zone with this name or slug already exists."
-              : mutation.error?.message
-          }
+          errorMessage={getZoneSaveErrorMessage(mutation.error)}
           isDirty={isDirty}
           isPending={isPending}
           onDiscard={handleDiscard}
@@ -134,7 +139,14 @@ function ZoneForm({ zone }: ZoneFormProps) {
         isOpen={isSavedSnackbarOpen}
         onClose={() => setIsSavedSnackbarOpen(false)}
       />
-    </form>
+      </form>
+
+      <UnsavedChangesDialog
+        isOpen={unsavedChanges.isDialogOpen}
+        onLeave={unsavedChanges.leave}
+        onStay={unsavedChanges.stay}
+      />
+    </>
   );
 }
 

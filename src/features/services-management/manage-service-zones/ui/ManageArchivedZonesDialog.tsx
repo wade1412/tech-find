@@ -52,7 +52,7 @@ function ManageArchivedZonesDialog({
         status={{
           isLoading: archivedQuery.isPending,
           errorMessage: archivedQuery.isError
-            ? "Failed to load archived service zones ."
+            ? "Failed to load archived service zones."
             : undefined,
         }}
       >
@@ -61,7 +61,7 @@ function ManageArchivedZonesDialog({
             emptyDescription: "Archived service zones will appear here.",
             entityLabel: "service zone",
             purgeDescription:
-              "Owner-only permanent purge removes the service zone and cascades to its technician relations. It cannot be undone.",
+              "Permanent purge removes the service zone and cascades to its technician relations. It cannot be undone.",
           }}
           items={archivedQuery.data ?? []}
           onPurgeRequest={setPurgeTarget}
@@ -69,9 +69,9 @@ function ManageArchivedZonesDialog({
             restoreMutation.reset();
             restoreMutation.mutate(id);
           }}
-          renderDetails={(unit) => (
+          renderDetails={(zone) => (
             <p className="mt-0.5 truncate text-xs text-zinc-500 dark:text-zinc-400">
-              {unit.slug} · Filter order {unit.display_order}
+              {zone.slug} · Filter order {zone.display_order}
             </p>
           )}
           state={{

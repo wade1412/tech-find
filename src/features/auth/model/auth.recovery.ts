@@ -1,5 +1,3 @@
-export const PASSWORD_MIN_LENGTH = 8;
-
 const RECOVERY_USER_STORAGE_KEY = "techfind.recovery-user-id";
 
 export type SecureEmailLinkType = "recovery" | "invite" | "email" | "signup";
@@ -110,19 +108,4 @@ export const clearPasswordRecoverySession = () => {
   } catch {
     // There may be no available storage to clear.
   }
-};
-
-export const validateNewPassword = (
-  password: string,
-  confirmation: string,
-) => {
-  if (password.length < PASSWORD_MIN_LENGTH) {
-    return `Password must contain at least ${PASSWORD_MIN_LENGTH} characters.`;
-  }
-
-  if (password !== confirmation) {
-    return "Passwords do not match.";
-  }
-
-  return null;
 };

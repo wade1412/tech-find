@@ -57,7 +57,7 @@ function ManageArchivedSpecificIssuesDialog({
             emptyDescription: "Archived specific issues will appear here.",
             entityLabel: "specific issue",
             purgeDescription:
-              "Owner-only permanent purge removes the issue and cascades to technician skills and ignore-list references. It cannot be undone.",
+              "Permanent purge removes the issue and cascades to technician skills and ignore-list references. It cannot be undone.",
           }}
           items={archivedQuery.data ?? []}
           onPurgeRequest={setPurgeTarget}

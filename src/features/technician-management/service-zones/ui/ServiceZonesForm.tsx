@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { ServiceZone } from "../../../../entities/service-zone/service-zone.types";
 import { useUpdateTechnicianServiceZonesMutation } from "../model/useUpdateTechnicianServiceZonesMutation";
 import { buildTechnicianZonesPatch } from "../model/serviceZones.helpers";
@@ -11,12 +11,14 @@ interface ServiceZonesFormProps {
   technicianId: string;
   zones: ServiceZone[];
   initialZoneIds: string[];
+  onDirtyChange?: (isDirty: boolean) => void;
 }
 
 function ServiceZonesForm({
   technicianId,
   zones,
   initialZoneIds,
+  onDirtyChange,
 }: ServiceZonesFormProps) {
   const [draftZoneIds, setZoneIds] = useState<string[]>(initialZoneIds);
   const [isSavedSnackbarOpen, setIsSavedSnackbarOpen] = useState(false);
@@ -38,6 +40,10 @@ function ServiceZonesForm({
 
   const isDirty = patch.addedIds.length > 0 || patch.removedIds.length > 0;
   const isPending = updateTechnicianZonesMutation.isPending;
+
+  useEffect(() => {
+    onDirtyChange?.(isDirty);
+  }, [isDirty, onDirtyChange]);
 
   const handleDiscardChanges = () => {
     setZoneIds(initialZoneIds);

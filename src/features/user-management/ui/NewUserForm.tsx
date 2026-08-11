@@ -15,6 +15,8 @@ import type { EditableUserTextField } from "../model/editUser.types";
 import { validateUserForm } from "../model/editUser.validation";
 import { useCreateUserMutation } from "../model/useCreateUserMutation";
 import EditUserFields from "./EditUserFields";
+import { useUnsavedChangesGuard } from "../../../shared/hooks/useUnsavedChangesGuard";
+import UnsavedChangesDialog from "../../../shared/ui/UnsavedChangesDialog";
 
 function NewUserForm() {
   const navigate = useNavigate();
@@ -31,6 +33,7 @@ function NewUserForm() {
   const hasValidationErrors = Object.values(formErrors).some(Boolean);
   const isDirty = isNewUserFormDirty(formState);
   const isPending = createUserMutation.isPending;
+  const unsavedChanges = useUnsavedChangesGuard(isDirty);
 
   const handleTextChange = (key: EditableUserTextField, value: string) => {
     createUserMutation.reset();
@@ -70,17 +73,20 @@ function NewUserForm() {
         buildCreateUserInput(formState, redirectTo),
       );
 
-      navigate(`/users/${createdUser.id}/edit`, {
-        replace: true,
-        state: { userCreated: true },
-      });
+      unsavedChanges.proceedWithoutPrompt(() =>
+        navigate(`/users/${createdUser.id}/edit`, {
+          replace: true,
+          state: { userCreated: true },
+        }),
+      );
     } catch {
       // The mutation shows the server error in the submit area.
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} noValidate className={formStyle}>
+    <>
+      <form onSubmit={handleSubmit} noValidate className={formStyle}>
       <div className={formWithPaddingStyle}>
         <div className="flex min-w-0 flex-col gap-3">
           <SectionHeader
@@ -115,7 +121,14 @@ function NewUserForm() {
           submitLabel="Create User"
         />
       </div>
-    </form>
+      </form>
+
+      <UnsavedChangesDialog
+        isOpen={unsavedChanges.isDialogOpen}
+        onLeave={unsavedChanges.leave}
+        onStay={unsavedChanges.stay}
+      />
+    </>
   );
 }
 

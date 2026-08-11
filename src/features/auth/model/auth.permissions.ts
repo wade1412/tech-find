@@ -16,11 +16,10 @@ export interface AuthPermissions {
   canArchiveTechnicians: boolean;
   canPurgeTechnicians: boolean;
   canManageUsers: boolean;
+  canPurgeUsers: boolean;
   canManageServices: boolean;
   canArchiveServices: boolean;
   canPurgeServices: boolean;
-
-  canUseOwnerTools: boolean;
 }
 
 export type AdminPermission =
@@ -28,10 +27,10 @@ export type AdminPermission =
   | "canArchiveTechnicians"
   | "canPurgeTechnicians"
   | "canManageUsers"
+  | "canPurgeUsers"
   | "canManageServices"
   | "canArchiveServices"
-  | "canPurgeServices"
-  | "canUseOwnerTools";
+  | "canPurgeServices";
 
 type PermissionProfile = Pick<UserProfile, "role" | "active">;
 
@@ -77,13 +76,12 @@ export function getAuthPermissions(
     canViewAdminPanel: hasRoleLevelOf(role, "secondary_admin"),
     canManageTechnicians: hasRoleLevelOf(role, "secondary_admin"),
     canArchiveTechnicians: hasRoleLevelOf(role, "main_admin"),
-    canPurgeTechnicians: role === "owner",
+    canPurgeTechnicians: hasRoleLevelOf(role, "main_admin"),
 
     canManageUsers: hasRoleLevelOf(role, "main_admin"),
+    canPurgeUsers: hasRoleLevelOf(role, "main_admin"),
     canManageServices: hasRoleLevelOf(role, "main_admin"),
     canArchiveServices: hasRoleLevelOf(role, "main_admin"),
-    canPurgeServices: role === "owner",
-
-    canUseOwnerTools: role === "owner",
+    canPurgeServices: hasRoleLevelOf(role, "main_admin"),
   };
 }

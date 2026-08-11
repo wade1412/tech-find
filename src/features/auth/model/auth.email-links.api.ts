@@ -1,9 +1,14 @@
-import type { Session } from "@supabase/supabase-js";
+import {
+  isAuthWeakPasswordError,
+  type AuthError,
+  type Session,
+} from "@supabase/supabase-js";
 import { supabase } from "../../../shared/api/supabase/supabaseClient";
 import type {
   ImplicitEmailLinkParams,
   SecureEmailLinkParams,
 } from "./auth.recovery";
+import { PASSWORD_MIN_LENGTH } from "./auth.password-policy";
 
 const verificationRequests = new Map<string, Promise<Session | null>>();
 
@@ -90,11 +95,39 @@ export const getCurrentAuthSession = async () => {
   return data.session;
 };
 
+const getPasswordUpdateErrorMessage = (error: AuthError) => {
+  if (isAuthWeakPasswordError(error)) {
+    if (error.reasons.includes("pwned")) {
+      return "This password has appeared in a known data breach. Choose a different password.";
+    }
+
+    if (error.reasons.includes("length")) {
+      return `Password must contain at least ${PASSWORD_MIN_LENGTH} characters.`;
+    }
+
+    if (error.reasons.includes("characters")) {
+      return "Include lowercase, uppercase, and at least one number.";
+    }
+  }
+
+  switch (error.code) {
+    case "same_password":
+      return "Choose a password different from your current password.";
+
+    case "reauthentication_needed":
+    case "reauthentication_not_valid":
+      return "Your security session has expired. Request a new password reset link.";
+
+    default:
+      return "We could not update your password. Please try again.";
+  }
+};
+
 export const updateRecoveryPassword = async (password: string) => {
   const { error } = await supabase.auth.updateUser({ password });
 
   if (error) {
-    throw new Error("We could not update your password. Please try again.");
+    throw new Error(getPasswordUpdateErrorMessage(error));
   }
 };
 

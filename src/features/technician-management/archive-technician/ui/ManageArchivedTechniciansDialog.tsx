@@ -179,7 +179,7 @@ function ManageArchivedTechniciansDialog({
                 </summary>
                 <div className="border-t border-red-200 px-4 py-4 dark:border-red-900/50">
                   <p className="mb-3 text-xs leading-5 text-red-700/80 dark:text-red-300/80">
-                    Permanent purge is owner-only and removes all related data.
+                    Permanent purge removes all related data.
                     It cannot be undone.
                   </p>
                   <ul className="flex flex-col gap-2">

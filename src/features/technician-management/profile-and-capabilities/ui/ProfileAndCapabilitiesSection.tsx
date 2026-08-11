@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Technician } from "../../../../entities/technician/technician.types";
 import { useUpdateTechnicianMutation } from "../../model/useUpdateTechnicianMutation";
 import {
@@ -24,10 +24,12 @@ import ActiveStatusBar from "../../../../shared/ui/ActiveStatusBar";
 
 interface ProfileAndCapabilitiesSectionProps {
   technician: Technician;
+  onDirtyChange?: (isDirty: boolean) => void;
 }
 
 function ProfileAndCapabilitiesSection({
   technician,
+  onDirtyChange,
 }: ProfileAndCapabilitiesSectionProps) {
   const [formState, setFormState] = useState(() =>
     createTechnicianFormState(technician),
@@ -62,6 +64,10 @@ function ProfileAndCapabilitiesSection({
 
   const isDirty = Object.keys(patch).length > 0;
   const isPending = updateTechnicianMutation.isPending;
+
+  useEffect(() => {
+    onDirtyChange?.(isDirty);
+  }, [isDirty, onDirtyChange]);
 
   const formErrorObj = validateProfileForm(formState);
   const hasErrors = Object.values(formErrorObj).some(Boolean);

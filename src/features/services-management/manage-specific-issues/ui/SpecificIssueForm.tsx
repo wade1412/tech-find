@@ -29,6 +29,8 @@ import {
   useUpdateSpecificIssueMutation,
 } from "../model/useSpecificIssueMutations";
 import EditSpecificIssueFields from "./EditSpecificIssueFields";
+import { useUnsavedChangesGuard } from "../../../../shared/hooks/useUnsavedChangesGuard";
+import UnsavedChangesDialog from "../../../../shared/ui/UnsavedChangesDialog";
 
 interface SpecificIssueFormProps {
   specificIssue?: SpecificIssue;
@@ -61,6 +63,7 @@ function SpecificIssueForm({ specificIssue, units }: SpecificIssueFormProps) {
     ? Object.keys(patch ?? {}).length > 0
     : isNewSpecificIssueFormDirty(formState);
   const isPending = mutation.isPending;
+  const unsavedChanges = useUnsavedChangesGuard(isDirty);
 
   const setField = (key: EditableSpecificIssueField, value: string) => {
     mutation.reset();
@@ -94,9 +97,11 @@ function SpecificIssueForm({ specificIssue, units }: SpecificIssueFormProps) {
         const createdIssue = await createMutation.mutateAsync(
           normalizeSpecificIssueFormState(formState),
         );
-        navigate(`/services/specific-issues/${createdIssue.id}/edit`, {
-          replace: true,
-        });
+        unsavedChanges.proceedWithoutPrompt(() =>
+          navigate(`/services/specific-issues/${createdIssue.id}/edit`, {
+            replace: true,
+          }),
+        );
       }
     } catch {
       // The shared submit area renders the mutation error.
@@ -104,7 +109,8 @@ function SpecificIssueForm({ specificIssue, units }: SpecificIssueFormProps) {
   };
 
   return (
-    <form className={formStyle} onSubmit={handleSubmit} noValidate>
+    <>
+      <form className={formStyle} onSubmit={handleSubmit} noValidate>
       <ActiveStatusBar
         label="Specific issue status"
         activeDescription="Active issues are available in technician skills and ignore-list configuration when their unit is active."
@@ -142,7 +148,14 @@ function SpecificIssueForm({ specificIssue, units }: SpecificIssueFormProps) {
         isOpen={isSavedSnackbarOpen}
         onClose={() => setIsSavedSnackbarOpen(false)}
       />
-    </form>
+      </form>
+
+      <UnsavedChangesDialog
+        isOpen={unsavedChanges.isDialogOpen}
+        onLeave={unsavedChanges.leave}
+        onStay={unsavedChanges.stay}
+      />
+    </>
   );
 }
 

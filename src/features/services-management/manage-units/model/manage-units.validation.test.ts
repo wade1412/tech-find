@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { EMPTY_UNIT_FORM_STATE } from "./manage-units.helpers";
-import { validateUnitForm } from "./manage-units.validation";
+import {
+  getUnitSaveErrorMessage,
+  validateUnitForm,
+} from "./manage-units.validation";
 
 describe("validateUnitForm", () => {
   it("requires the identity fields", () => {
@@ -35,5 +38,25 @@ describe("validateUnitForm", () => {
         }),
       ).filter(Boolean),
     ).toHaveLength(0);
+  });
+});
+
+describe("getUnitSaveErrorMessage", () => {
+  it("maps unique constraints by PostgreSQL error code", () => {
+    const nameError = Object.assign(new Error("duplicate"), {
+      code: "23505",
+      details: "Key violates unit_name_key",
+    });
+    const slugError = Object.assign(new Error("duplicate"), {
+      code: "23505",
+      details: "Key violates unit_slug_key",
+    });
+
+    expect(getUnitSaveErrorMessage(nameError)).toBe(
+      "A unit with this name already exists.",
+    );
+    expect(getUnitSaveErrorMessage(slugError)).toBe(
+      "A unit with this slug already exists.",
+    );
   });
 });

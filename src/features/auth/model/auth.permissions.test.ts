@@ -86,11 +86,11 @@ describe("auth.permissions", () => {
         canArchiveTechnicians: false,
         canPurgeTechnicians: false,
         canManageUsers: false,
+        canPurgeUsers: false,
         canManageServices: false,
         canArchiveServices: false,
         canPurgeServices: false,
 
-        canUseOwnerTools: false,
       });
     });
 
@@ -109,10 +109,10 @@ describe("auth.permissions", () => {
         canArchiveTechnicians: false,
         canPurgeTechnicians: false,
         canManageUsers: false,
+        canPurgeUsers: false,
         canManageServices: false,
         canArchiveServices: false,
         canPurgeServices: false,
-        canUseOwnerTools: false,
       });
     });
 
@@ -131,10 +131,10 @@ describe("auth.permissions", () => {
         canArchiveTechnicians: false,
         canPurgeTechnicians: false,
         canManageUsers: false,
+        canPurgeUsers: false,
         canManageServices: false,
         canArchiveServices: false,
         canPurgeServices: false,
-        canUseOwnerTools: false,
       });
     });
 
@@ -153,10 +153,10 @@ describe("auth.permissions", () => {
         canArchiveTechnicians: false,
         canPurgeTechnicians: false,
         canManageUsers: false,
+        canPurgeUsers: false,
         canManageServices: false,
         canArchiveServices: false,
         canPurgeServices: false,
-        canUseOwnerTools: false,
       });
     });
 
@@ -173,12 +173,12 @@ describe("auth.permissions", () => {
         canViewAdminPanel: true,
         canManageTechnicians: true,
         canArchiveTechnicians: true,
-        canPurgeTechnicians: false,
+        canPurgeTechnicians: true,
         canManageUsers: true,
+        canPurgeUsers: true,
         canManageServices: true,
         canArchiveServices: true,
-        canPurgeServices: false,
-        canUseOwnerTools: false,
+        canPurgeServices: true,
       });
     });
 
@@ -197,10 +197,10 @@ describe("auth.permissions", () => {
         canArchiveTechnicians: true,
         canPurgeTechnicians: true,
         canManageUsers: true,
+        canPurgeUsers: true,
         canManageServices: true,
         canArchiveServices: true,
         canPurgeServices: true,
-        canUseOwnerTools: true,
       });
     });
   });

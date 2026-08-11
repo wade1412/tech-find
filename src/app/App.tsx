@@ -1,5 +1,6 @@
+/* eslint-disable react-refresh/only-export-components -- route configuration is consumed once when the app router is created */
 import { lazy, Suspense } from "react";
-import { Outlet, Route, Routes } from "react-router";
+import { createRoutesFromElements, Outlet, Route } from "react-router";
 import ProtectedRoute from "../features/auth/ui/ProtectedRoute";
 import { FullPageSpinner } from "../shared/ui/Spinners";
 import AuthenticatedLayout from "../layouts/AuthenticatedLayout";
@@ -65,11 +66,8 @@ const NewSpecificIssuePage = lazy(
 const EditZonePage = lazy(() => import("../pages/manageServices/EditZonePage"));
 const NewZonePage = lazy(() => import("../pages/manageServices/NewZonePage"));
 
-const OwnerToolsPage = lazy(() => import("../pages/OwnerToolsPage"));
-
-function App() {
-  return (
-    <Routes>
+export const appRoutes = createRoutesFromElements(
+  <>
       <Route
         path="/login"
         element={
@@ -176,19 +174,7 @@ function App() {
           <Route path=":userId/edit" element={<EditUserPage />} />
           <Route path="new" element={<NewUserPage />} />
         </Route>
-        <Route
-          path="owner"
-          element={
-            <PermissionRoute permission="canUseOwnerTools">
-              <OwnerToolsPage />
-            </PermissionRoute>
-          }
-        />
-
         <Route path="*" element={<NotFoundPage />} />
       </Route>
-    </Routes>
-  );
-}
-
-export default App;
+  </>,
+);

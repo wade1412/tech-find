@@ -69,7 +69,7 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("ManageArchivedUnitsDialog", () => {
-  it("lets a main admin restore without exposing permanent purge", async () => {
+  it("lets an admin restore when permanent purge permission is unavailable", async () => {
     const restoreMutation = createMutation();
     mockedUseRestoreUnitMutation.mockReturnValue(
       restoreMutation as unknown as ReturnType<typeof useRestoreUnitMutation>,
@@ -86,7 +86,7 @@ describe("ManageArchivedUnitsDialog", () => {
     expect(restoreMutation.mutate).toHaveBeenCalledWith(archivedUnit.id);
   });
 
-  it("lets an owner start purge and shows dependency impact", async () => {
+  it("lets an authorized admin start purge and shows dependency impact", async () => {
     mockedUseAuthPermissions.mockReturnValue({
       canPurgeServices: true,
     } as ReturnType<typeof useAuthPermissions>);

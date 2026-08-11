@@ -110,7 +110,7 @@ describe("ManageArchivedSpecificIssuesDialog", () => {
     expect(restoreMutation.mutate).toHaveBeenCalledWith(archivedIssue.id);
   });
 
-  it("requires typed owner confirmation before purge", async () => {
+  it("requires typed privileged confirmation before purge", async () => {
     mockedUseAuthPermissions.mockReturnValue({
       canPurgeServices: true,
     } as ReturnType<typeof useAuthPermissions>);

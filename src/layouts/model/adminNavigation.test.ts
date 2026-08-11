@@ -7,7 +7,7 @@ describe("getAdminNavigationLinksFromPermissions", () => {
     ["user", []],
     ["secondary_admin", ["Technicians"]],
     ["main_admin", ["Technicians", "Users", "Services"]],
-    ["owner", ["Technicians", "Users", "Services", "Owner Tools"]],
+    ["owner", ["Technicians", "Users", "Services"]],
   ] as const)("returns permitted links for %s", (role, expectedLabels) => {
     const permissions = getAuthPermissions({ role, active: true });
 

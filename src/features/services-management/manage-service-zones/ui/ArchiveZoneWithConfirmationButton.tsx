@@ -25,7 +25,7 @@ function ArchiveZoneWithConfirmationButton({ zone }: { zone: ServiceZone }) {
     archiveMutation.mutate(zone.id, {
       onSuccess: () => {
         setIsDialogOpen(false);
-        navigate("/services", { replace: true });
+        navigate("/services?section=service_zones", { replace: true });
       },
     });
   };

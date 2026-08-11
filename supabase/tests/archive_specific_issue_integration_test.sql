@@ -211,24 +211,6 @@ select public.archive_specific_issue(
   '52000000-0000-4000-8000-000000000002'
 );
 
-do $$
-begin
-  begin
-    perform public.purge_specific_issue(
-      '52000000-0000-4000-8000-000000000002'
-    );
-    raise exception 'main admin unexpectedly purged an issue';
-  exception when insufficient_privilege then null;
-  end;
-end;
-$$;
-
-select set_config(
-  'request.jwt.claims',
-  '{"sub":"50000000-0000-4000-8000-000000000003","role":"authenticated"}',
-  true
-);
-
 select public.purge_specific_issue(
   '52000000-0000-4000-8000-000000000002'
 );

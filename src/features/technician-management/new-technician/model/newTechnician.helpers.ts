@@ -25,6 +25,20 @@ export const createEmptyNewTechnicianDraft = (): NewTechnicianDraft => ({
   ignoreList: [],
 });
 
+export const isNewTechnicianDraftDirty = (draft: NewTechnicianDraft) => {
+  const initialDraft = createEmptyNewTechnicianDraft();
+  const profileChanged = (
+    Object.keys(initialDraft.profile) as Array<keyof NewTechnicianDraft["profile"]>
+  ).some((key) => draft.profile[key] !== initialDraft.profile[key]);
+
+  return (
+    profileChanged ||
+    draft.zoneIds.length > 0 ||
+    draft.skills.length > 0 ||
+    draft.ignoreList.length > 0
+  );
+};
+
 export const buildCreateTechnicianInput = (
   draft: NewTechnicianDraft,
 ): CreateTechnicianInput => ({

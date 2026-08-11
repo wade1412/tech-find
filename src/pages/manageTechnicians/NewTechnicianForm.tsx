@@ -37,10 +37,13 @@ import IgnoreListFields from "../../features/technician-management/ignore-list/u
 import {
   buildCreateTechnicianInput,
   createEmptyNewTechnicianDraft,
+  isNewTechnicianDraftDirty,
 } from "../../features/technician-management/new-technician/model/newTechnician.helpers";
 import type { NewTechnicianDraft } from "../../features/technician-management/new-technician/model/newTechnician.types";
 import { useCreateTechnicianMutation } from "../../features/technician-management/new-technician/model/useCreateTechnicianMutation";
 import { SKILL_TEMPLATES } from "../../features/technician-management/skills/model/skillTemplates.constants";
+import { useUnsavedChangesGuard } from "../../shared/hooks/useUnsavedChangesGuard";
+import UnsavedChangesDialog from "../../shared/ui/UnsavedChangesDialog";
 
 interface NewTechnicianFormProps {
   units: Unit[];
@@ -120,6 +123,8 @@ function NewTechnicianForm({
     }));
 
   const isPending = createTechnicianMutation.isPending;
+  const isDirty = isNewTechnicianDraftDirty(newTechnicianDraft);
+  const unsavedChanges = useUnsavedChangesGuard(isDirty);
 
   //Profile is valid, if error object from validate helper has no values
   const isValidProfile = !Object.values(
@@ -137,14 +142,17 @@ function NewTechnicianForm({
       buildCreateTechnicianInput(newTechnicianDraft),
       {
         onSuccess: (technician) => {
-          navigate(`/technicians/${technician.id}/edit`, { replace: true });
+          unsavedChanges.proceedWithoutPrompt(() =>
+            navigate(`/technicians/${technician.id}/edit`, { replace: true }),
+          );
         },
       },
     );
   };
 
   return (
-    <div className={centeredContainerStyle}>
+    <>
+      <div className={centeredContainerStyle}>
       <section className={formStyle}>
         {/* Header */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -255,7 +263,14 @@ function NewTechnicianForm({
           </div>
         )}
       </section>
-    </div>
+      </div>
+
+      <UnsavedChangesDialog
+        isOpen={unsavedChanges.isDialogOpen}
+        onLeave={unsavedChanges.leave}
+        onStay={unsavedChanges.stay}
+      />
+    </>
   );
 }
 
