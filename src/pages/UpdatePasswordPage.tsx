@@ -155,66 +155,89 @@ function UpdatePasswordPage() {
   return (
     <AuthPageShell
       title="Create a new password"
-      description={`Follow the password requirements`}
+      description="Use a strong, unique password for your TechFind account."
     >
-      <div className="flex flex-col gap-2">
-        {passwordRequirements.map((req) => (
-          <div
-            key={req.id}
-            className="flex gap-2 items-center text-sm text-zinc-500 dark:text-zinc-400"
-          >
-            {req.isMet ? (
-              <svg
-                width="8"
-                height="8"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-emerald-500"
-              >
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-            ) : (
-              <svg
-                width="8"
-                height="8"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                className="text-zinc-400"
-              >
-                <circle cx="12" cy="12" r="9" />
-              </svg>
-            )}
-            <p>{req.label}</p>
-          </div>
-        ))}
-      </div>
-
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
         <label className={authLabelStyle}>
           New password
           <input
             value={password}
-            onChange={(event) => setPassword(event.target.value)}
+            onChange={(event) => {
+              setPassword(event.target.value);
+              setError("");
+            }}
             disabled={isSubmitting}
             type="password"
             autoComplete="new-password"
             minLength={PASSWORD_MIN_LENGTH}
+            aria-describedby="password-requirements"
             required
             className={authInputStyle}
           />
         </label>
 
+        <div
+          id="password-requirements"
+          className="rounded-xl border border-zinc-200/80 bg-zinc-50/70 px-3.5 py-3 dark:border-zinc-800 dark:bg-zinc-950/40"
+        >
+          <p className="mb-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+            Password requirements
+          </p>
+          <ul className="grid gap-1.5" aria-label="Password requirements">
+            {passwordRequirements.map((requirement) => (
+              <li
+                key={requirement.id}
+                className={`flex items-center gap-2 text-xs transition-colors ${
+                  requirement.isMet
+                    ? "text-emerald-700 dark:text-emerald-400"
+                    : "text-zinc-500 dark:text-zinc-400"
+                }`}
+              >
+                {requirement.isMet ? (
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    className="h-4 w-4 shrink-0"
+                  >
+                    <circle
+                      cx="10"
+                      cy="10"
+                      r="8"
+                      fill="currentColor"
+                      opacity="0.14"
+                    />
+                    <path
+                      d="m6.75 10.1 2.05 2.05 4.45-4.45"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                ) : (
+                  <span
+                    aria-hidden="true"
+                    className="h-4 w-4 shrink-0 rounded-full border border-current opacity-50"
+                  />
+                )}
+                <span className="sr-only">
+                  {requirement.isMet ? "Met: " : "Not met: "}
+                </span>
+                <span>{requirement.label}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
         <label className={authLabelStyle}>
           Confirm new password
           <input
             value={confirmation}
-            onChange={(event) => setConfirmation(event.target.value)}
+            onChange={(event) => {
+              setConfirmation(event.target.value);
+              setError("");
+            }}
             disabled={isSubmitting}
             type="password"
             autoComplete="new-password"

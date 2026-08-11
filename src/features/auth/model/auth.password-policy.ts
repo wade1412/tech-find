@@ -4,8 +4,9 @@ type PasswordRequirementId =
   | "length"
   | "lowercase"
   | "uppercase"
-  | "digit"
-  | "confirmation";
+  | "digit";
+
+type PasswordValidationErrorId = PasswordRequirementId | "confirmation";
 
 interface PasswordRequirement {
   id: PasswordRequirementId;
@@ -13,12 +14,15 @@ interface PasswordRequirement {
   isMet: boolean;
 }
 
-export const PASSWORD_ERROR_TEXTS: Record<PasswordRequirementId, string> = {
+export const PASSWORD_ERROR_TEXTS: Record<
+  PasswordValidationErrorId,
+  string
+> = {
   length: `Password must contain at least ${PASSWORD_MIN_LENGTH} characters.`,
-  lowercase: `Password must contain at least one lowercase letter`,
-  uppercase: `Password must contain at least one uppercase letter`,
-  digit: `Password must contait at least one number`,
-  confirmation: `Passwords do not match`,
+  lowercase: "Password must contain at least one lowercase letter.",
+  uppercase: "Password must contain at least one uppercase letter.",
+  digit: "Password must contain at least one number.",
+  confirmation: "Passwords do not match.",
 };
 
 export const getPasswordRequirements = (
@@ -32,7 +36,7 @@ export const getPasswordRequirements = (
   return [
     {
       id: "length",
-      label: "At least 12 characters",
+      label: `At least ${PASSWORD_MIN_LENGTH} characters`,
       isMet: isValidLength,
     },
     {
@@ -57,25 +61,12 @@ export const validateNewPassword = (
   password: string,
   confirmation: string,
 ): string | null => {
-  const isValidLength = password.length >= PASSWORD_MIN_LENGTH;
-  const hasLowerCase = /[a-z]/.test(password);
-  const hasUpperCase = /[A-Z]/.test(password);
-  const hasDigit = /\d/.test(password);
+  const firstUnmetRequirement = getPasswordRequirements(password).find(
+    ({ isMet }) => !isMet,
+  );
 
-  if (!isValidLength) {
-    return PASSWORD_ERROR_TEXTS.length;
-  }
-
-  if (!hasLowerCase) {
-    return PASSWORD_ERROR_TEXTS.lowercase;
-  }
-
-  if (!hasUpperCase) {
-    return PASSWORD_ERROR_TEXTS.uppercase;
-  }
-
-  if (!hasDigit) {
-    return PASSWORD_ERROR_TEXTS.digit;
+  if (firstUnmetRequirement) {
+    return PASSWORD_ERROR_TEXTS[firstUnmetRequirement.id];
   }
 
   if (password !== confirmation) {
