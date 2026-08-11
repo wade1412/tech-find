@@ -49,11 +49,16 @@ if (listUsersError) {
   throw listUsersError;
 }
 
-const existingUser = existingUsers.users.find(
-  (candidate) => candidate.email?.toLowerCase() === email.toLowerCase(),
+const fixtureEmails = new Set([
+  email.toLowerCase(),
+  // Remove fixtures created before the E2E role was changed from owner.
+  "owner.e2e@techfind.test",
+]);
+const existingFixtureUsers = existingUsers.users.filter((candidate) =>
+  fixtureEmails.has(candidate.email?.toLowerCase() ?? ""),
 );
 
-if (existingUser) {
+for (const existingUser of existingFixtureUsers) {
   const { error: deleteUserError } = await supabaseAdmin.auth.admin.deleteUser(
     existingUser.id,
   );
@@ -75,7 +80,7 @@ if (error) {
 
 const user = data.user;
 
-// Created user with owner role, because currently only owner can purge records
+// Browser smoke exercises the same privileged role used by customer admins.
 const { error: profileError } = await supabaseAdmin
   .from("user_profile")
   .upsert({
@@ -83,7 +88,7 @@ const { error: profileError } = await supabaseAdmin
     email,
     full_name: "E2E Admin",
     alias: "E2E Admin",
-    role: "owner",
+    role: "main_admin",
     active: true,
   });
 

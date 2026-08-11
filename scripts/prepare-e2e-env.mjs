@@ -40,9 +40,9 @@ if (!isLocalSupabase) {
   );
 }
 
-const email = process.env.E2E_USER_EMAIL ?? "owner.e2e@techfind.test";
+const email = process.env.E2E_USER_EMAIL ?? "main-admin.e2e@techfind.test";
 const password =
-  process.env.E2E_USER_PASSWORD ?? "Local-E2E-Owner-2026!";
+  process.env.E2E_USER_PASSWORD ?? "Local-E2E-MainAdmin-2026!";
 const envFile = resolve(workspace, ".env.e2e.local");
 const envContents = [
   `VITE_SUPABASE_URL=${supabaseUrl}`,

@@ -32,3 +32,6 @@ stats.html
 playwright-report/
 test-results/
 playwright/.auth/
+
+# Local database backups may contain production data and must never be committed.
+.backups/
