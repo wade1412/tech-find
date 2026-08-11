@@ -16,11 +16,7 @@ export const authInputStyle =
 export const authErrorStyle =
   "rounded-xl border border-red-200 bg-red-50/50 px-3.5 py-2 text-xs font-medium text-red-600 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-400";
 
-function AuthPageShell({
-  title,
-  description,
-  children,
-}: AuthPageShellProps) {
+function AuthPageShell({ title, description, children }: AuthPageShellProps) {
   return (
     <div className="flex min-h-screen flex-col bg-zinc-50 text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50">
       <AuthHeader />
