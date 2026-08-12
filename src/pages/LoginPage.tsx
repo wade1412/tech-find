@@ -4,12 +4,16 @@ import AuthHeader from "../layouts/AuthHeader";
 import { useState } from "react";
 import { FullPageSpinner } from "../shared/ui/Spinners";
 import { isAppAuthError } from "../features/auth/model/auth.errors";
-import { primaryButton } from "../shared/styles/styles";
+import {
+  formInputStyle,
+  loginContainerStyle,
+  loginErrorStyle,
+  loginFormStyle,
+  loginLabelStyle,
+  primaryButton,
+} from "../shared/styles/styles";
 import { AnimatePresence, motion } from "motion/react";
 import { hasPasswordRecoverySession } from "../features/auth/model/auth.recovery";
-
-const labelStyle =
-  "flex flex-col text-sm font-medium text-zinc-700 dark:text-zinc-300 gap-1.5";
 
 function LoginPage() {
   const {
@@ -78,14 +82,11 @@ function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-zinc-50 text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50">
+    <div className={loginContainerStyle}>
       <AuthHeader />
 
       <main className="flex flex-1 items-center justify-center px-4 py-12">
-        <form
-          onSubmit={handleSubmit}
-          className="w-full max-w-sm rounded-2xl border border-zinc-200/80 bg-white p-6 shadow-lg shadow-zinc-200/30 dark:border-zinc-800 dark:bg-zinc-900/50 dark:shadow-none flex flex-col gap-6"
-        >
+        <form onSubmit={handleSubmit} className={loginFormStyle}>
           {/* Header */}
           <div className="space-y-1">
             <h1 className="font-heading text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
@@ -97,7 +98,7 @@ function LoginPage() {
           </div>
 
           {/* Inputs */}
-          <label className={labelStyle}>
+          <label className={loginLabelStyle}>
             Email
             <input
               value={email}
@@ -107,11 +108,11 @@ function LoginPage() {
               type="email"
               autoComplete="email"
               required
-              className="focus:border-main-500 focus:ring-main-500/20 dark:focus:border-main-500 rounded-xl border border-zinc-200 bg-zinc-50/50 px-3.5 py-2 text-zinc-900 transition-[border-color,background-color,box-shadow] outline-none focus:bg-white focus:ring-2 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:bg-zinc-950"
+              className={formInputStyle}
             />
           </label>
 
-          <label className={labelStyle}>
+          <label className={loginLabelStyle}>
             Password
             <input
               value={password}
@@ -120,7 +121,7 @@ function LoginPage() {
               type="password"
               autoComplete="current-password"
               required
-              className="focus:border-main-500 focus:ring-main-500/20 dark:focus:border-main-500 mt-1.5 rounded-xl border border-zinc-200 bg-zinc-50/50 px-3.5 py-2 text-zinc-900 transition-[border-color,background-color,box-shadow] outline-none focus:bg-white focus:ring-2 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:bg-zinc-950"
+              className={formInputStyle}
             />
           </label>
 
@@ -141,10 +142,7 @@ function LoginPage() {
                 transition={{ duration: 0.18, ease: "easeOut" }}
                 style={{ overflow: "hidden" }}
               >
-                <p
-                  role="alert"
-                  className="rounded-xl border border-red-200 bg-red-50/50 px-3.5 py-2 text-xs font-medium text-red-600 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-400"
-                >
+                <p role="alert" className={loginErrorStyle}>
                   {formError}
                 </p>
               </motion.div>

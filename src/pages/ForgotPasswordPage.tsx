@@ -1,15 +1,15 @@
 import { useState, type FormEvent } from "react";
 import { Link } from "react-router";
-import {
-  getSecureEmailLinkRedirectUrl,
-} from "../features/auth/model/auth.recovery";
+import { getSecureEmailLinkRedirectUrl } from "../features/auth/model/auth.recovery";
 import { requestPasswordReset } from "../features/auth/model/auth.email-links.api";
-import AuthPageShell, {
-  authErrorStyle,
-  authInputStyle,
-  authLabelStyle,
-} from "../features/auth/ui/AuthPageShell";
-import { primaryButton } from "../shared/styles/styles";
+import AuthPageShell from "../features/auth/ui/AuthPageShell";
+import {
+  formInputStyle,
+  formStyle,
+  loginErrorStyle,
+  loginLabelStyle,
+  primaryButton,
+} from "../shared/styles/styles";
 
 function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -25,10 +25,7 @@ function ForgotPasswordPage() {
     setIsSubmitting(true);
 
     try {
-      await requestPasswordReset(
-        email.trim(),
-        getSecureEmailLinkRedirectUrl(),
-      );
+      await requestPasswordReset(email.trim(), getSecureEmailLinkRedirectUrl());
       setIsSubmitted(true);
     } catch (requestError) {
       setError(
@@ -51,7 +48,7 @@ function ForgotPasswordPage() {
       }
     >
       {isSubmitted ? (
-        <div className="flex flex-col gap-4">
+        <div className={formStyle}>
           <p
             role="status"
             className="rounded-xl border border-emerald-200 bg-emerald-50/60 px-3.5 py-3 text-sm text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-300"
@@ -64,8 +61,8 @@ function ForgotPasswordPage() {
           </Link>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-          <label className={authLabelStyle}>
+        <form onSubmit={handleSubmit} className={formStyle}>
+          <label className={loginLabelStyle}>
             Email
             <input
               value={email}
@@ -75,12 +72,12 @@ function ForgotPasswordPage() {
               type="email"
               autoComplete="email"
               required
-              className={authInputStyle}
+              className={formInputStyle}
             />
           </label>
 
           {error && (
-            <p role="alert" className={authErrorStyle}>
+            <p role="alert" className={loginErrorStyle}>
               {error}
             </p>
           )}
