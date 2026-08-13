@@ -57,7 +57,10 @@ jobs:
       # -----------------------------
       - name: Start local supabase
         id: supabase_start
-        run: npx supabase start
+        # These checks exercise Postgres, Auth, REST, and Storage only. Starting
+        # the unused Edge Runtime adds a native container health dependency and
+        # can fail the job before database checks run.
+        run: npx supabase start --exclude edge-runtime
 
       - name: Lint database
         run: npx supabase db lint --local --level warning --fail-on error
@@ -114,7 +117,9 @@ jobs:
 
       - name: Start local Supabase
         id: supabase_start
-        run: npx supabase start
+        # The smoke test creates its user through the Admin API and exercises
+        # service-zone RPCs; it does not invoke an Edge Function.
+        run: npx supabase start --exclude edge-runtime
 
       - name: Prepare local E2E environment
         run: npm run test:e2e:prepare
