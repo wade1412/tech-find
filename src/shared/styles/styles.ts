@@ -93,3 +93,8 @@ export const archivedManagementItemsButtonStyle = `${managementActionButtonBaseS
 export const createManagementItemButtonStyle = `${managementActionButtonBaseStyle} border-zinc-200 hover:bg-zinc-50 hover:border-main-500 hover:text-main-500 dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-zinc-400 dark:hover:border-main-400 dark:hover:bg-zinc-900 dark:hover:text-main-400`;
 export const archiveEntityButtonStyle =
   "inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-zinc-200 bg-transparent px-4 py-2.5 text-xs font-semibold text-zinc-600 transition-[background-color,border-color,color,opacity,transform] hover:border-red-500/50 hover:text-red-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-main-500 focus-visible:ring-offset-2 active:scale-[0.98] dark:border-zinc-700 dark:text-zinc-300  dark:focus-visible:ring-offset-zinc-950";
+
+// ------ Fallback Styles ------
+
+export const fallbackMessageBoxStyle =
+  "flex w-full max-w-lg flex-col items-center gap-6 rounded-2xl border border-zinc-200/80 bg-white px-4 py-6 text-center text-zinc-900 shadow-lg shadow-zinc-200/30 md:px-8 md:py-12 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-50 dark:shadow-none";
