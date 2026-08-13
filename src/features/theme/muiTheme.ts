@@ -3,11 +3,6 @@ import type { ThemeMode } from "./theme.types";
 
 const headingFont = '"Manrope", system-ui, sans-serif';
 
-export const themeColors = {
-  light: "#fafafa",
-  dark: "#09090b",
-};
-
 const palettes = {
   light: {
     primary: "#eab308",
