@@ -5,11 +5,9 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { ThemeProvider as MuiProvider } from "@mui/material/styles";
 import { ThemeContext } from "./ThemeContext";
 import type { ThemeMode } from "./theme.types";
-import { CssBaseline } from "@mui/material";
-import { createAppTheme, themeColors } from "./muiTheme";
+import { themeColors } from "./theme.constants";
 
 interface ThemeProviderProps {
   children: ReactNode;
@@ -45,9 +43,6 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     setTheme((current) => (current === "light" ? "dark" : "light"));
   }, []);
 
-  // Creating MUI Theme
-  const muiTheme = useMemo(() => createAppTheme(theme), [theme]);
-
   const contextValue = useMemo(
     () => ({ theme, toggleTheme }),
     [theme, toggleTheme],
@@ -55,10 +50,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
   return (
     <ThemeContext.Provider value={contextValue}>
-      <MuiProvider theme={muiTheme}>
-        <CssBaseline />
-        {children}
-      </MuiProvider>
+      {children}
     </ThemeContext.Provider>
   );
 }

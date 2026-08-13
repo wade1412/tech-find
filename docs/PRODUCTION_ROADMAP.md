@@ -14,6 +14,8 @@ TechFind currently includes:
 - reversible archive and restore workflows with restricted permanent deletion;
 - URL-driven filters and management searches;
 - protection against leaving forms with unsaved changes;
+- root-level recovery UI for lazy-chunk and unexpected React render failures;
+- route-level bundle optimization with MUI isolated from public authentication pages;
 - unit, component, database integration, and browser smoke tests;
 - an automated GitHub Actions quality gate.
 
@@ -27,15 +29,16 @@ TechFind currently includes:
 
 ### Reliability and diagnostics
 
-- Add a root-level recovery experience for unexpected runtime errors.
-- Introduce production error monitoring and actionable operational alerts.
+- Add reconciliation monitoring for user-management operations that leave authentication and profile data out of sync.
+- Introduce minimal production error monitoring and actionable operational alerts.
 - Continue expanding high-value integration coverage without duplicating unit tests.
 
 ## Planned
 
 ### Performance
 
-- Analyze the production bundle and reduce unnecessary initial JavaScript.
+- Add a CI bundle-size budget to prevent regressions from the current optimized baseline.
+- Continue measuring route-level loading before introducing additional chunking rules.
 - Improve loading behavior for larger management datasets where measurements justify it.
 
 ### Data resilience

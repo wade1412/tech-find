@@ -1,10 +1,6 @@
 export const PASSWORD_MIN_LENGTH = 12;
 
-type PasswordRequirementId =
-  | "length"
-  | "lowercase"
-  | "uppercase"
-  | "digit";
+type PasswordRequirementId = "length" | "lowercase" | "uppercase" | "digit";
 
 type PasswordValidationErrorId = PasswordRequirementId | "confirmation";
 
@@ -14,10 +10,7 @@ interface PasswordRequirement {
   isMet: boolean;
 }
 
-export const PASSWORD_ERROR_TEXTS: Record<
-  PasswordValidationErrorId,
-  string
-> = {
+export const PASSWORD_ERROR_TEXTS: Record<PasswordValidationErrorId, string> = {
   length: `Password must contain at least ${PASSWORD_MIN_LENGTH} characters.`,
   lowercase: "Password must contain at least one lowercase letter.",
   uppercase: "Password must contain at least one uppercase letter.",
@@ -41,12 +34,12 @@ export const getPasswordRequirements = (
     },
     {
       id: "lowercase",
-      label: "One lowercase letter",
+      label: "One lowercase Latin letter",
       isMet: hasLowerCase,
     },
     {
       id: "uppercase",
-      label: "One uppercase letter",
+      label: "One uppercase Latin letter",
       isMet: hasUpperCase,
     },
     {

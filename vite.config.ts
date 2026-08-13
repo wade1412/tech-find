@@ -7,6 +7,10 @@ const shouldAnalyze = process.env.ANALYZE === "true";
 
 // https://vite.dev/config/
 export default defineConfig({
+  // Brand assets are static PWA files. Serving this directory as Vite's
+  // public root keeps manifest icon URLs stable instead of hashing only the
+  // HTML references while leaving manifest-internal URLs unresolved.
+  publicDir: "brand",
   plugins: [
     react(),
     tailwindcss(),

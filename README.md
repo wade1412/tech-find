@@ -197,11 +197,12 @@ Technician, user, and service-management lists also store the selected section, 
 
 - Vitest
 - Testing Library
+- Playwright
 - ESLint
 - TypeScript project builds
 - Rollup visualizer
 - local Supabase and Docker integration checks
-- Git and GitHub
+- GitHub Actions quality gate and end-to-end smoke pipeline
 
 ### Architecture
 
@@ -343,7 +344,13 @@ The current test suite covers:
 - skill templates and duplicate prevention;
 - unit, brand, brand-group, specific-issue, and service-zone search and validation;
 - management cards, archived-entity dialogs, and purge confirmations;
+- root-level runtime recovery and application/MUI theme synchronization;
 - PostgreSQL archive, restore, purge, cascade, RLS, and owner-isolation integration paths.
+
+GitHub Actions runs two automated CI jobs:
+
+- `quality-gate`: lint, unit/component tests, production build, database lint, and SQL integration tests;
+- `e2e-smoke`: a focused Playwright lifecycle check against a local Supabase instance.
 
 Run all tests once:
 
@@ -355,6 +362,12 @@ Run Vitest in watch mode:
 
 ```bash
 npm test
+```
+
+Run the focused Playwright smoke test against local Supabase:
+
+```bash
+npm run test:e2e:smoke
 ```
 
 Validate the local database schema:
@@ -435,15 +448,16 @@ Deploying the database first is required because generated TypeScript types prov
 
 ## Available Scripts
 
-| Command                 | Purpose                                                   |
-| ----------------------- | --------------------------------------------------------- |
-| `npm run dev`           | Start the Vite development server                         |
-| `npm run build`         | Run TypeScript build checks and create a production build |
-| `npm run build:analyze` | Build and generate a bundle visualization                 |
-| `npm run lint`          | Run ESLint across the project                             |
-| `npm test`              | Run Vitest in watch mode                                  |
-| `npm run test:run`      | Run the test suite once                                   |
-| `npm run preview`       | Preview the production build                              |
+| Command                  | Purpose                                                   |
+| ------------------------ | --------------------------------------------------------- |
+| `npm run dev`            | Start the Vite development server                         |
+| `npm run build`          | Run TypeScript build checks and create a production build |
+| `npm run build:analyze`  | Build and generate a bundle visualization                 |
+| `npm run lint`           | Run ESLint across the project                             |
+| `npm test`               | Run Vitest in watch mode                                  |
+| `npm run test:run`       | Run the test suite once                                   |
+| `npm run test:e2e:smoke` | Run the focused Playwright lifecycle smoke test           |
+| `npm run preview`        | Preview the production build                              |
 
 ## Current Status
 
@@ -466,13 +480,17 @@ Implemented:
 - reversible service archive workflows and restricted purge;
 - owner-profile isolation and archived-user access hardening at the database boundary;
 - unsaved-change protection for management forms and technician edit sections;
+- root-level recovery UI for lazy-chunk and unexpected React render failures;
+- route-level lazy loading with MUI scoped to the authenticated application shell;
+- an automated GitHub Actions quality gate and Playwright lifecycle smoke test;
 - transactional RPCs for multi-step technician writes;
 - unit, component, and SQL integration tests for core business rules and destructive workflows.
 
 Next improvements:
 
+- reconciliation monitoring for user-management operations that leave Auth and profile data out of sync;
+- minimal production error monitoring and operational alerts;
 - automated off-site database backups and regular restore drills;
 - technician-result image export;
 - accessibility and responsive UI polish;
-- CI-backed database integration and end-to-end smoke tests;
-- bundle-size and route-level loading optimization.
+- a CI bundle-size budget to prevent startup JavaScript regressions.

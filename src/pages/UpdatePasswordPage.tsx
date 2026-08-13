@@ -9,12 +9,13 @@ import {
   clearPasswordRecoverySession,
   hasPasswordRecoverySession,
 } from "../features/auth/model/auth.recovery";
-import AuthPageShell, {
+import AuthPageShell from "../features/auth/ui/AuthPageShell";
+import {
+  formInputStyle,
   authErrorStyle,
-  authInputStyle,
   authLabelStyle,
-} from "../features/auth/ui/AuthPageShell";
-import { primaryButton } from "../shared/styles/styles";
+  primaryButton,
+} from "../shared/styles/styles";
 import {
   getPasswordRequirements,
   PASSWORD_MIN_LENGTH,
@@ -157,7 +158,7 @@ function UpdatePasswordPage() {
       title="Create a new password"
       description="Use a strong, unique password for your TechFind account."
     >
-      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+      <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
         <label className={authLabelStyle}>
           New password
           <input
@@ -172,7 +173,7 @@ function UpdatePasswordPage() {
             minLength={PASSWORD_MIN_LENGTH}
             aria-describedby="password-requirements"
             required
-            className={authInputStyle}
+            className={formInputStyle}
           />
         </label>
 
@@ -243,7 +244,7 @@ function UpdatePasswordPage() {
             autoComplete="new-password"
             minLength={PASSWORD_MIN_LENGTH}
             required
-            className={authInputStyle}
+            className={formInputStyle}
           />
         </label>
 

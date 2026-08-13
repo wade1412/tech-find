@@ -131,6 +131,42 @@ function isConflictError(message: string, code?: string): boolean {
   );
 }
 
+function getInviteFailure(
+  message: string,
+  code?: string,
+): { message: string; status: number } {
+  const normalized = message.toLowerCase();
+
+  if (
+    code === "over_email_send_rate_limit" ||
+    normalized.includes("rate limit") ||
+    normalized.includes("too many requests")
+  ) {
+    return {
+      status: 429,
+      message:
+        "The authentication email limit has been reached. Wait and try again, or configure custom SMTP in Supabase.",
+    };
+  }
+
+  if (
+    code === "email_address_not_authorized" ||
+    normalized.includes("email address not authorized")
+  ) {
+    return {
+      status: 400,
+      message:
+        "Supabase cannot send invitations to this address until custom SMTP is configured.",
+    };
+  }
+
+  if (isConflictError(message, code)) {
+    return { status: 409, message: "A user with this email already exists." };
+  }
+
+  return { status: 400, message: "We could not send the user invitation." };
+}
+
 Deno.serve(async (request) => {
   if (request.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -241,13 +277,10 @@ Deno.serve(async (request) => {
 
   if (inviteError || !inviteData.user) {
     const message = inviteError?.message ?? "Failed to invite user";
+    const failure = getInviteFailure(message, inviteError?.code);
     await writeAudit({ outcome: "failed", errorMessage: message });
 
-    return jsonResponse(isConflictError(message) ? 409 : 400, {
-      message: isConflictError(message)
-        ? "A user with this email already exists."
-        : "We could not send the user invitation.",
-    });
+    return jsonResponse(failure.status, { message: failure.message });
   }
 
   const invitedUserId = inviteData.user.id;
