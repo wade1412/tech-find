@@ -6,10 +6,10 @@ import { FullPageSpinner } from "../shared/ui/Spinners";
 import { isAppAuthError } from "../features/auth/model/auth.errors";
 import {
   formInputStyle,
-  loginContainerStyle,
-  loginErrorStyle,
-  loginFormStyle,
-  loginLabelStyle,
+  authContainerStyle,
+  authErrorStyle,
+  authFormStyle,
+  authLabelStyle,
   primaryButton,
 } from "../shared/styles/styles";
 import { AnimatePresence, motion } from "motion/react";
@@ -82,11 +82,11 @@ function LoginPage() {
   }
 
   return (
-    <div className={loginContainerStyle}>
+    <div className={authContainerStyle}>
       <AuthHeader />
 
       <main className="flex flex-1 items-center justify-center px-4 py-12">
-        <form onSubmit={handleSubmit} className={loginFormStyle}>
+        <form onSubmit={handleSubmit} className={authFormStyle}>
           {/* Header */}
           <div className="space-y-1">
             <h1 className="font-heading text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
@@ -98,7 +98,7 @@ function LoginPage() {
           </div>
 
           {/* Inputs */}
-          <label className={loginLabelStyle}>
+          <label className={authLabelStyle}>
             Email
             <input
               value={email}
@@ -112,7 +112,7 @@ function LoginPage() {
             />
           </label>
 
-          <label className={loginLabelStyle}>
+          <label className={authLabelStyle}>
             Password
             <input
               value={password}
@@ -142,7 +142,7 @@ function LoginPage() {
                 transition={{ duration: 0.18, ease: "easeOut" }}
                 style={{ overflow: "hidden" }}
               >
-                <p role="alert" className={loginErrorStyle}>
+                <p role="alert" className={authErrorStyle}>
                   {formError}
                 </p>
               </motion.div>

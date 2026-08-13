@@ -6,8 +6,8 @@ import AuthPageShell from "../features/auth/ui/AuthPageShell";
 import {
   formInputStyle,
   formStyle,
-  loginErrorStyle,
-  loginLabelStyle,
+  authErrorStyle,
+  authLabelStyle,
   primaryButton,
 } from "../shared/styles/styles";
 
@@ -62,7 +62,7 @@ function ForgotPasswordPage() {
         </div>
       ) : (
         <form onSubmit={handleSubmit} className={formStyle}>
-          <label className={loginLabelStyle}>
+          <label className={authLabelStyle}>
             Email
             <input
               value={email}
@@ -77,7 +77,7 @@ function ForgotPasswordPage() {
           </label>
 
           {error && (
-            <p role="alert" className={loginErrorStyle}>
+            <p role="alert" className={authErrorStyle}>
               {error}
             </p>
           )}

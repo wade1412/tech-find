@@ -10,10 +10,8 @@ import {
   parseImplicitEmailLink,
   parseSecureEmailLink,
 } from "../features/auth/model/auth.recovery";
-import AuthPageShell, {
-  authErrorStyle,
-} from "../features/auth/ui/AuthPageShell";
-import { primaryButton } from "../shared/styles/styles";
+import AuthPageShell from "../features/auth/ui/AuthPageShell";
+import { authErrorStyle, primaryButton } from "../shared/styles/styles";
 
 function SecureEmailLinkPage() {
   const location = useLocation();
@@ -27,12 +25,10 @@ function SecureEmailLinkPage() {
     [location.hash],
   );
   const [verificationError, setVerificationError] = useState("");
-  const error =
-    link.success || implicitLink ? verificationError : link.error;
+  const error = link.success || implicitLink ? verificationError : link.error;
   const linkType = link.success ? link.params.type : implicitLink?.type;
   const isRecoveryLink = linkType === "recovery";
-  const isPasswordSetupLink =
-    linkType === "recovery" || linkType === "invite";
+  const isPasswordSetupLink = linkType === "recovery" || linkType === "invite";
 
   useEffect(() => {
     let isActive = true;
@@ -121,7 +117,10 @@ function SecureEmailLinkPage() {
           </Link>
         </div>
       ) : (
-        <div role="status" className="flex items-center gap-3 text-sm text-zinc-500 dark:text-zinc-400">
+        <div
+          role="status"
+          className="flex items-center gap-3 text-sm text-zinc-500 dark:text-zinc-400"
+        >
           <span
             aria-hidden="true"
             className="h-5 w-5 animate-spin rounded-full border-2 border-zinc-300 border-t-main-500 dark:border-zinc-700 dark:border-t-main-500"

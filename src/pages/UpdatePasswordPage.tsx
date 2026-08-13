@@ -12,8 +12,8 @@ import {
 import AuthPageShell from "../features/auth/ui/AuthPageShell";
 import {
   formInputStyle,
-  loginErrorStyle,
-  loginLabelStyle,
+  authErrorStyle,
+  authLabelStyle,
   primaryButton,
 } from "../shared/styles/styles";
 import {
@@ -159,7 +159,7 @@ function UpdatePasswordPage() {
       description="Use a strong, unique password for your TechFind account."
     >
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
-        <label className={loginLabelStyle}>
+        <label className={authLabelStyle}>
           New password
           <input
             value={password}
@@ -231,7 +231,7 @@ function UpdatePasswordPage() {
           </ul>
         </div>
 
-        <label className={loginLabelStyle}>
+        <label className={authLabelStyle}>
           Confirm new password
           <input
             value={confirmation}
@@ -249,7 +249,7 @@ function UpdatePasswordPage() {
         </label>
 
         {error && (
-          <p role="alert" className={loginErrorStyle}>
+          <p role="alert" className={authErrorStyle}>
             {error}
           </p>
         )}

@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import AuthHeader from "../../../layouts/AuthHeader";
 import {
-  loginContainerStyle,
-  loginFormStyle,
+  authContainerStyle,
+  authFormStyle,
 } from "../../../shared/styles/styles";
 
 type AuthPageShellProps = {
@@ -13,11 +13,11 @@ type AuthPageShellProps = {
 
 function AuthPageShell({ title, description, children }: AuthPageShellProps) {
   return (
-    <div className={loginContainerStyle}>
+    <div className={authContainerStyle}>
       <AuthHeader />
 
       <main className="flex flex-1 items-center justify-center px-4 py-12">
-        <section className={loginFormStyle}>
+        <section className={authFormStyle}>
           <div className="space-y-1">
             <h1 className="font-heading text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
               {title}
