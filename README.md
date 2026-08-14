@@ -2,7 +2,11 @@
 
 TechFind is a React and TypeScript application that helps appliance-repair dispatchers find technicians who match a service request.
 
-The production-readiness implementation plan is tracked in [docs/PRODUCTION_ROADMAP.md](docs/PRODUCTION_ROADMAP.md).
+Project documentation:
+
+- [Production roadmap](docs/PRODUCTION_ROADMAP.md)
+- [Backup, restore, and reconciliation operations guide](docs/OPERATIONS_GUIDE.md)
+- [Customer administrator runbook](docs/RUNBOOK.md)
 
 Matching is based on appliance units, service zones, brands, specific issues, job requirements, technician skills, capabilities, and technician-specific ignore rules. The project is built as a portfolio and learning application around realistic business rules, frontend architecture, authentication, authorization, and Supabase-backed data.
 
@@ -121,14 +125,14 @@ Protected and permission-aware routes separate general application access from a
 
 Current permissions:
 
-| Capability                                | Minimum role      |
-| ----------------------------------------- | ----------------- |
-| View the application                      | Active user       |
-| Create or edit technicians                | `secondary_admin` |
-| Archive or restore technicians            | `main_admin`      |
+| Capability                                 | Minimum role      |
+| ------------------------------------------ | ----------------- |
+| View the application                       | Active user       |
+| Create or edit technicians                 | `secondary_admin` |
+| Archive or restore technicians             | `main_admin`      |
 | Create, edit, archive, or restore services | `main_admin`      |
-| Create, edit, archive, or restore users   | `main_admin`      |
-| Permanently purge archived entities       | `main_admin`      |
+| Create, edit, archive, or restore users    | `main_admin`      |
+| Permanently purge archived entities        | `main_admin`      |
 
 Frontend permission checks control navigation and route access. Supabase Row Level Security, column grants, constraints, and permission-aware RPCs form the database security boundary.
 
@@ -300,31 +304,31 @@ All public tables have Row Level Security enabled. Lifecycle metadata is control
 
 ## Routes
 
-| Route                             | Purpose                            |
-| --------------------------------- | ---------------------------------- |
-| `/login`                          | Authentication                     |
-| `/forgot-password`                | Request a password recovery email  |
-| `/secure-email-link`              | Verify Supabase email-link tokens  |
-| `/update-password`                | Update a password in recovery mode |
-| `/email-confirmation`             | Display email confirmation status  |
-| `/`                               | Technician matching workspace      |
-| `/technicians`                    | Technician management              |
-| `/technicians/new`                | Create a technician                |
-| `/technicians/:technicianId/edit` | Technician editor                  |
-| `/services`                       | Service management                 |
-| `/services/units/new`             | Create a unit                      |
-| `/services/units/:unitId/edit`    | Unit editor                        |
-| `/services/brands/new`            | Create a brand                     |
-| `/services/brands/:brandId/edit`  | Brand editor                       |
-| `/services/brand-groups/new`      | Create a brand group               |
-| `/services/brand-groups/:brandGroupId/edit` | Brand-group editor        |
-| `/services/specific-issues/new`   | Create a specific issue            |
-| `/services/specific-issues/:specificIssueId/edit` | Specific-issue editor |
-| `/services/zones/new`             | Create a service zone              |
-| `/services/zones/:zoneId/edit`    | Service-zone editor                |
-| `/users`                          | User management                    |
-| `/users/new`                      | Invite a new user                  |
-| `/users/:userId/edit`             | User editor                        |
+| Route                                             | Purpose                            |
+| ------------------------------------------------- | ---------------------------------- |
+| `/login`                                          | Authentication                     |
+| `/forgot-password`                                | Request a password recovery email  |
+| `/secure-email-link`                              | Verify Supabase email-link tokens  |
+| `/update-password`                                | Update a password in recovery mode |
+| `/email-confirmation`                             | Display email confirmation status  |
+| `/`                                               | Technician matching workspace      |
+| `/technicians`                                    | Technician management              |
+| `/technicians/new`                                | Create a technician                |
+| `/technicians/:technicianId/edit`                 | Technician editor                  |
+| `/services`                                       | Service management                 |
+| `/services/units/new`                             | Create a unit                      |
+| `/services/units/:unitId/edit`                    | Unit editor                        |
+| `/services/brands/new`                            | Create a brand                     |
+| `/services/brands/:brandId/edit`                  | Brand editor                       |
+| `/services/brand-groups/new`                      | Create a brand group               |
+| `/services/brand-groups/:brandGroupId/edit`       | Brand-group editor                 |
+| `/services/specific-issues/new`                   | Create a specific issue            |
+| `/services/specific-issues/:specificIssueId/edit` | Specific-issue editor              |
+| `/services/zones/new`                             | Create a service zone              |
+| `/services/zones/:zoneId/edit`                    | Service-zone editor                |
+| `/users`                                          | User management                    |
+| `/users/new`                                      | Invite a new user                  |
+| `/users/:userId/edit`                             | User editor                        |
 
 The service and user management pages are protected by role-aware routes and database permissions.
 
@@ -379,7 +383,7 @@ npx supabase db lint
 Transactional SQL integration tests live in `supabase/tests`. They insert isolated fixtures, exercise requests as real `authenticated` roles, and roll back their data after each run. On PowerShell, run the complete set against the local Supabase database with:
 
 ```powershell
-Get-ChildItem .\supabase\tests\*_integration_test.sql | Sort-Object Name | ForEach-Object {
+Get-ChildItem .\supabase\tests\*_test.sql | Sort-Object Name | ForEach-Object {
   Get-Content -Raw $_.FullName |
     docker exec -i supabase_db_tech-find psql -v ON_ERROR_STOP=1 -U postgres -d postgres
 }
@@ -479,8 +483,10 @@ Implemented:
 - unit, brand-group, brand, specific-issue, and service-zone management;
 - reversible service archive workflows and restricted purge;
 - owner-profile isolation and archived-user access hardening at the database boundary;
+- explicit anonymous-RPC restrictions and hardened database function search paths;
 - unsaved-change protection for management forms and technician edit sections;
 - root-level recovery UI for lazy-chunk and unexpected React render failures;
+- production HTTP security headers and an Edge Function CORS origin allowlist;
 - route-level lazy loading with MUI scoped to the authenticated application shell;
 - an automated GitHub Actions quality gate and Playwright lifecycle smoke test;
 - transactional RPCs for multi-step technician writes;
@@ -488,9 +494,9 @@ Implemented:
 
 Next improvements:
 
-- reconciliation monitoring for user-management operations that leave Auth and profile data out of sync;
+- implement the documented reconciliation monitor for user-management operations that leave Auth and profile data out of sync;
 - minimal production error monitoring and operational alerts;
-- automated off-site database backups and regular restore drills;
+- automate the documented off-site backup process and record regular restore drills;
 - technician-result image export;
 - accessibility and responsive UI polish;
 - a CI bundle-size budget to prevent startup JavaScript regressions.

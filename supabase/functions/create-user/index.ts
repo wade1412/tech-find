@@ -1,5 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2.106.1";
-import { corsHeaders } from "../_shared/cors.ts";
+import { getCorsHeaders } from "../_shared/cors.ts";
 
 const APP_ROLES = ["user", "secondary_admin", "main_admin", "owner"] as const;
 type AppRole = (typeof APP_ROLES)[number];
@@ -49,7 +49,11 @@ function getAllowedRedirectOrigins(): Set<string> {
   ]);
 }
 
-function jsonResponse(status: number, body: Record<string, unknown>) {
+function jsonResponse(
+  status: number,
+  body: Record<string, unknown>,
+  corsHeaders: Record<string, string>,
+) {
   return new Response(JSON.stringify(body), {
     status,
     headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -168,12 +172,24 @@ function getInviteFailure(
 }
 
 Deno.serve(async (request) => {
+  const corsHeaders = getCorsHeaders(request);
+
+  if (!corsHeaders) {
+    return new Response(JSON.stringify({ message: "Origin not allowed" }), {
+      status: 403,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  const respond = (status: number, body: Record<string, unknown>) =>
+    jsonResponse(status, body, corsHeaders);
+
   if (request.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
 
   if (request.method !== "POST") {
-    return jsonResponse(405, { message: "Method not allowed" });
+    return respond(405, { message: "Method not allowed" });
   }
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
@@ -184,11 +200,11 @@ Deno.serve(async (request) => {
 
   if (!supabaseUrl || !adminKey) {
     console.error("Missing Supabase server environment variables");
-    return jsonResponse(500, { message: "Server configuration error" });
+    return respond(500, { message: "Server configuration error" });
   }
 
   if (!authorization?.startsWith("Bearer ")) {
-    return jsonResponse(401, { message: "Authentication required" });
+    return respond(401, { message: "Authentication required" });
   }
 
   const admin = createClient(supabaseUrl, adminKey, {
@@ -202,19 +218,19 @@ Deno.serve(async (request) => {
   const { data: authData, error: authError } = await admin.auth.getUser(token);
 
   if (authError || !authData.user) {
-    return jsonResponse(401, { message: "Invalid or expired session" });
+    return respond(401, { message: "Invalid or expired session" });
   }
 
   let requestBody: unknown;
   try {
     requestBody = await request.json();
   } catch {
-    return jsonResponse(400, { message: "Request body must be valid JSON" });
+    return respond(400, { message: "Request body must be valid JSON" });
   }
 
   const input = parsePayload(requestBody);
   if (!input) {
-    return jsonResponse(400, { message: "Invalid user data" });
+    return respond(400, { message: "Invalid user data" });
   }
 
   const { data: actor, error: actorError } = await admin
@@ -224,12 +240,12 @@ Deno.serve(async (request) => {
     .single();
 
   if (actorError || !actor) {
-    return jsonResponse(403, { message: "Active admin profile required" });
+    return respond(403, { message: "Active admin profile required" });
   }
 
   const actorProfile = actor as UserProfile;
   if (!canCreateRole(actorProfile, input.role)) {
-    return jsonResponse(403, {
+    return respond(403, {
       message:
         actorProfile.role === "owner"
           ? "You do not have permission to create users."
@@ -280,7 +296,7 @@ Deno.serve(async (request) => {
     const failure = getInviteFailure(message, inviteError?.code);
     await writeAudit({ outcome: "failed", errorMessage: message });
 
-    return jsonResponse(failure.status, { message: failure.message });
+    return respond(failure.status, { message: failure.message });
   }
 
   const invitedUserId = inviteData.user.id;
@@ -314,7 +330,7 @@ Deno.serve(async (request) => {
       requiresReconciliation,
     });
 
-    return jsonResponse(
+    return respond(
       isConflictError(profileError?.message ?? "", profileError?.code)
         ? 409
         : 500,
@@ -336,5 +352,5 @@ Deno.serve(async (request) => {
     user,
   });
 
-  return jsonResponse(201, { user });
+  return respond(201, { user });
 });

@@ -97,10 +97,6 @@ export const getCurrentAuthSession = async () => {
 
 const getPasswordUpdateErrorMessage = (error: AuthError) => {
   if (isAuthWeakPasswordError(error)) {
-    if (error.reasons.includes("pwned")) {
-      return "This password has appeared in a known data breach. Choose a different password.";
-    }
-
     if (error.reasons.includes("length")) {
       return `Password must contain at least ${PASSWORD_MIN_LENGTH} characters.`;
     }
