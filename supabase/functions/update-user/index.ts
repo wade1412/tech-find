@@ -1,5 +1,5 @@
 import { createClient, type AdminUserAttributes } from "npm:@supabase/supabase-js@2.106.1";
-import { corsHeaders } from "../_shared/cors.ts";
+import { getCorsHeaders } from "../_shared/cors.ts";
 
 const APP_ROLES = ["user", "secondary_admin", "main_admin", "owner"] as const;
 type AppRole = (typeof APP_ROLES)[number];
@@ -34,7 +34,11 @@ const ROLE_LEVEL: Record<AppRole, number> = {
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-function jsonResponse(status: number, body: Record<string, unknown>) {
+function jsonResponse(
+  status: number,
+  body: Record<string, unknown>,
+  corsHeaders: Record<string, string>,
+) {
   return new Response(JSON.stringify(body), {
     status,
     headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -135,12 +139,24 @@ function isConflictError(message: string, code?: string): boolean {
 }
 
 Deno.serve(async (request) => {
+  const corsHeaders = getCorsHeaders(request);
+
+  if (!corsHeaders) {
+    return new Response(JSON.stringify({ message: "Origin not allowed" }), {
+      status: 403,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  const respond = (status: number, body: Record<string, unknown>) =>
+    jsonResponse(status, body, corsHeaders);
+
   if (request.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
 
   if (request.method !== "POST") {
-    return jsonResponse(405, { message: "Method not allowed" });
+    return respond(405, { message: "Method not allowed" });
   }
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
@@ -151,11 +167,11 @@ Deno.serve(async (request) => {
 
   if (!supabaseUrl || !adminKey) {
     console.error("Missing Supabase server environment variables");
-    return jsonResponse(500, { message: "Server configuration error" });
+    return respond(500, { message: "Server configuration error" });
   }
 
   if (!authorization?.startsWith("Bearer ")) {
-    return jsonResponse(401, { message: "Authentication required" });
+    return respond(401, { message: "Authentication required" });
   }
 
   const admin = createClient(supabaseUrl, adminKey, {
@@ -169,19 +185,19 @@ Deno.serve(async (request) => {
   const { data: authData, error: authError } = await admin.auth.getUser(token);
 
   if (authError || !authData.user) {
-    return jsonResponse(401, { message: "Invalid or expired session" });
+    return respond(401, { message: "Invalid or expired session" });
   }
 
   let requestBody: unknown;
   try {
     requestBody = await request.json();
   } catch {
-    return jsonResponse(400, { message: "Request body must be valid JSON" });
+    return respond(400, { message: "Request body must be valid JSON" });
   }
 
   const update = parsePayload(requestBody);
   if (!update) {
-    return jsonResponse(400, { message: "Invalid user data" });
+    return respond(400, { message: "Invalid user data" });
   }
 
   const [{ data: actor, error: actorError }, { data: target, error: targetError }] =
@@ -196,23 +212,23 @@ Deno.serve(async (request) => {
     ]);
 
   if (actorError || !actor) {
-    return jsonResponse(403, { message: "Active admin profile required" });
+    return respond(403, { message: "Active admin profile required" });
   }
 
   if (targetError || !target) {
-    return jsonResponse(404, { message: "User not found" });
+    return respond(404, { message: "User not found" });
   }
 
   const actorProfile = actor as UserProfile;
   const targetProfile = target as UserProfile;
 
   if (actorProfile.role !== "owner" && targetProfile.role === "owner") {
-    return jsonResponse(404, { message: "User not found" });
+    return respond(404, { message: "User not found" });
   }
 
   const permissionError = canEditTarget(actorProfile, targetProfile, update);
   if (permissionError) {
-    return jsonResponse(403, { message: permissionError });
+    return respond(403, { message: permissionError });
   }
 
   const writeAudit = async ({
@@ -247,7 +263,7 @@ Deno.serve(async (request) => {
       outcome: "conflict",
       errorMessage: "The supplied profile version is stale.",
     });
-    return jsonResponse(409, {
+    return respond(409, {
       message:
         "This user was changed by another administrator. Discard your changes to load the latest version.",
     });
@@ -273,7 +289,7 @@ Deno.serve(async (request) => {
         outcome: "conflict",
         errorMessage: "The profile changed during the update.",
       });
-      return jsonResponse(409, {
+      return respond(409, {
         message:
           "This user was changed by another administrator. Discard your changes to load the latest version.",
       });
@@ -284,7 +300,7 @@ Deno.serve(async (request) => {
       outcome: "failed",
       errorMessage: profileError.message,
     });
-    return jsonResponse(conflict ? 409 : 500, {
+    return respond(conflict ? 409 : 500, {
       message: conflict
         ? "A user with this email already exists."
         : "Failed to update user profile.",
@@ -343,7 +359,7 @@ Deno.serve(async (request) => {
         requiresReconciliation,
       });
 
-      return jsonResponse(isConflictError(error.message) ? 409 : 400, {
+      return respond(isConflictError(error.message) ? 409 : 400, {
         message: isConflictError(error.message)
           ? "A user with this email already exists."
           : "Failed to update the user's authentication account.",
@@ -356,5 +372,5 @@ Deno.serve(async (request) => {
     outcome: "succeeded",
   });
 
-  return jsonResponse(200, { user: updatedProfile });
+  return respond(200, { user: updatedProfile });
 });

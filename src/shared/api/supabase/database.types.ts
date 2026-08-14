@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -401,21 +401,7 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "technician_skill_set_brandGroupId_fkey"
-            columns: ["brand_group_id"]
-            isOneToOne: false
-            referencedRelation: "brand_group"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "technician_skill_set_specific_issue_id_fkey"
-            columns: ["specific_issue_id"]
-            isOneToOne: false
-            referencedRelation: "specific_issue"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "technician_skill_set_specificIssueId_fkey"
             columns: ["specific_issue_id"]
             isOneToOne: false
             referencedRelation: "specific_issue"
@@ -430,13 +416,6 @@ export type Database = {
           },
           {
             foreignKeyName: "technician_skill_set_unit_id_fkey"
-            columns: ["unit_id"]
-            isOneToOne: false
-            referencedRelation: "unit"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "technician_skill_set_unitId_fkey"
             columns: ["unit_id"]
             isOneToOne: false
             referencedRelation: "unit"
@@ -501,36 +480,51 @@ export type Database = {
         Row: {
           actor_id: string
           after_state: Json | null
+          alert_count: number
           before_state: Json | null
           created_at: string
           error_message: string | null
           id: string
+          last_alerted_at: string | null
           operation: string
           outcome: string
+          reconciled_at: string | null
+          reconciled_by: string | null
+          reconciliation_note: string | null
           requires_reconciliation: boolean
           target_user_id: string | null
         }
         Insert: {
           actor_id: string
           after_state?: Json | null
+          alert_count?: number
           before_state?: Json | null
           created_at?: string
           error_message?: string | null
           id?: string
+          last_alerted_at?: string | null
           operation: string
           outcome: string
+          reconciled_at?: string | null
+          reconciled_by?: string | null
+          reconciliation_note?: string | null
           requires_reconciliation?: boolean
           target_user_id?: string | null
         }
         Update: {
           actor_id?: string
           after_state?: Json | null
+          alert_count?: number
           before_state?: Json | null
           created_at?: string
           error_message?: string | null
           id?: string
+          last_alerted_at?: string | null
           operation?: string
           outcome?: string
+          reconciled_at?: string | null
+          reconciled_by?: string | null
+          reconciliation_note?: string | null
           requires_reconciliation?: boolean
           target_user_id?: string | null
         }
@@ -600,12 +594,12 @@ export type Database = {
         Args: { p_brand_group_id: string }
         Returns: string
       }
-      archive_specific_issue: {
-        Args: { p_specific_issue_id: string }
-        Returns: string
-      }
       archive_service_zone: {
         Args: { p_service_zone_id: string }
+        Returns: string
+      }
+      archive_specific_issue: {
+        Args: { p_specific_issue_id: string }
         Returns: string
       }
       archive_technician: { Args: { p_technician_id: string }; Returns: string }
@@ -652,28 +646,32 @@ export type Database = {
       }
       purge_brand: { Args: { p_brand_id: string }; Returns: string }
       purge_brand_group: { Args: { p_brand_group_id: string }; Returns: string }
-      purge_specific_issue: {
-        Args: { p_specific_issue_id: string }
-        Returns: string
-      }
       purge_service_zone: {
         Args: { p_service_zone_id: string }
+        Returns: string
+      }
+      purge_specific_issue: {
+        Args: { p_specific_issue_id: string }
         Returns: string
       }
       purge_technician: { Args: { p_technician_id: string }; Returns: string }
       purge_unit: { Args: { p_unit_id: string }; Returns: string }
       purge_user: { Args: { p_user_id: string }; Returns: string }
+      resolve_user_management_reconciliation: {
+        Args: { p_audit_id: string; p_resolution_note: string }
+        Returns: undefined
+      }
       restore_brand: { Args: { p_brand_id: string }; Returns: string }
       restore_brand_group: {
         Args: { p_brand_group_id: string }
         Returns: string
       }
-      restore_specific_issue: {
-        Args: { p_specific_issue_id: string }
-        Returns: string
-      }
       restore_service_zone: {
         Args: { p_service_zone_id: string }
+        Returns: string
+      }
+      restore_specific_issue: {
+        Args: { p_specific_issue_id: string }
         Returns: string
       }
       restore_technician: { Args: { p_technician_id: string }; Returns: string }
