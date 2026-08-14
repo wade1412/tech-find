@@ -68,7 +68,7 @@ jobs:
           set -euo pipefail
 
           shopt -s nullglob
-          test_files=(supabase/tests/*_integration_test.sql)
+          test_files=(supabase/tests/*_test.sql)
 
           if (( ${#test_files[@]} == 0 )); then
             echo "No SQL integration tests found."
