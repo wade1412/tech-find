@@ -117,14 +117,14 @@ jobs:
 
       - name: Start local Supabase
         id: supabase_start
-        # The smoke test creates its user through the Admin API and exercises
-        # service-zone RPCs; it does not invoke an Edge Function.
-        run: npx supabase start --exclude edge-runtime
+        # User-management smoke coverage invokes create-user and update-user,
+        # so the local Edge Runtime is part of this integration boundary.
+        run: npx supabase start
 
       - name: Prepare local E2E environment
         run: npm run test:e2e:prepare
 
-      - name: Create local E2E main dmin
+      - name: Create local E2E main admin
         run: npm run test:e2e:setup
 
       - name: Run Playwright smoke test
