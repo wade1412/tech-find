@@ -163,6 +163,8 @@ site_url = "http://localhost:5173"
 additional_redirect_urls = [
   "http://localhost:5173/secure-email-link",
   "http://localhost:5173/update-password",
+  "http://127.0.0.1:5173/secure-email-link",
+  "http://127.0.0.1:5173/update-password",
   "https://tech-find.vercel.app/secure-email-link",
   "https://tech-find.vercel.app/update-password",
 ]

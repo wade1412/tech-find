@@ -1,14 +1,44 @@
 # 🔍 TechFind
 
-TechFind is a React and TypeScript application that helps appliance-repair dispatchers find technicians who match a service request.
+TechFind is a technician-matching and service-management application for appliance-repair dispatch teams. It replaces manual cross-checking of technician coverage, skills, brand support, job constraints, and exclusions with one consistent workflow.
 
-Project documentation:
+## Business Problem
 
-- [Production roadmap](docs/PRODUCTION_ROADMAP.md)
+Dispatchers need to assign the right technician quickly, but the decision depends on data spread across service zones, appliance types, brands, specific issues, capabilities, skills, and technician-specific restrictions. TechFind resolves those rules into a focused list of eligible technicians and gives authorized administrators one place to maintain the underlying data.
+
+## Core Workflow
+
+1. A dispatcher selects the service zone and appliance details for a job.
+2. TechFind applies active-status, capability, skill, brand, issue, and ignore-list rules.
+3. Matching technicians are filtered and ordered for the dispatcher.
+4. Administrators maintain technicians, users, and the service catalog through role-protected management workflows.
+5. Reversible archive/restore operations are separated from explicitly confirmed permanent purge operations.
+
+## Security Model
+
+- Supabase Auth provides user identity and session management.
+- `user`, `secondary_admin`, `main_admin`, and provider-owned `owner` roles define application capabilities.
+- Frontend route guards improve the user experience, while PostgreSQL RLS, grants, constraints, and permission-aware RPCs enforce the actual security boundary.
+- Privileged Auth/profile synchronization runs in Supabase Edge Functions; service-role credentials are never exposed to the browser.
+- Owner profiles are hidden from non-owners, archived accounts are blocked, and `main_admin` purge operations remain limited to lower-role archived records.
+
+## Supported Deployment
+
+- Vercel hosts the Vite/React frontend and production security headers.
+- Supabase hosts PostgreSQL, Auth, Row Level Security, RPCs, and Edge Functions.
+- GitHub Actions runs lint, tests, production build, database lint, SQL integration tests, and Playwright smoke coverage.
+- Docker and the Supabase CLI provide the isolated local development and test environment.
+
+## Operational Status
+
+The core matching, management, authorization, archive, restore, and purge workflows are implemented. Production hardening includes generated database types, a root error boundary, HTTP security headers, Edge Function origin restrictions, and automated CI quality gates.
+
+Encrypted off-site backup automation and scheduled reconciliation alerts are documented operational requirements that still need to be enabled and verified before TechFind is treated as an unattended production service. See the operations guide for the current recovery and monitoring plan.
+
+## Project Documentation
+
 - [Backup, restore, and reconciliation operations guide](docs/OPERATIONS_GUIDE.md)
 - [Customer administrator runbook](docs/RUNBOOK.md)
-
-Matching is based on appliance units, service zones, brands, specific issues, job requirements, technician skills, capabilities, and technician-specific ignore rules. The project is built as a portfolio and learning application around realistic business rules, frontend architecture, authentication, authorization, and Supabase-backed data.
 
 ## 🔁 Core Workflows
 
@@ -354,7 +384,7 @@ The current test suite covers:
 GitHub Actions runs two automated CI jobs:
 
 - `quality-gate`: lint, unit/component tests, production build, database lint, and SQL integration tests;
-- `e2e-smoke`: a focused Playwright lifecycle check against a local Supabase instance.
+- `e2e-smoke`: focused Playwright lifecycle checks for service zones and the Auth/user-profile management boundary against local Supabase.
 
 Run all tests once:
 
@@ -368,7 +398,7 @@ Run Vitest in watch mode:
 npm test
 ```
 
-Run the focused Playwright smoke test against local Supabase:
+Run the focused Playwright lifecycle smoke tests against local Supabase:
 
 ```bash
 npm run test:e2e:smoke
@@ -452,16 +482,17 @@ Deploying the database first is required because generated TypeScript types prov
 
 ## Available Scripts
 
-| Command                  | Purpose                                                   |
-| ------------------------ | --------------------------------------------------------- |
-| `npm run dev`            | Start the Vite development server                         |
-| `npm run build`          | Run TypeScript build checks and create a production build |
-| `npm run build:analyze`  | Build and generate a bundle visualization                 |
-| `npm run lint`           | Run ESLint across the project                             |
-| `npm test`               | Run Vitest in watch mode                                  |
-| `npm run test:run`       | Run the test suite once                                   |
-| `npm run test:e2e:smoke` | Run the focused Playwright lifecycle smoke test           |
-| `npm run preview`        | Preview the production build                              |
+| Command                                     | Purpose                                                   |
+| ------------------------------------------- | --------------------------------------------------------- |
+| `npm run dev`                               | Start the Vite development server                         |
+| `npm run build`                             | Run TypeScript build checks and create a production build |
+| `npm run build:analyze`                     | Build and generate a bundle visualization                 |
+| `npm run lint`                              | Run ESLint across the project                             |
+| `npm test`                                  | Run Vitest in watch mode                                  |
+| `npm run test:run`                          | Run the test suite once                                   |
+| `npm run test:e2e:smoke`                    | Run both Playwright lifecycle smoke tests                 |
+| `npm run test:e2e:user-management-smoke`    | Run only the user-management lifecycle smoke test         |
+| `npm run preview`                           | Preview the production build                              |
 
 ## Current Status
 

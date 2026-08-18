@@ -32,6 +32,7 @@ const ROLE_LEVEL: Record<AppRole, number> = {
 };
 const DEFAULT_ALLOWED_REDIRECT_ORIGINS = [
   "http://localhost:5173",
+  "http://127.0.0.1:5173",
   "https://tech-find.vercel.app",
 ];
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
