@@ -2,6 +2,12 @@
 
 TechFind is a technician-matching and service-management application for appliance-repair dispatch teams. It replaces manual cross-checking of technician coverage, skills, brand support, job constraints, and exclusions with one consistent workflow.
 
+## Project Background
+
+TechFind grew from a real appliance-repair dispatch workflow and is independently maintained as a production-oriented learning project for personal use and professional development. It is a functional application rather than a commercial customer deployment, and it is not affiliated with, endorsed by, or developed on behalf of any specific employer.
+
+The project intentionally applies production-shaped engineering practices—including layered authorization, database migrations, automated testing, CI, recovery planning, and operational documentation—so that architectural and operational decisions can be learned in a realistic system rather than in isolated examples.
+
 ## Business Problem
 
 Dispatchers need to assign the right technician quickly, but the decision depends on data spread across service zones, appliance types, brands, specific issues, capabilities, skills, and technician-specific restrictions. TechFind resolves those rules into a focused list of eligible technicians and gives authorized administrators one place to maintain the underlying data.
@@ -33,12 +39,12 @@ Dispatchers need to assign the right technician quickly, but the decision depend
 
 The core matching, management, authorization, archive, restore, and purge workflows are implemented. Production hardening includes generated database types, a root error boundary, HTTP security headers, Edge Function origin restrictions, and automated CI quality gates.
 
-Encrypted off-site backup automation and scheduled reconciliation alerts are documented operational requirements that still need to be enabled and verified before TechFind is treated as an unattended production service. See the operations guide for the current recovery and monitoring plan.
+Encrypted off-site backup automation and scheduled reconciliation alerts are documented production-readiness exercises that still need to be implemented and verified before TechFind could be treated as an unattended production service. See the operations guide for the reference recovery and monitoring plan.
 
 ## Project Documentation
 
 - [Backup, restore, and reconciliation operations guide](docs/OPERATIONS_GUIDE.md)
-- [Customer administrator runbook](docs/RUNBOOK.md)
+- [Reference administrator runbook](docs/RUNBOOK.md)
 
 ## 🔁 Core Workflows
 

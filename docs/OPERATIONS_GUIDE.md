@@ -1,10 +1,10 @@
-# TechFind Operations Guide
+# TechFind Production-Readiness Operations Guide
 
-This guide explains how to operate backups and user-management reconciliation monitoring. It intentionally keeps credentials out of the repository.
+This guide is a production-readiness exercise explaining how backups and user-management reconciliation monitoring should be operated if TechFind is deployed as a hosted service. TechFind is currently an independently maintained learning project, not an active customer deployment. The guide intentionally keeps credentials out of the repository.
 
 ## Operating targets
 
-The initial production targets for a small customer deployment are:
+The reference targets for a future small deployment are:
 
 | Area | Target |
 | --- | --- |
@@ -15,7 +15,7 @@ The initial production targets for a small customer deployment are:
 | Reconciliation check | Every 15 minutes |
 | Reconciliation reminder | Immediately, then at most once every 24 hours until resolved |
 
-These are operational targets, not an uptime or recovery guarantee. Change the customer agreement only after confirming that the automation consistently meets them.
+These are design targets, not an uptime or recovery guarantee. They should become contractual targets only after the automation has been implemented, tested, and shown to meet them consistently.
 
 ## Password security on the current Supabase plan
 
