@@ -181,6 +181,62 @@ Use explicit UUIDs from a fixture-only range, for example:
 Do not reuse IDs from SQL integration tests or E2E fixtures. Every foreign-key relationship must
 be readable from the seed and repeatable after `npx supabase db reset`.
 
+## Deterministic fixture ID map
+
+### Service zones
+
+| Constant     | UUID                                   | Name    |
+| ------------ | -------------------------------------- | ------- |
+| ZONE_NORTH   | `10000000-0000-4000-8000-000000000001` | North   |
+| ZONE_SOUTH   | `10000000-0000-4000-8000-000000000002` | South   |
+| ZONE_CENTRAL | `10000000-0000-4000-8000-000000000003` | Central |
+
+### Units
+
+| Constant               | UUID                                   | Name              |
+| ---------------------- | -------------------------------------- | ----------------- |
+| UNIT_WASHER            | `11000000-0000-4000-8000-000000000001` | Washer            |
+| UNIT_DRYER             | `11000000-0000-4000-8000-000000000002` | Dryer             |
+| UNIT_REFRIGERATOR      | `11000000-0000-4000-8000-000000000003` | Refrigerator      |
+| UNIT_STOVE             | `11000000-0000-4000-8000-000000000004` | Stove             |
+| UNIT_WALL_OVEN         | `11000000-0000-4000-8000-000000000005` | Wall Oven         |
+| UNIT_LEGACY_DISHWASHER | `11000000-0000-4000-8000-000000000006` | Legacy Dishwasher |
+
+### Brand groups
+
+| Constant             | UUID                                   | Name     |
+| -------------------- | -------------------------------------- | -------- |
+| BRAND_GROUP_STANDARD | `12000000-0000-4000-8000-000000000001` | Standard |
+| BRAND_GROUP_PREMIUM  | `12000000-0000-4000-8000-000000000002` | Premium  |
+
+### Brands
+
+| Constant        | UUID                                   | Name      | Group    |
+| --------------- | -------------------------------------- | --------- | -------- |
+| BRAND_WHIRLPOOL | `13000000-0000-4000-8000-000000000001` | Whirlpool | Standard |
+| BRAND_BOSCH     | `13000000-0000-4000-8000-000000000002` | Bosch     | Premium  |
+| BRAND_SAMSUNG   | `13000000-0000-4000-8000-000000000003` | Samsung   | Standard |
+| BRAND_LG        | `13000000-0000-4000-8000-000000000004` | LG        | Standard |
+
+### Specific issues
+
+| Constant                     | UUID                                   | Name                               | Unit         |
+| ---------------------------- | -------------------------------------- | ---------------------------------- | ------------ |
+| ISSUE_COMPRESSOR_REPLACEMENT | `14000000-0000-4000-8000-000000000001` | Compressor Replacement             | Refrigerator |
+| ISSUE_DRYER_CYCLES           | `14000000-0000-4000-8000-000000000002` | Dryer Taking Several Cycles to Dry | Dryer        |
+
+### Technicians
+
+| Constant      | UUID                                   | Name          |
+| ------------- | -------------------------------------- | ------------- |
+| TECH_ALEX     | `15000000-0000-4000-8000-000000000001` | Alex Demo     |
+| TECH_MORGAN   | `15000000-0000-4000-8000-000000000002` | Morgan Demo   |
+| TECH_CASEY    | `15000000-0000-4000-8000-000000000003` | Casey Demo    |
+| TECH_RILEY    | `15000000-0000-4000-8000-000000000004` | Riley Demo    |
+| TECH_JORDAN   | `15000000-0000-4000-8000-000000000005` | Jordan Demo   |
+| TECH_TAYLOR   | `15000000-0000-4000-8000-000000000006` | Taylor Demo   |
+| TECH_ARCHIVED | `15000000-0000-4000-8000-000000000007` | Archived Demo |
+
 ## Insertion order for the future seed
 
 The eventual `supabase/seed.sql` must insert records in this dependency order:
