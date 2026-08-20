@@ -237,6 +237,52 @@ be readable from the seed and repeatable after `npx supabase db reset`.
 | TECH_TAYLOR   | `15000000-0000-4000-8000-000000000006` | Taylor Demo   |
 | TECH_ARCHIVED | `15000000-0000-4000-8000-000000000007` | Archived Demo |
 
+## Fixture relationships
+
+### Technician-to-zone assignments
+
+| Technician    | Zones   |
+| ------------- | ------- |
+| Alex Demo     | North   |
+| Morgan Demo   | North   |
+| Casey Demo    | South   |
+| Riley Demo    | Central |
+| Jordan Demo   | South   |
+| Taylor Demo   | Central |
+| Archived Demo | South   |
+
+### Technician skills
+
+| Technician  | Unit         | Variant        | Brand group / issue                |
+| ----------- | ------------ | -------------- | ---------------------------------- |
+| Alex Demo   | Washer       | brand group    | Standard                           |
+| Alex Demo   | Dryer        | brand group    | Standard                           |
+| Morgan Demo | Washer       | brand group    | Standard                           |
+| Casey Demo  | Refrigerator | brand group    | Standard                           |
+| Casey Demo  | Refrigerator | specific issue | Compressor Replacement             |
+| Riley Demo  | Wall Oven    | brand group    | Premium                            |
+| Jordan Demo | Dryer        | commercial     | —                                  |
+| Jordan Demo | Dryer        | specific issue | Dryer Taking Several Cycles to Dry |
+| Taylor Demo | Stove        | brand group    | Standard                           |
+
+### Technician capabilities
+
+| Technician    |   Gas | Built-in | Stacked Washer | Stacked Dryer | Commercial |
+| ------------- | ----: | -------: | -------------: | ------------: | ---------: |
+| Alex Demo     | false |    false |           true |          true |      false |
+| Morgan Demo   | false |    false |          false |         false |      false |
+| Casey Demo    | false |    false |          false |         false |      false |
+| Riley Demo    | false |     true |          false |         false |      false |
+| Jordan Demo   | false |    false |          false |          true |       true |
+| Taylor Demo   |  true |    false |          false |         false |      false |
+| Archived Demo | false |    false |          false |         false |      false |
+
+### Technician ignore rules
+
+| Technician  | Ignored brand | Unit | Issue |
+| ----------- | ------------- | ---- | ----- |
+| Morgan Demo | LG            | any  | any   |
+
 ## Insertion order for the future seed
 
 The eventual `supabase/seed.sql` must insert records in this dependency order:
