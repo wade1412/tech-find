@@ -103,7 +103,7 @@ and `gas = true`; he must not receive stacked or built-in capabilities.
 
 ## Expected matching stories
 
-These are acceptance scenarios for the eventual fixture. The seed is not complete until each
+These are acceptance scenarios for the fixture. The seed is not complete until each
 story is explainable from the inserted rows.
 
 1. **North + Washer + Dryer + Stacked**
@@ -283,9 +283,9 @@ be readable from the seed and repeatable after `npx supabase db reset`.
 | ----------- | ------------- | ---- | ----- |
 | Morgan Demo | LG            | any  | any   |
 
-## Insertion order for the future seed
+## Seed insertion order
 
-The eventual `supabase/seed.sql` must insert records in this dependency order:
+`supabase/seed.sql` inserts records in this dependency order:
 
 1. service zones;
 2. units;
@@ -319,7 +319,6 @@ Run these commands only against local Supabase.
 ```powershell
 npx supabase start
 npm run demo:reset
-npm run demo:setup-users
 npm run demo:dev
 ```
 
@@ -333,16 +332,41 @@ Use this after changing supabase/seed.sql:
 
 ```
 npm run demo:reset
-npm run demo:setup-users
 ```
 
-demo:reset recreates the local database and applies migrations plus supabase/seed.sql.
-demo:setup-users recreates or updates the three local Auth users and their
-user_profile records.
+`demo:reset` recreates the local database, applies migrations and `supabase/seed.sql`,
+generates the gitignored `.env.demo.local`, and creates the three local Auth users plus their
+`user_profile` records. `demo:prepare` and `demo:setup-users` remain available as separate
+commands when only the local environment or Auth fixtures need to be refreshed.
+
+Default local credentials:
+
+| Role              | Email                                      | Password                      |
+| ----------------- | ------------------------------------------ | ----------------------------- |
+| `main_admin`      | `main-admin.demo@techfind.test`             | `LocalDemoMainAdmin2026`      |
+| `secondary_admin` | `secondary-admin.demo@techfind.test`        | `LocalDemoSecondaryAdmin2026` |
+| `user`            | `user.demo@techfind.test`                   | `LocalDemoUser2026`           |
+
+These credentials work only with the local Supabase URL enforced by the setup scripts. Override
+them through `DEMO_*` process environment variables before running `demo:prepare` if needed.
+
+### Remove local demo data
+
+The fixture is intentionally tied to the disposable local Supabase stack. Remove all local demo
+data and Docker volumes with:
+
+```powershell
+npx supabase stop --no-backup
+```
+
+The next `npx supabase start` or `npm run demo:reset` rebuilds the local schema and seed. Do not
+delete fixture rows individually because that can leave Auth/profile or relationship data out of
+sync and makes the demo non-deterministic.
 
 ### Safety
 
 - Never use these commands with --linked.
-- Never put production credentials in .env.e2e.local.
+- Never put production credentials in `.env.demo.local`.
 - Never run demo setup against hosted Supabase.
-- E2E fixtures remain separate from demo fixtures.
+- Demo configuration and users use `.env.demo.local`; E2E uses `.env.e2e.local` and remains
+  independently disposable.

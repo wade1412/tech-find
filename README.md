@@ -43,6 +43,7 @@ Encrypted off-site backup automation and scheduled reconciliation alerts are doc
 
 ## Project Documentation
 
+- [Local demo fixture scenario and credentials](docs/DEMO_FIXTURE_SCENARIO.md)
 - [Backup, restore, and reconciliation operations guide](docs/OPERATIONS_GUIDE.md)
 - [Reference administrator runbook](docs/RUNBOOK.md)
 
@@ -451,6 +452,20 @@ npx supabase start
 npx supabase migration up --local
 ```
 
+For a clean local demo with deterministic fictional data and three local roles:
+
+```bash
+npx supabase start
+npm run demo:reset
+npm run demo:dev
+```
+
+`demo:reset` is intentionally destructive to the local database: it reapplies all migrations,
+loads `supabase/seed.sql`, creates a gitignored `.env.demo.local`, and prepares local
+`main_admin`, `secondary_admin`, and `user` accounts. It refuses non-local Supabase URLs. See the
+[demo fixture scenario](docs/DEMO_FIXTURE_SCENARIO.md) for credentials, matching stories, and
+safety rules. Demo fixtures and Playwright fixtures are kept separate.
+
 Do not expose a service-role or secret key through a `VITE_` environment variable. Browser code uses only the publishable key; privileged user-management operations remain inside Supabase Edge Functions.
 
 ### 3. Start the development server
@@ -498,6 +513,10 @@ Deploying the database first is required because generated TypeScript types prov
 | `npm run test:run`                          | Run the test suite once                                   |
 | `npm run test:e2e:smoke`                    | Run both Playwright lifecycle smoke tests                 |
 | `npm run test:e2e:user-management-smoke`    | Run only the user-management lifecycle smoke test         |
+| `npm run demo:prepare`                      | Generate the gitignored local demo environment            |
+| `npm run demo:reset`                        | Rebuild the local database and demo users                  |
+| `npm run demo:setup-users`                  | Recreate or update only the local demo users               |
+| `npm run demo:dev`                          | Start Vite with the local demo environment                 |
 | `npm run preview`                           | Preview the production build                              |
 
 ## Current Status
@@ -526,6 +545,7 @@ Implemented:
 - production HTTP security headers and an Edge Function CORS origin allowlist;
 - route-level lazy loading with MUI scoped to the authenticated application shell;
 - an automated GitHub Actions quality gate and Playwright lifecycle smoke test;
+- deterministic fictional demo fixtures with isolated local Auth roles;
 - transactional RPCs for multi-step technician writes;
 - unit, component, and SQL integration tests for core business rules and destructive workflows.
 
