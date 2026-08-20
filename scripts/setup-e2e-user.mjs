@@ -13,7 +13,7 @@ if (!supabaseUrl || !serviceRoleKey || !email || !password) {
   throw new Error("Missing E2E environment variables");
 }
 
-// Exit early on not local instance of DB
+// If DB is not running locally - throw error
 const supabaseEndpoint = new URL(supabaseUrl);
 const isLocalSupabase =
   ["127.0.0.1", "localhost"].includes(supabaseEndpoint.hostname) &&
@@ -25,6 +25,7 @@ if (!isLocalSupabase) {
   );
 }
 
+// Setup Supabase Admin
 const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, {
   auth: {
     persistSession: false,
