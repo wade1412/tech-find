@@ -2,6 +2,12 @@
 
 TechFind is a technician-matching and service-management application for appliance-repair dispatch teams. It replaces manual cross-checking of technician coverage, skills, brand support, job constraints, and exclusions with one consistent workflow.
 
+## Project Background
+
+TechFind grew from a real appliance-repair dispatch workflow and is independently maintained as a production-oriented learning project for personal use and professional development. It is a functional application rather than a commercial customer deployment, and it is not affiliated with, endorsed by, or developed on behalf of any specific employer.
+
+The project intentionally applies production-shaped engineering practices—including layered authorization, database migrations, automated testing, CI, recovery planning, and operational documentation—so that architectural and operational decisions can be learned in a realistic system rather than in isolated examples.
+
 ## Business Problem
 
 Dispatchers need to assign the right technician quickly, but the decision depends on data spread across service zones, appliance types, brands, specific issues, capabilities, skills, and technician-specific restrictions. TechFind resolves those rules into a focused list of eligible technicians and gives authorized administrators one place to maintain the underlying data.
@@ -33,12 +39,13 @@ Dispatchers need to assign the right technician quickly, but the decision depend
 
 The core matching, management, authorization, archive, restore, and purge workflows are implemented. Production hardening includes generated database types, a root error boundary, HTTP security headers, Edge Function origin restrictions, and automated CI quality gates.
 
-Encrypted off-site backup automation and scheduled reconciliation alerts are documented operational requirements that still need to be enabled and verified before TechFind is treated as an unattended production service. See the operations guide for the current recovery and monitoring plan.
+Encrypted off-site backup automation and scheduled reconciliation alerts are documented production-readiness exercises that still need to be implemented and verified before TechFind could be treated as an unattended production service. See the operations guide for the reference recovery and monitoring plan.
 
 ## Project Documentation
 
+- [Local demo fixture scenario and credentials](docs/DEMO_FIXTURE_SCENARIO.md)
 - [Backup, restore, and reconciliation operations guide](docs/OPERATIONS_GUIDE.md)
-- [Customer administrator runbook](docs/RUNBOOK.md)
+- [Reference administrator runbook](docs/RUNBOOK.md)
 
 ## 🔁 Core Workflows
 
@@ -445,6 +452,20 @@ npx supabase start
 npx supabase migration up --local
 ```
 
+For a clean local demo with deterministic fictional data and three local roles:
+
+```bash
+npx supabase start
+npm run demo:reset
+npm run demo:dev
+```
+
+`demo:reset` is intentionally destructive to the local database: it reapplies all migrations,
+loads `supabase/seed.sql`, creates a gitignored `.env.demo.local`, and prepares local
+`main_admin`, `secondary_admin`, and `user` accounts. It refuses non-local Supabase URLs. See the
+[demo fixture scenario](docs/DEMO_FIXTURE_SCENARIO.md) for credentials, matching stories, and
+safety rules. Demo fixtures and Playwright fixtures are kept separate.
+
 Do not expose a service-role or secret key through a `VITE_` environment variable. Browser code uses only the publishable key; privileged user-management operations remain inside Supabase Edge Functions.
 
 ### 3. Start the development server
@@ -492,6 +513,10 @@ Deploying the database first is required because generated TypeScript types prov
 | `npm run test:run`                          | Run the test suite once                                   |
 | `npm run test:e2e:smoke`                    | Run both Playwright lifecycle smoke tests                 |
 | `npm run test:e2e:user-management-smoke`    | Run only the user-management lifecycle smoke test         |
+| `npm run demo:prepare`                      | Generate the gitignored local demo environment            |
+| `npm run demo:reset`                        | Rebuild the local database and demo users                  |
+| `npm run demo:setup-users`                  | Recreate or update only the local demo users               |
+| `npm run demo:dev`                          | Start Vite with the local demo environment                 |
 | `npm run preview`                           | Preview the production build                              |
 
 ## Current Status
@@ -520,6 +545,7 @@ Implemented:
 - production HTTP security headers and an Edge Function CORS origin allowlist;
 - route-level lazy loading with MUI scoped to the authenticated application shell;
 - an automated GitHub Actions quality gate and Playwright lifecycle smoke test;
+- deterministic fictional demo fixtures with isolated local Auth roles;
 - transactional RPCs for multi-step technician writes;
 - unit, component, and SQL integration tests for core business rules and destructive workflows.
 

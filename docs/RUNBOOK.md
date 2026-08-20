@@ -1,8 +1,10 @@
-# TechFind Runbook
+# TechFind Reference Operations Runbook
 
-This document is the operational handoff guide for customer managers and administrators. It does not transfer ownership of the TechFind software or source code.
+This document is a reference operational runbook for a possible future TechFind deployment. TechFind is currently an independently maintained learning project and is not affiliated with or operated for a specific employer or customer.
 
-## Service ownership
+The terms Provider and Customer below describe how responsibilities should be separated if the application is ever licensed as a hosted service. They do not represent an existing commercial relationship and do not transfer ownership of the TechFind software or source code.
+
+## Reference service ownership
 
 - TechFind and its source code remain the Provider's intellectual property.
 - The Customer receives a subscription right to use the hosted service for internal business operations.
