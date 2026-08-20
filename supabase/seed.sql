@@ -1,11 +1,11 @@
 -- TechFind fictional demo fixtures
--- Base records only: zones, units, brand groups, brands, issues
+-- Domain and technician records only; local Auth users are prepared separately
 
 insert into public.service_zone (id, name, slug, display_order, active)
 values
-  ('10000000-0000-4000-8000-000000000001', 'North', 'north', 1, true),
-  ('10000000-0000-4000-8000-000000000002', 'South', 'south', 2, true),
-  ('10000000-0000-4000-8000-000000000003', 'Central', 'central', 3, true);
+  ('10000000-0000-4000-8000-000000000001', 'North', 'north', 10, true),
+  ('10000000-0000-4000-8000-000000000002', 'South', 'south', 20, true),
+  ('10000000-0000-4000-8000-000000000003', 'Central', 'central', 30, true);
 
 insert into public.unit (
     id,
@@ -27,7 +27,7 @@ values
     true,
     true,
     false,
-    1,
+    10,
     true
   ),
   (
@@ -38,7 +38,7 @@ values
     true,
     true,
     true,
-    2,
+    20,
     true
   ),
   (
@@ -49,7 +49,7 @@ values
     false,
     true,
     false,
-    3,
+    30,
     true
   ),
   (
@@ -60,7 +60,7 @@ values
     false,
     true,
     true,
-    4,
+    40,
     true
   ),
   (
@@ -71,7 +71,7 @@ values
     false,
     true,
     false,
-    5,
+    50,
     true
   ),
   (
@@ -82,7 +82,7 @@ values
     false,
     true,
     false,
-    6,
+    60,
     false
   );
 
@@ -93,14 +93,14 @@ values
     'Standard',
     'standard',
     true,
-    1
+    10
   ),
   (
     '12000000-0000-4000-8000-000000000002',
     'Premium',
     'premium',
     true,
-    2
+    20
   );
 
 insert into public.brand (id, name, slug, group_id, active)
