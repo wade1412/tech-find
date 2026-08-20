@@ -16,7 +16,10 @@
     "test:e2e": "playwright test",
     "test:e2e:smoke": "playwright test e2e/service-zone-lifecycle.spec.ts e2e/user-management-lifecycle.spec.ts",
     "test:e2e:user-management-smoke": "playwright test e2e/user-management-lifecycle.spec.ts",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "demo:reset": "supabase db reset",
+    "demo:setup-users": "node scripts/setup-demo-users.mjs",
+    "demo:dev": "vite --mode=e2e"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

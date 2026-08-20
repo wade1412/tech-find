@@ -309,3 +309,40 @@ clauses to hide fixture errors.
 - E2E-specific records;
 - simulating dozens or hundreds of technicians;
 - changing matching logic to fit the fixture.
+
+## Local demo workflow
+
+Run these commands only against local Supabase.
+
+### First setup
+
+```powershell
+npx supabase start
+npm run demo:reset
+npm run demo:setup-users
+npm run demo:dev
+```
+
+### Open:
+
+http://localhost:5173
+
+### Rebuild demo data
+
+Use this after changing supabase/seed.sql:
+
+```
+npm run demo:reset
+npm run demo:setup-users
+```
+
+demo:reset recreates the local database and applies migrations plus supabase/seed.sql.
+demo:setup-users recreates or updates the three local Auth users and their
+user_profile records.
+
+### Safety
+
+- Never use these commands with --linked.
+- Never put production credentials in .env.e2e.local.
+- Never run demo setup against hosted Supabase.
+- E2E fixtures remain separate from demo fixtures.
