@@ -1,11 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
 import { loadEnv } from "vite";
 
-const fileEnv = loadEnv("e2e", process.cwd(), "");
+const fileEnv = loadEnv("demo", process.cwd(), "");
 const getEnv = (key) => process.env[key] ?? fileEnv[key];
 
-const supabaseUrl = getEnv("E2E_SUPABASE_URL");
-const serviceRoleKey = getEnv("E2E_SUPABASE_SERVICE_ROLE_KEY");
+const supabaseUrl = getEnv("DEMO_SUPABASE_URL");
+const serviceRoleKey = getEnv("DEMO_SUPABASE_SERVICE_ROLE_KEY");
 
 const demoUsers = [
   {
@@ -33,7 +33,9 @@ const demoUsers = [
 
 // Check variables and credentials
 if (!supabaseUrl || !serviceRoleKey) {
-  throw new Error("Missing E2E_SUPABASE_URL or E2E_SUPABASE_SERVICE_ROLE_KEY");
+  throw new Error(
+    "Missing local demo environment. Run `npm run demo:prepare` first.",
+  );
 }
 
 for (const demoUser of demoUsers) {
@@ -42,7 +44,7 @@ for (const demoUser of demoUsers) {
   }
 }
 
-// If DB is not running locally - throw error
+// Demo setup must never be able to write to a linked or hosted project.
 const supabaseEndpoint = new URL(supabaseUrl);
 const isLocalSupabase =
   ["127.0.0.1", "localhost"].includes(supabaseEndpoint.hostname) &&
@@ -54,7 +56,6 @@ if (!isLocalSupabase) {
   );
 }
 
-// Setup Supabase Admin
 const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, {
   auth: {
     persistSession: false,
@@ -72,7 +73,8 @@ if (listError) {
 for (const demoUser of demoUsers) {
   // Check if the user exists
   const existingUser = usersData.users.find(
-    (user) => user.email.toLowerCase() === demoUser.email.toLowerCase(),
+    (user) =>
+      user.email?.toLowerCase() === demoUser.email.toLowerCase(),
   );
 
   let user;
@@ -108,7 +110,6 @@ for (const demoUser of demoUsers) {
     throw new Error(`Auth user was not created: ${demoUser.email}`);
   }
 
-  // Upsert (update or insert) user information in user_profile db table
   const { error: profileError } = await supabaseAdmin
     .from("user_profile")
     .upsert(
