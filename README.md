@@ -37,13 +37,16 @@ Dispatchers need to assign the right technician quickly, but the decision depend
 
 ## Operational Status
 
-The core matching, management, authorization, archive, restore, and purge workflows are implemented. Production hardening includes generated database types, a root error boundary, HTTP security headers, Edge Function origin restrictions, and automated CI quality gates.
+**Project status: completed educational SaaS project (feature-frozen, 2026-08-24).**
 
-Encrypted off-site backup automation and scheduled reconciliation alerts are documented production-readiness exercises that still need to be implemented and verified before TechFind could be treated as an unattended production service. See the operations guide for the reference recovery and monitoring plan.
+TechFind is intentionally complete as a learning project that demonstrates how a small SaaS-style application can be designed, secured, tested, documented, recreated locally, and recovered from a logical database backup. The project is not intended to become a commercial product or an unattended production service.
+
+The feature scope is closed and no further feature development is planned. The documented production-readiness gaps, such as unattended backup scheduling, reconciliation monitoring, and external operational monitoring, are intentional boundaries of the educational project rather than unfinished product work. See [Project completion and maintenance status](docs/PROJECT_STATUS.md) for the final scope and maintenance policy.
 
 ## Project Documentation
 
 - [Local demo fixture scenario and credentials](docs/DEMO_FIXTURE_SCENARIO.md)
+- [Project completion and maintenance status](docs/PROJECT_STATUS.md)
 - [Backup, restore, and reconciliation operations guide](docs/OPERATIONS_GUIDE.md)
 - [Reference administrator runbook](docs/RUNBOOK.md)
 
@@ -549,11 +552,9 @@ Implemented:
 - transactional RPCs for multi-step technician writes;
 - unit, component, and SQL integration tests for core business rules and destructive workflows.
 
-Next improvements:
+Project completion policy:
 
-- implement the documented reconciliation monitor for user-management operations that leave Auth and profile data out of sync;
-- minimal production error monitoring and operational alerts;
-- automate the documented off-site backup process and record regular restore drills;
-- technician-result image export;
-- accessibility and responsive UI polish;
-- a CI bundle-size budget to prevent startup JavaScript regressions.
+- no further feature phases or product roadmap work are planned;
+- the repository is preserved as a completed educational reference implementation;
+- future changes are limited to correcting critical defects, addressing security issues, keeping dependencies compatible, fixing documentation, or adapting local/deployment configuration;
+- any broader change would reopen the project scope and should be treated as a new project or explicitly approved follow-up phase.

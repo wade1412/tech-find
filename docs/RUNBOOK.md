@@ -1,6 +1,8 @@
 # TechFind Reference Operations Runbook
 
-This document is a reference operational runbook for a possible future TechFind deployment. TechFind is currently an independently maintained learning project and is not affiliated with or operated for a specific employer or customer.
+This document is a reference operational runbook retained with the completed TechFind educational project. TechFind demonstrates a SaaS-style application but is not an active customer deployment, commercial product, or commitment to operate a hosted service.
+
+The deployment, support, backup-retention, and subscription sections below describe hypothetical responsibilities if the project were adapted into a hosted service. They are reference material, not a product roadmap and not implemented service commitments.
 
 The terms Provider and Customer below describe how responsibilities should be separated if the application is ever licensed as a hosted service. They do not represent an existing commercial relationship and do not transfer ownership of the TechFind software or source code.
 
