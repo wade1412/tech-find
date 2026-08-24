@@ -2,6 +2,12 @@
 
 This guide is a production-readiness exercise explaining how backups and user-management reconciliation monitoring should be operated if TechFind is deployed as a hosted service. TechFind is currently an independently maintained learning project, not an active customer deployment. The guide intentionally keeps credentials out of the repository.
 
+## Project completion status
+
+TechFind is a completed educational project as of 2026-08-24. The application demonstrates the core SaaS-style workflows and the documented manual database backup/restore process, but it is not an active customer deployment and does not claim unattended production-service guarantees.
+
+The scheduled backup automation, recurring reconciliation monitor, and external operational alerting described in this guide are reference procedures for learning and future adaptation. They are not unfinished feature work for this project. No further feature development is planned; this guide is retained as an operational reference for the completed implementation.
+
 ## Operating targets
 
 The reference targets for a future small deployment are:
