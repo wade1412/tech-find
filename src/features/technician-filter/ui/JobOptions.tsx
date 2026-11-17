@@ -5,8 +5,6 @@ import { useTechnicianFilters } from "../model/useTechnicianFilters";
 import Checkbox from "../../../shared/ui/Checkbox";
 import type { JobOptionKey } from "../model/filter.types";
 import ErrorMessage from "../../../shared/ui/ErrorMessage";
-import { AnimatePresence, motion } from "motion/react";
-import { heightRevealMotionProps } from "../../../shared/styles/motionVariants";
 
 function JobOptions() {
   const { data: units, isPending, isError, error } = useUnitsQuery();
@@ -22,43 +20,41 @@ function JobOptions() {
 
   const selectedUnits =
     units?.filter((unit) => filter.unitSlugs.includes(unit.slug)) || [];
-
+  // Flags to check if the option should be disabled
   const canBeGas = selectedUnits.some((el) => el.can_be_gas);
   const canBeStacked = selectedUnits.some((el) => el.can_be_stacked);
-  const canBeCommercial = selectedUnits.some((el) => el.can_be_commercial);
+  const canBeCommercial =
+    selectedUnits.some((el) => el.can_be_commercial) && !filter.isInstallation;
 
   const options: Record<
     JobOptionKey,
     {
-      visible: boolean;
+      disabled: boolean;
       checked: boolean;
       onChange: () => void;
     }
   > = {
     gas: {
-      visible: canBeGas,
+      disabled: !canBeGas,
       checked: filter.isGas,
       onChange: toggleGas,
     },
     stacked: {
-      visible: canBeStacked,
+      disabled: !canBeStacked,
       checked: filter.isStacked,
       onChange: toggleStacked,
     },
     installation: {
-      visible: true,
+      disabled: selectedUnits.length === 0,
       checked: filter.isInstallation,
       onChange: toggleInstallation,
     },
     commercial: {
-      visible: canBeCommercial,
+      disabled: !canBeCommercial,
       checked: filter.isCommercial,
       onChange: toggleCommercial,
     },
   };
-
-  const isOptionsActive =
-    canBeGas || canBeStacked || canBeCommercial || options.installation.visible;
 
   // Sync URL params
   useEffect(() => {
@@ -90,27 +86,20 @@ function JobOptions() {
   }
 
   return (
-    <AnimatePresence initial={false}>
-      {isOptionsActive && (
-        <motion.div key="job-options" {...heightRevealMotionProps}>
-          <div className="mb-3 flex flex-row gap-4">
-            {filterCheckboxes
-              .filter((optionName: JobOptionKey) => options[optionName].visible)
-              .map((optionName: JobOptionKey) => (
-                <Checkbox
-                  key={optionName}
-                  id={optionName}
-                  label={
-                    optionName.charAt(0).toUpperCase() + optionName.slice(1)
-                  }
-                  checked={options[optionName].checked}
-                  onChange={options[optionName].onChange}
-                />
-              ))}
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <div key="job-options">
+      <div className="mb-3 flex flex-row gap-4">
+        {filterCheckboxes.map((optionName: JobOptionKey) => (
+          <Checkbox
+            disabled={options[optionName].disabled}
+            key={optionName}
+            id={optionName}
+            label={optionName.charAt(0).toUpperCase() + optionName.slice(1)}
+            checked={options[optionName].checked}
+            onChange={options[optionName].onChange}
+          />
+        ))}
+      </div>
+    </div>
   );
 }
 

@@ -123,12 +123,23 @@ export const useTechnicianFilters = () => {
     updateFilter("gas", filter.isGas ? null : "1");
   }, [filter.isGas, updateFilter]);
 
-  // Toggle Installation option - has to disable commercial flag
+  // Toggle Installation option - has to disable commercial flag:
+  // Since commercial installations are not supported by the team at the moment - disabled for now
   const toggleInstallation = useCallback(() => {
-    updateFilter("installation", filter.isInstallation ? null : "1");
-  }, [filter.isInstallation, updateFilter]);
+    const newParams = new URLSearchParams(filterParams);
 
-  // Toggle Commercial option - has to disable selected brands
+    if (filter.isInstallation) {
+      newParams.delete("installation");
+    } else {
+      newParams.set("installation", "1");
+      newParams.delete("commercial");
+    }
+
+    setFilterParams(newParams, { replace: true });
+  }, [filter.isInstallation, filterParams, setFilterParams]);
+
+  // Toggle Commercial option - has to disable selected brands:
+  // When the technician does commercial he does all of them, so brand selection is not needed here
   const toggleCommercial = useCallback(() => {
     const newParams = new URLSearchParams(filterParams);
 

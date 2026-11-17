@@ -18,7 +18,7 @@ function UnitSelector() {
     <div className="flex flex-col gap-3">
       {/* Top Row if any units selected: Info and Clear Button */}
       <div
-        className={`overflow-hidden transition-all duration-200 ${filter.unitSlugs.length > 0 ? "max-h-10" : "max-h-0"}`}
+        className={`overflow-hidden transition-[opacity, height] duration-250 ${filter.unitSlugs.length > 0 ? "max-h-10 opacity-100" : "max-h-0 opacity-20"}`}
       >
         <div className="flex items-center justify-between">
           <span className="text-sm text-zinc-500 dark:text-zinc-400">
