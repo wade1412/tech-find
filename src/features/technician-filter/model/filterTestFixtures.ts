@@ -19,6 +19,7 @@ export const makeTechnician = (
   home_zip_code: "28100",
   gas: false,
   commercial: false,
+  can_provide_installation: false,
   can_service_built_in: false,
   can_service_stacked_washer: false,
   can_service_stacked_dryer: false,
