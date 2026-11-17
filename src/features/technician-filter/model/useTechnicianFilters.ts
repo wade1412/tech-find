@@ -6,9 +6,10 @@ type FilterParamKey =
   | "units"
   | "brands"
   | "specific_issues"
-  | "stacked"
-  | "commercial"
   | "gas"
+  | "stacked"
+  | "installation"
+  | "commercial"
   | "sort"
   | "zone";
 
@@ -29,6 +30,7 @@ export const useTechnicianFilters = () => {
         : [],
       isGas: filterParams.get("gas") === "1",
       isStacked: filterParams.get("stacked") === "1",
+      isInstallation: filterParams.get("installation") === "1",
       isCommercial: filterParams.get("commercial") === "1",
       brandSlugs: brandsParam
         ? [...new Set(brandsParam.split(",").filter(Boolean))]
@@ -121,6 +123,11 @@ export const useTechnicianFilters = () => {
     updateFilter("gas", filter.isGas ? null : "1");
   }, [filter.isGas, updateFilter]);
 
+  // Toggle Installation option - has to disable commercial flag
+  const toggleInstallation = useCallback(() => {
+    updateFilter("installation", filter.isInstallation ? null : "1");
+  }, [filter.isInstallation, updateFilter]);
+
   // Toggle Commercial option - has to disable selected brands
   const toggleCommercial = useCallback(() => {
     const newParams = new URLSearchParams(filterParams);
@@ -164,9 +171,10 @@ export const useTechnicianFilters = () => {
     updateZone,
     toggleUnit,
     clearUnits,
-    toggleStacked,
-    toggleCommercial,
     toggleGas,
+    toggleStacked,
+    toggleInstallation,
+    toggleCommercial,
     clearOptionByKeys,
     resetFilters,
   };

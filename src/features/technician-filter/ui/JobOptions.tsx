@@ -13,9 +13,10 @@ function JobOptions() {
 
   const {
     filter,
-    toggleStacked,
-    toggleCommercial,
     toggleGas,
+    toggleStacked,
+    toggleInstallation,
+    toggleCommercial,
     clearOptionByKeys,
   } = useTechnicianFilters();
 
@@ -44,6 +45,11 @@ function JobOptions() {
       checked: filter.isStacked,
       onChange: toggleStacked,
     },
+    installation: {
+      visible: true,
+      checked: filter.isInstallation,
+      onChange: toggleInstallation,
+    },
     commercial: {
       visible: canBeCommercial,
       checked: filter.isCommercial,
@@ -51,7 +57,8 @@ function JobOptions() {
     },
   };
 
-  const isOptionsActive = canBeGas || canBeStacked || canBeCommercial;
+  const isOptionsActive =
+    canBeGas || canBeStacked || canBeCommercial || options.installation.visible;
 
   // Sync URL params
   useEffect(() => {
@@ -88,9 +95,7 @@ function JobOptions() {
         <motion.div key="job-options" {...heightRevealMotionProps}>
           <div className="mb-3 flex flex-row gap-4">
             {filterCheckboxes
-              .filter(
-                (optionName: JobOptionKey) => options[optionName].visible,
-              )
+              .filter((optionName: JobOptionKey) => options[optionName].visible)
               .map((optionName: JobOptionKey) => (
                 <Checkbox
                   key={optionName}
