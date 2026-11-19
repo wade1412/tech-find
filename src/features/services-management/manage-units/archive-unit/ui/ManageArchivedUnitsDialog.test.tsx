@@ -1,7 +1,6 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { Unit } from "../../../../../entities/unit/unit.types";
 import { useUnitsQuery } from "../../../../../entities/unit/useUnitsQuery";
 import { useAuthPermissions } from "../../../../auth/model/useAuthPermissions";
 import {
@@ -9,6 +8,7 @@ import {
   useRestoreUnitMutation,
 } from "../model/useUnitArchiveMutations";
 import ManageArchivedUnitsDialog from "./ManageArchivedUnitsDialog";
+import { makeUnit } from "../../../../../entities/unit/testing/unit.factory";
 
 vi.mock("../../../../../entities/unit/useUnitsQuery", () => ({
   useUnitsQuery: vi.fn(),
@@ -28,7 +28,7 @@ const mockedUseAuthPermissions = vi.mocked(useAuthPermissions);
 const mockedUsePurgeUnitMutation = vi.mocked(usePurgeUnitMutation);
 const mockedUseRestoreUnitMutation = vi.mocked(useRestoreUnitMutation);
 
-const archivedUnit: Unit = {
+const archivedUnit = makeUnit({
   active: false,
   active_before_archive: true,
   archived_at: "2026-07-27T12:00:00.000Z",
@@ -41,7 +41,7 @@ const archivedUnit: Unit = {
   is_built_in: false,
   name: "Dryer",
   slug: "dryer",
-};
+});
 
 const createMutation = () => ({
   error: null,

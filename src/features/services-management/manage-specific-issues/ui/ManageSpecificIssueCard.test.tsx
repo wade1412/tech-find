@@ -1,11 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { describe, expect, it } from "vitest";
-import type { SpecificIssue } from "../../../../entities/specific-issue/specific-issue.types";
-import type { Unit } from "../../../../entities/unit/unit.types";
 import ManageSpecificIssueCard from "./ManageSpecificIssueCard";
+import { makeIssue } from "../../../../entities/specific-issue/testing/specific-issue.factory";
+import { makeUnit } from "../../../../entities/unit/testing/unit.factory";
 
-const issue: SpecificIssue = {
+const issue = makeIssue({
   active: true,
   active_before_archive: null,
   archived_at: null,
@@ -14,9 +14,9 @@ const issue: SpecificIssue = {
   name: "No Heat",
   slug: "no-heat",
   unit_id: "unit-1",
-};
+});
 
-const unit: Unit = {
+const unit = makeUnit({
   active: true,
   active_before_archive: null,
   archived_at: null,
@@ -29,7 +29,7 @@ const unit: Unit = {
   is_built_in: false,
   name: "Dryer",
   slug: "dryer",
-};
+});
 
 describe("ManageSpecificIssueCard", () => {
   it("shows the related unit and edit route", () => {

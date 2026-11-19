@@ -1,10 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { describe, expect, it } from "vitest";
-import type { Unit } from "../../../../entities/unit/unit.types";
 import ManageUnitCard from "./ManageUnitCard";
+import { makeUnit } from "../../../../entities/unit/testing/unit.factory";
 
-const unit: Unit = {
+const unit = makeUnit({
   active: false,
   active_before_archive: null,
   archived_at: null,
@@ -17,7 +17,7 @@ const unit: Unit = {
   is_built_in: false,
   name: "Dryer",
   slug: "dryer",
-};
+});
 
 describe("ManageUnitCard", () => {
   it("renders management metadata and the inactive state", () => {

@@ -3,8 +3,8 @@ import {
   buildTechnicianPatch,
   createTechnicianFormState,
 } from "./profile.helpers";
-import { makeTechnician } from "../../../technician-filter/model/filterTestFixtures";
 import { EDITABLE_TECHNICIAN_PROFILE_KEYS } from "./profile.constants";
+import { makeTechnician } from "../../../../entities/technician/testing/technician.factory";
 
 describe("createTechnicianFormState", () => {
   it("takes only editable keys", () => {

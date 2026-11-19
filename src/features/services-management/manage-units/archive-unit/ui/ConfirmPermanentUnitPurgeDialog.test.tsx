@@ -1,10 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import type { Unit } from "../../../../../entities/unit/unit.types";
 import ConfirmPermanentUnitPurgeDialog from "./ConfirmPermanentUnitPurgeDialog";
+import { makeUnit } from "../../../../../entities/unit/testing/unit.factory";
 
-const archivedUnit: Unit = {
+const archivedUnit = makeUnit({
   active: false,
   active_before_archive: true,
   archived_at: "2026-07-27T12:00:00.000Z",
@@ -17,7 +17,7 @@ const archivedUnit: Unit = {
   is_built_in: false,
   name: "Dryer",
   slug: "dryer",
-};
+});
 
 describe("ConfirmPermanentUnitPurgeDialog", () => {
   it("requires the exact name and explains cascading deletion", async () => {
