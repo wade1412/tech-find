@@ -1,10 +1,11 @@
 export type UnitProfileFieldKey = "name" | "slug" | "display_order";
 
 export type UnitPropertyFieldKey =
-  | "can_be_commercial"
   | "can_be_gas"
   | "can_be_stacked"
-  | "is_built_in";
+  | "can_be_installed"
+  | "is_built_in"
+  | "can_be_commercial";
 
 export type EditableUnitKey =
   | "active"
@@ -23,15 +24,14 @@ export type UnitPropertyFieldConfig = {
 
 export interface UnitFormState {
   active: boolean;
-  can_be_commercial: boolean;
-  can_be_gas: boolean;
-  can_be_stacked: boolean;
   display_order: string;
-  is_built_in: boolean;
   name: string;
   slug: string;
+  can_be_gas: boolean;
+  can_be_stacked: boolean;
+  can_be_installed: boolean;
+  can_be_commercial: boolean;
+  is_built_in: boolean;
 }
 
-export type UnitFormErrors = Partial<
-  Record<UnitProfileFieldKey, string>
->;
+export type UnitFormErrors = Partial<Record<UnitProfileFieldKey, string>>;

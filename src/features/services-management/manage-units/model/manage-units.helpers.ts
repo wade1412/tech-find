@@ -8,38 +8,41 @@ import type { UnitFormState } from "./manage-units.types";
 export const createUnitFormState = (unit: Unit): UnitFormState => {
   return {
     active: unit.active,
-    can_be_commercial: unit.can_be_commercial,
-    can_be_gas: unit.can_be_gas,
-    can_be_stacked: unit.can_be_stacked,
-    display_order: String(unit.display_order),
-    is_built_in: unit.is_built_in,
     name: unit.name,
     slug: unit.slug,
+    display_order: String(unit.display_order),
+    can_be_gas: unit.can_be_gas,
+    can_be_stacked: unit.can_be_stacked,
+    can_be_installed: unit.can_be_installed,
+    is_built_in: unit.is_built_in,
+    can_be_commercial: unit.can_be_commercial,
   };
 };
 
 export const EMPTY_UNIT_FORM_STATE: UnitFormState = {
   active: true,
-  can_be_commercial: false,
-  can_be_gas: false,
-  can_be_stacked: false,
   display_order: "999",
-  is_built_in: false,
   name: "",
   slug: "",
+  can_be_gas: false,
+  can_be_stacked: false,
+  can_be_installed: false,
+  is_built_in: false,
+  can_be_commercial: false,
 };
 
 export const normalizeUnitFormState = (
   formState: UnitFormState,
 ): UnitInsert => ({
   active: formState.active,
-  can_be_commercial: formState.can_be_commercial,
-  can_be_gas: formState.can_be_gas,
-  can_be_stacked: formState.can_be_stacked,
   display_order: Number(formState.display_order),
-  is_built_in: formState.is_built_in,
   name: formState.name.trim(),
   slug: formState.slug.trim().toLowerCase(),
+  can_be_gas: formState.can_be_gas,
+  can_be_stacked: formState.can_be_stacked,
+  is_built_in: formState.is_built_in,
+  can_be_installed: formState.can_be_installed,
+  can_be_commercial: formState.can_be_commercial,
 });
 
 export const buildUnitPatch = (
@@ -64,7 +67,6 @@ export const isNewUnitFormDirty = (formState: UnitFormState): boolean => {
 
   return Object.keys(normalized).some(
     (key) =>
-      normalized[key as keyof UnitInsert] !==
-      initial[key as keyof UnitInsert],
+      normalized[key as keyof UnitInsert] !== initial[key as keyof UnitInsert],
   );
 };

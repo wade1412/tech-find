@@ -10,17 +10,18 @@ import {
 
 const unit: Unit = {
   active: true,
+  display_order: 10,
+  id: "unit-1",
+  name: "Washer",
+  slug: "washer",
   active_before_archive: null,
   archived_at: null,
   archived_by: null,
-  can_be_commercial: false,
   can_be_gas: true,
   can_be_stacked: false,
-  display_order: 10,
-  id: "unit-1",
+  can_be_installed: false,
   is_built_in: true,
-  name: "Washer",
-  slug: "washer",
+  can_be_commercial: false,
 };
 
 describe("unit form helpers", () => {
@@ -29,13 +30,14 @@ describe("unit form helpers", () => {
 
     expect(draft).toEqual({
       active: true,
-      can_be_commercial: false,
-      can_be_gas: true,
-      can_be_stacked: false,
       display_order: "10",
-      is_built_in: true,
       name: "Washer",
       slug: "washer",
+      can_be_gas: true,
+      can_be_stacked: false,
+      can_be_installed: false,
+      is_built_in: true,
+      can_be_commercial: false,
     });
     expect(draft).not.toBe(unit);
   });
