@@ -75,6 +75,7 @@ const defaultFilter: FilterState = {
   specificIssueSlugs: [],
   isGas: false,
   isCommercial: false,
+  isInstallation: false,
   isStacked: false,
   sort: "default.asc",
   zone: "",

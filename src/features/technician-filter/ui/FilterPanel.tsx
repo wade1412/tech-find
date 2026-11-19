@@ -27,6 +27,7 @@ function FilterPanel() {
     filter.specificIssueSlugs.length,
     filter.isGas,
     filter.isStacked,
+    filter.isInstallation,
     filter.isCommercial,
   ].filter(Boolean).length;
 

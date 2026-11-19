@@ -64,6 +64,8 @@ function JobOptions() {
     const invalidOptions: JobOptionKey[] = [];
     if (!canBeGas && filter.isGas) invalidOptions.push("gas");
     if (!canBeStacked && filter.isStacked) invalidOptions.push("stacked");
+    if (selectedUnits.length === 0 && filter.isInstallation)
+      invalidOptions.push("installation");
     if (!canBeCommercial && filter.isCommercial)
       invalidOptions.push("commercial");
 
@@ -75,8 +77,10 @@ function JobOptions() {
     canBeGas,
     canBeStacked,
     canBeCommercial,
+    selectedUnits.length,
     filter.isGas,
     filter.isStacked,
+    filter.isInstallation,
     filter.isCommercial,
     clearOptionByKeys,
   ]);

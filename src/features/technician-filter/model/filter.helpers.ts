@@ -23,12 +23,13 @@ export function createDataMapByTechnicianId<
   return map;
 }
 
+// Check if the current skill matches the unit id and that it isnt a specific issue skill
 export const matchesBaseUnitSkill = (
   skill: TechnicianSkill,
   unitId: string,
 ): boolean => skill.unit_id === unitId && !skill.specific_issue_id;
 
-// Check if the technician has commerial skill
+// Check if the current skill matches the commercial job option flag
 export const matchesCommercialMode = (
   skill: TechnicianSkill,
   isCommercial: boolean,
