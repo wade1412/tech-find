@@ -142,7 +142,55 @@ describe("filterTechnicians", () => {
 
     expect(getIds(filterTechnicians(params))).toEqual([fullyQualified.id]);
   });
-  // 4) Installation flag requires the technician to have both the installation capability and a relevant unit skill
+  // 4) Selected brands are ignored on commercial flag
+  it("matches the technician with commercial capability, when commercial skill exists and brand group is selected", () => {
+    const washer = makeUnit({
+      id: "unit-washer",
+      name: "Washer",
+      slug: "washer",
+      can_be_commercial: true,
+    });
+
+    const tech1 = makeTechnician({
+      id: "tech-1",
+      alias: "Alex",
+      commercial: true,
+    });
+
+    const params = makeFilterParams({
+      technicians: [tech1],
+      selectedUnits: [washer],
+      selectedUnitIds: new Set(["unit-washer"]),
+      selectedBrandIds: new Set(["brand-lg"]),
+      selectedBrandGroupIds: new Set(["brand-group-standard"]),
+      skillsByTechId: new Map([
+        [
+          "tech-1",
+          [
+            makeSkill({
+              id: "skill-1",
+              technician_id: "tech-1",
+              unit_id: "unit-washer",
+              brand_group_id: null,
+              commercial: true,
+            }),
+          ],
+        ],
+      ]),
+      filter: {
+        unitSlugs: ["washer"],
+        brandSlugs: ["lg"],
+        isCommercial: true,
+      },
+    });
+
+    const result = filterTechnicians(params);
+
+    expect(getIds(result)).toEqual(["tech-1"]);
+  });
+
+  // -------- Installation Tests --------
+  // 1) Installation flag requires the technician to have both the installation capability and a relevant unit skill
   it("matches the technician, when the installatio job option is selected only if he has the capability and the unit skill", () => {
     const dryerForInstallation = makeUnit({
       id: "dryer",
@@ -161,7 +209,7 @@ describe("filterTechnicians", () => {
     });
     const skillOnly = makeTechnician({
       id: "tech-skill-only",
-      can_service_built_in: false,
+      can_provide_installation: false,
     });
 
     const params = makeFilterParams({
@@ -208,51 +256,116 @@ describe("filterTechnicians", () => {
 
     expect(getIds(filterTechnicians(params))).toEqual([fullyQualified.id]);
   });
-  // 5) Selected brands are ignored on commercial flag
-  it("matches the technician with commercial capability, when commercial skill exists and brand group is selected", () => {
-    const washer = makeUnit({
-      id: "unit-washer",
-      name: "Washer",
-      slug: "washer",
-      can_be_commercial: true,
+  // 2) Mixed filtering: when there are two units selected, filter will match only the technicians that have all the needed skills and capabilitie
+  it("matches the technicians that have all the needed skills and selected capabilities during mixed matching", () => {
+    const dryerGas = makeUnit({
+      id: "dryer",
+      name: "Dryer",
+      slug: "Dryer",
+      can_be_gas: true,
+    });
+    const washerInstallation = makeUnit({
+      id: "dryer",
+      name: "Dryer",
+      slug: "Dryer",
+      can_be_installed: true,
     });
 
-    const tech1 = makeTechnician({
-      id: "tech-1",
-      alias: "Alex",
-      commercial: true,
+    const fullyQualified = makeTechnician({
+      id: "tech-qualified",
+      can_provide_installation: true,
+      gas: true,
+    });
+    const capabilityOnly = makeTechnician({
+      id: "capability-only",
+      can_provide_installation: true,
+      gas: true,
+    });
+    const skillOnly = makeTechnician({
+      id: "tech-skill-only",
+      can_provide_installation: false,
+      gas: false,
+    });
+    const mixedSet = makeTechnician({
+      id: "mixed-set",
+      can_provide_installation: true,
+      gas: false,
     });
 
     const params = makeFilterParams({
-      technicians: [tech1],
-      selectedUnits: [washer],
-      selectedUnitIds: new Set(["unit-washer"]),
-      selectedBrandIds: new Set(["brand-lg"]),
-      selectedBrandGroupIds: new Set(["brand-group-standard"]),
+      technicians: [fullyQualified, capabilityOnly, skillOnly, mixedSet],
+      selectedUnits: [dryerGas, washerInstallation],
+      selectedUnitIds: new Set([dryerGas.id, washerInstallation.id]),
       skillsByTechId: new Map([
         [
-          "tech-1",
+          fullyQualified.id,
           [
             makeSkill({
-              id: "skill-1",
-              technician_id: "tech-1",
-              unit_id: "unit-washer",
-              brand_group_id: null,
-              commercial: true,
+              id: "qualified-dryer-gas-skill",
+              technician_id: fullyQualified.id,
+              unit_id: dryerGas.id,
+            }),
+            makeSkill({
+              id: "qualified-washer-installation-skill",
+              technician_id: fullyQualified.id,
+              unit_id: washerInstallation.id,
+            }),
+          ],
+        ],
+        [
+          capabilityOnly.id,
+          [
+            makeSkill({
+              id: "skill-for-some-other-unit",
+              technician_id: capabilityOnly.id,
+              unit_id: "44",
+            }),
+            makeSkill({
+              id: "skill-for-some-other-unit-2",
+              technician_id: capabilityOnly.id,
+              unit_id: "45",
+            }),
+          ],
+        ],
+        [
+          skillOnly.id,
+          [
+            makeSkill({
+              id: "unit-only-skill",
+              technician_id: skillOnly.id,
+              unit_id: dryerGas.id,
+            }),
+            makeSkill({
+              id: "unit-only-skill-2",
+              technician_id: skillOnly.id,
+              unit_id: washerInstallation.id,
+            }),
+          ],
+        ],
+        [
+          mixedSet.id,
+          [
+            makeSkill({
+              id: "washer-installation-skill-1",
+              technician_id: mixedSet.id,
+              unit_id: washerInstallation.id,
+            }),
+            makeSkill({
+              id: "dryer-skill-id-3",
+              technician_id: mixedSet.id,
+              unit_id: dryerGas.id,
             }),
           ],
         ],
       ]),
       filter: {
-        unitSlugs: ["washer"],
-        brandSlugs: ["lg"],
-        isCommercial: true,
+        unitSlugs: [dryerGas.slug, washerInstallation.slug],
+        isInstallation: true,
+        isGas: true,
       },
     });
 
-    const result = filterTechnicians(params);
-
-    expect(getIds(result)).toEqual(["tech-1"]);
+    expect(getIds(filterTechnicians(params))).toEqual([fullyQualified.id]);
   });
 
   // -------- Brand Group Tests --------
