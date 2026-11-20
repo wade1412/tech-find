@@ -3,10 +3,15 @@ import UnitCard from "../../../entities/unit/ui/UnitCard";
 import UnitSkeleton from "../../../entities/unit/ui/UnitSkeleton";
 import { useTechnicianFilters } from "../model/useTechnicianFilters";
 import ErrorMessage from "../../../shared/ui/ErrorMessage";
+import {
+  getActiveJobOptions,
+  getUnsupportedJobOptions,
+} from "../model/unitCompatibility";
 
 function UnitSelector() {
   const { data, isPending, isError, error } = useUnitsQuery();
   const { filter, toggleUnit, clearUnits } = useTechnicianFilters();
+  const activeJobOptions = getActiveJobOptions(filter);
 
   if (isPending) return <UnitSkeleton />;
 
@@ -34,16 +39,25 @@ function UnitSelector() {
       </div>
 
       {/* Units Grid */}
-      <div className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-4">
         {data && data.length > 0 ? (
-          data.map((unit) => (
-            <UnitCard
-              key={unit.id}
-              unit={unit}
-              isSelected={filter.unitSlugs.includes(unit.slug)}
-              onToggle={() => toggleUnit(unit.slug)}
-            />
-          ))
+          data.map((unit) => {
+            const isSelected = filter.unitSlugs.includes(unit.slug);
+            const unsupportedOptions = getUnsupportedJobOptions(
+              unit,
+              activeJobOptions,
+            );
+
+            return (
+              <UnitCard
+                key={unit.id}
+                unit={unit}
+                isSelected={isSelected}
+                unsupportedLabels={isSelected ? unsupportedOptions : []}
+                onToggle={() => toggleUnit(unit.slug)}
+              />
+            );
+          })
         ) : (
           <p className="col-span-full py-6 text-center text-sm text-zinc-400 dark:text-zinc-500">
             No units found

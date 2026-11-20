@@ -27,14 +27,14 @@ function Checkbox({
 
       {/* Custom square - changing color on peer-checked */}
       <span
-        className={`peer-focus-visible:ring-main-500 flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-[color,background-color,border-color,opacity] peer-focus-visible:ring-2 peer-focus-visible:ring-offset-1 peer-disabled:opacity-50 ${
+        className={`peer-focus-visible:ring-main-500 flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-[color,background-color,border-color,opacity] duration-250 peer-focus-visible:ring-2 peer-focus-visible:ring-offset-1 peer-disabled:opacity-40 ${
           checked
             ? "border-main-500 bg-main-500"
             : "border-zinc-300 bg-white peer-enabled:group-hover:border-zinc-400 dark:border-zinc-600 dark:bg-zinc-800 dark:peer-enabled:group-hover:border-zinc-500"
         }`}
       >
         <svg
-          className={`h-2.5 w-2.5 text-zinc-900 transition-opacity ${checked ? "opacity-100" : "opacity-0"}`}
+          className={`h-2.5 w-2.5 text-zinc-900 transition-opacity duration-250 ${checked ? "opacity-100" : "opacity-0"}`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"

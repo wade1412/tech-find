@@ -21,6 +21,7 @@ function JobOptions() {
   const selectedUnits =
     units?.filter((unit) => filter.unitSlugs.includes(unit.slug)) || [];
   // Flags to check if the option should be disabled
+  const canBeInstalled = selectedUnits.some((el) => el.can_be_installed);
   const canBeGas = selectedUnits.some((el) => el.can_be_gas);
   const canBeStacked = selectedUnits.some((el) => el.can_be_stacked);
   const canBeCommercial =
@@ -45,7 +46,7 @@ function JobOptions() {
       onChange: toggleStacked,
     },
     installation: {
-      disabled: selectedUnits.length === 0,
+      disabled: !canBeInstalled,
       checked: filter.isInstallation,
       onChange: toggleInstallation,
     },
@@ -64,7 +65,7 @@ function JobOptions() {
     const invalidOptions: JobOptionKey[] = [];
     if (!canBeGas && filter.isGas) invalidOptions.push("gas");
     if (!canBeStacked && filter.isStacked) invalidOptions.push("stacked");
-    if (selectedUnits.length === 0 && filter.isInstallation)
+    if (!canBeInstalled && filter.isInstallation)
       invalidOptions.push("installation");
     if (!canBeCommercial && filter.isCommercial)
       invalidOptions.push("commercial");
@@ -76,6 +77,7 @@ function JobOptions() {
     isPending,
     canBeGas,
     canBeStacked,
+    canBeInstalled,
     canBeCommercial,
     selectedUnits.length,
     filter.isGas,
