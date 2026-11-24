@@ -1,15 +1,15 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { SpecificIssue } from "../../../../entities/specific-issue/specific-issue.types";
 import { useSpecificIssuesQuery } from "../../../../entities/specific-issue/useSpecificIssuesQuery";
-import type { Unit } from "../../../../entities/unit/unit.types";
 import { useAuthPermissions } from "../../../auth/model/useAuthPermissions";
 import {
   usePurgeSpecificIssueMutation,
   useRestoreSpecificIssueMutation,
 } from "../model/useSpecificIssueArchiveMutations";
 import ManageArchivedSpecificIssuesDialog from "./ManageArchivedSpecificIssuesDialog";
+import { makeIssue } from "../../../../entities/specific-issue/testing/specific-issue.factory";
+import { makeUnit } from "../../../../entities/unit/testing/unit.factory";
 
 vi.mock("../../../../entities/specific-issue/useSpecificIssuesQuery", () => ({
   useSpecificIssuesQuery: vi.fn(),
@@ -29,7 +29,7 @@ const mockedUseAuthPermissions = vi.mocked(useAuthPermissions);
 const mockedUsePurgeMutation = vi.mocked(usePurgeSpecificIssueMutation);
 const mockedUseRestoreMutation = vi.mocked(useRestoreSpecificIssueMutation);
 
-const archivedIssue: SpecificIssue = {
+const archivedIssue = makeIssue({
   active: false,
   active_before_archive: true,
   archived_at: "2026-08-01T12:00:00.000Z",
@@ -38,9 +38,9 @@ const archivedIssue: SpecificIssue = {
   name: "No Heat",
   slug: "no-heat",
   unit_id: "unit-1",
-};
+});
 
-const unit: Unit = {
+const unit = makeUnit({
   active: true,
   active_before_archive: null,
   archived_at: null,
@@ -53,7 +53,7 @@ const unit: Unit = {
   is_built_in: false,
   name: "Dryer",
   slug: "dryer",
-};
+});
 
 const createMutation = () => ({
   error: null,

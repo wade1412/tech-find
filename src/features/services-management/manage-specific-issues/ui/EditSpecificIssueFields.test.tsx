@@ -4,11 +4,12 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Unit } from "../../../../entities/unit/unit.types";
 import type { SpecificIssueFormState } from "../model/manage-specific-issues.types";
 import EditSpecificIssueFields from "./EditSpecificIssueFields";
+import { makeUnit } from "../../../../entities/unit/testing/unit.factory";
 
 afterEach(cleanup);
 
 const units: Unit[] = [
-  {
+  makeUnit({
     active: true,
     active_before_archive: null,
     archived_at: null,
@@ -21,8 +22,8 @@ const units: Unit[] = [
     is_built_in: false,
     name: "Dryer",
     slug: "dryer",
-  },
-  {
+  }),
+  makeUnit({
     active: false,
     active_before_archive: null,
     archived_at: null,
@@ -35,7 +36,7 @@ const units: Unit[] = [
     is_built_in: false,
     name: "Legacy Washer",
     slug: "legacy-washer",
-  },
+  }),
 ];
 
 const formState: SpecificIssueFormState = {

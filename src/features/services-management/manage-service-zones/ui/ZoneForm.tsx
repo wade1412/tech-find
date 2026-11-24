@@ -23,10 +23,11 @@ import {
 } from "../../../../shared/styles/styles";
 import ActiveStatusBar from "../../../../shared/ui/ActiveStatusBar";
 import FormSubmitArea from "../../../../shared/ui/FormSubmitArea";
-import SaveSuccessSnackbar from "../../../../shared/ui/SaveSuccessSnackbar";
 import EditZoneFields from "./EditZoneFields";
 import { useUnsavedChangesGuard } from "../../../../shared/hooks/useUnsavedChangesGuard";
 import UnsavedChangesDialog from "../../../../shared/ui/UnsavedChangesDialog";
+import { useFeedback } from "../../../../shared/feedback/useFeedback";
+import { FEEDBACK_TEXT } from "../../../../shared/feedback/feedback.constants";
 
 interface ZoneFormProps {
   zone?: ServiceZone;
@@ -38,7 +39,9 @@ function ZoneForm({ zone }: ZoneFormProps) {
     zone ? createZoneFormState(zone) : { ...EMPTY_ZONE_FORM_STATE },
   );
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [isSavedSnackbarOpen, setIsSavedSnackbarOpen] = useState(false);
+
+  // Feedback Snackbar
+  const { openSuccessFeedbackWithMessage } = useFeedback();
 
   const createMutation = useCreateServiceZoneMutation();
   const updateMutation = useUpdateServiceZoneMutation();
@@ -84,7 +87,7 @@ function ZoneForm({ zone }: ZoneFormProps) {
           id: zone.id,
           patch: patch ?? {},
         });
-        setIsSavedSnackbarOpen(true);
+        openSuccessFeedbackWithMessage(FEEDBACK_TEXT.zone.saved);
       } else {
         const createZone = await createMutation.mutateAsync(
           normalizeZoneFormState(formState),
@@ -94,6 +97,7 @@ function ZoneForm({ zone }: ZoneFormProps) {
             replace: true,
           }),
         );
+        openSuccessFeedbackWithMessage(FEEDBACK_TEXT.zone.created);
       }
     } catch {
       // The shared submit area renders the mutation error.
@@ -103,42 +107,37 @@ function ZoneForm({ zone }: ZoneFormProps) {
   return (
     <>
       <form className={formStyle} onSubmit={handleSubmit} noValidate>
-      <ActiveStatusBar
-        label="Zone status"
-        activeDescription="Active zones are available in filters and technician configuration."
-        inactiveDescription="Inactive zones stay configured but are hidden from active workflows."
-        isActive={formState.active}
-        disabled={isPending}
-        onChange={(active) => {
-          mutation.reset();
-          setFormState((previous) => ({ ...previous, active }));
-        }}
-      />
-
-      <div className={formWithPaddingStyle}>
-        <EditZoneFields
+        <ActiveStatusBar
+          label="Zone status"
+          activeDescription="Active zones are available in filters and technician configuration."
+          inactiveDescription="Inactive zones stay configured but are hidden from active workflows."
+          isActive={formState.active}
           disabled={isPending}
-          errors={hasSubmitted ? errors : null}
-          formState={formState}
-          onFieldChange={setZoneField}
+          onChange={(active) => {
+            mutation.reset();
+            setFormState((previous) => ({ ...previous, active }));
+          }}
         />
 
-        <FormSubmitArea
-          discardLabel={zone ? "Discard changes" : "Clear form"}
-          error={mutation.error}
-          errorMessage={getZoneSaveErrorMessage(mutation.error)}
-          isDirty={isDirty}
-          isPending={isPending}
-          onDiscard={handleDiscard}
-          pendingLabel={zone ? "Saving..." : "Creating..."}
-          submitLabel={zone ? "Save Changes" : "Create Zone"}
-        />
-      </div>
+        <div className={formWithPaddingStyle}>
+          <EditZoneFields
+            disabled={isPending}
+            errors={hasSubmitted ? errors : null}
+            formState={formState}
+            onFieldChange={setZoneField}
+          />
 
-      <SaveSuccessSnackbar
-        isOpen={isSavedSnackbarOpen}
-        onClose={() => setIsSavedSnackbarOpen(false)}
-      />
+          <FormSubmitArea
+            discardLabel={zone ? "Discard changes" : "Clear form"}
+            error={mutation.error}
+            errorMessage={getZoneSaveErrorMessage(mutation.error)}
+            isDirty={isDirty}
+            isPending={isPending}
+            onDiscard={handleDiscard}
+            pendingLabel={zone ? "Saving..." : "Creating..."}
+            submitLabel={zone ? "Save Changes" : "Create Zone"}
+          />
+        </div>
       </form>
 
       <UnsavedChangesDialog

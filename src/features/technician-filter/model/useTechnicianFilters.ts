@@ -6,9 +6,10 @@ type FilterParamKey =
   | "units"
   | "brands"
   | "specific_issues"
-  | "stacked"
-  | "commercial"
   | "gas"
+  | "stacked"
+  | "installation"
+  | "commercial"
   | "sort"
   | "zone";
 
@@ -29,6 +30,7 @@ export const useTechnicianFilters = () => {
         : [],
       isGas: filterParams.get("gas") === "1",
       isStacked: filterParams.get("stacked") === "1",
+      isInstallation: filterParams.get("installation") === "1",
       isCommercial: filterParams.get("commercial") === "1",
       brandSlugs: brandsParam
         ? [...new Set(brandsParam.split(",").filter(Boolean))]
@@ -121,7 +123,23 @@ export const useTechnicianFilters = () => {
     updateFilter("gas", filter.isGas ? null : "1");
   }, [filter.isGas, updateFilter]);
 
-  // Toggle Commercial option - has to disable selected brands
+  // Toggle Installation option - has to disable commercial flag:
+  // Since commercial installations are not supported by the team at the moment - disabled for now
+  const toggleInstallation = useCallback(() => {
+    const newParams = new URLSearchParams(filterParams);
+
+    if (filter.isInstallation) {
+      newParams.delete("installation");
+    } else {
+      newParams.set("installation", "1");
+      newParams.delete("commercial");
+    }
+
+    setFilterParams(newParams, { replace: true });
+  }, [filter.isInstallation, filterParams, setFilterParams]);
+
+  // Toggle Commercial option - has to disable selected brands:
+  // When the technician does commercial he does all of them, so brand selection is not needed here
   const toggleCommercial = useCallback(() => {
     const newParams = new URLSearchParams(filterParams);
 
@@ -164,9 +182,10 @@ export const useTechnicianFilters = () => {
     updateZone,
     toggleUnit,
     clearUnits,
-    toggleStacked,
-    toggleCommercial,
     toggleGas,
+    toggleStacked,
+    toggleInstallation,
+    toggleCommercial,
     clearOptionByKeys,
     resetFilters,
   };

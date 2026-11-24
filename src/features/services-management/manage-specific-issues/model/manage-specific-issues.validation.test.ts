@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import type { Unit } from "../../../../entities/unit/unit.types";
 import { EMPTY_SPECIFIC_ISSUE_FORM_STATE } from "./manage-specific-issues.helpers";
 import { validateSpecificIssueForm } from "./manage-specific-issues.validation";
+import { makeUnit } from "../../../../entities/unit/testing/unit.factory";
 
-const unit: Unit = {
+const unit = makeUnit({
   active: true,
   active_before_archive: null,
   archived_at: null,
@@ -16,7 +16,7 @@ const unit: Unit = {
   is_built_in: false,
   name: "Dryer",
   slug: "dryer",
-};
+});
 
 describe("validateSpecificIssueForm", () => {
   it("requires an available unit", () => {
@@ -30,10 +30,9 @@ describe("validateSpecificIssueForm", () => {
       "Select a unit",
     );
     expect(
-      validateSpecificIssueForm(
-        { ...validIdentity, unit_id: "missing" },
-        [unit],
-      ).unit_id,
+      validateSpecificIssueForm({ ...validIdentity, unit_id: "missing" }, [
+        unit,
+      ]).unit_id,
     ).toBe("The selected unit is no longer available");
   });
 

@@ -1,8 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { makeTechnician } from "../../../technician-filter/model/filterTestFixtures";
 import ConfirmPermanentTechnicianPurgeDialog from "./ConfirmPermanentTechnicianPurgeDialog";
+import { makeTechnician } from "../../../../entities/technician/testing/technician.factory";
 
 const archivedTechnician = makeTechnician({
   alias: "Alex",

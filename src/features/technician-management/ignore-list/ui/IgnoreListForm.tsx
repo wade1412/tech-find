@@ -5,7 +5,6 @@ import type { TechnicianIgnoreList } from "../../../../entities/technician-ignor
 import type { Unit } from "../../../../entities/unit/unit.types";
 import { formWithPaddingStyle } from "../../../../shared/styles/styles";
 import FormSubmitArea from "../../../../shared/ui/FormSubmitArea";
-import SaveSuccessSnackbar from "../../../../shared/ui/SaveSuccessSnackbar";
 import {
   createIgnoreItemDraft,
   createIgnoreListPatch,
@@ -13,6 +12,8 @@ import {
 import type { IgnoreItemDraft } from "../model/ignoreList.types";
 import { useUpdateTechnicianIgnoreListMutation } from "../model/useUpdateTechnicianIgnoreListMutation";
 import IgnoreListFields from "./IgnoreListFields";
+import { useFeedback } from "../../../../shared/feedback/useFeedback";
+import { FEEDBACK_TEXT } from "../../../../shared/feedback/feedback.constants";
 
 interface IgnoreListFormProps {
   technicianId: string;
@@ -42,7 +43,9 @@ function IgnoreListForm({
     [technicianIgnoreList],
   );
   const [itemsDraft, setItemsDraft] = useState<IgnoreItemDraft[]>(initialItems);
-  const [isSavedSnackbarOpen, setIsSavedSnackbarOpen] = useState(false);
+
+  // Feedback Snackbar
+  const { openSuccessFeedbackWithMessage } = useFeedback();
 
   const updateTechnicianIgnoreListMutation =
     useUpdateTechnicianIgnoreListMutation();
@@ -78,7 +81,7 @@ function IgnoreListForm({
       {
         onSuccess: (savedItems) => {
           setItemsDraft(savedItems.map(createIgnoreItemDraft));
-          setIsSavedSnackbarOpen(true);
+          openSuccessFeedbackWithMessage(FEEDBACK_TEXT.ignoreList.saved);
         },
       },
     );
@@ -103,11 +106,6 @@ function IgnoreListForm({
         isDirty={isDirty}
         isPending={isPending}
         onDiscard={handleDiscardChanges}
-      />
-
-      <SaveSuccessSnackbar
-        isOpen={isSavedSnackbarOpen}
-        onClose={() => setIsSavedSnackbarOpen(false)}
       />
     </form>
   );

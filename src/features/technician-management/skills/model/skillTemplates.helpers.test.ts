@@ -1,27 +1,28 @@
 import { describe, expect, it } from "vitest";
 import type { BrandGroup } from "../../../../entities/brandGroup/brandGroup.types";
-import type { Unit } from "../../../../entities/unit/unit.types";
 import { SKILL_TEMPLATES } from "./skillTemplates.constants";
 import {
   applySkillTemplate,
   getSkillTemplateAvailability,
 } from "./skillTemplates.helpers";
 import type { SkillDraft } from "./skills.types";
+import { makeUnit } from "../../../../entities/unit/testing/unit.factory";
 
-const makeUnit = (id: string, active = true): Unit => ({
-  active_before_archive: null,
-  archived_at: null,
-  archived_by: null,
-  id,
-  name: id,
-  slug: id,
-  active,
-  display_order: 1,
-  is_built_in: false,
-  can_be_stacked: false,
-  can_be_gas: false,
-  can_be_commercial: true,
-});
+const makeBasicUnit = (id: string, active = true) =>
+  makeUnit({
+    active_before_archive: null,
+    archived_at: null,
+    archived_by: null,
+    id,
+    name: id,
+    slug: id,
+    active,
+    display_order: 1,
+    is_built_in: false,
+    can_be_stacked: false,
+    can_be_gas: false,
+    can_be_commercial: true,
+  });
 
 const makeBrandGroup = (
   id: string,
@@ -38,7 +39,7 @@ const makeBrandGroup = (
   archived_by: null,
 });
 
-const units = [makeUnit("washer"), makeUnit("dryer")];
+const units = [makeBasicUnit("washer"), makeBasicUnit("dryer")];
 const basicUnitSlugs = [
   "dishwasher",
   "dryer",
@@ -64,12 +65,7 @@ const highEndTemplate = SKILL_TEMPLATES[1];
 
 describe("applySkillTemplate", () => {
   it("adds a brand-group skill for every eligible active unit", () => {
-    const result = applySkillTemplate(
-      [],
-      units,
-      brandGroups,
-      standardTemplate,
-    );
+    const result = applySkillTemplate([], units, brandGroups, standardTemplate);
 
     expect(result.success).toBe(true);
     if (!result.success) return;
@@ -96,7 +92,7 @@ describe("applySkillTemplate", () => {
   });
 
   it("adds every unit from the basic allowlist", () => {
-    const basicUnits = basicUnitSlugs.map((slug) => makeUnit(slug));
+    const basicUnits = basicUnitSlugs.map((slug) => makeBasicUnit(slug));
     const result = applySkillTemplate(
       [],
       basicUnits,
@@ -115,7 +111,7 @@ describe("applySkillTemplate", () => {
 
   it("does not add specialized units", () => {
     const specializedUnits = specializedUnitSlugs.map((slug) =>
-      makeUnit(slug),
+      makeBasicUnit(slug),
     );
     const result = applySkillTemplate(
       [],
@@ -271,7 +267,7 @@ describe("applySkillTemplate", () => {
   it("ignores an inactive unit that belongs to the basic allowlist", () => {
     const result = applySkillTemplate(
       [],
-      [makeUnit("washer", false), makeUnit("dryer")],
+      [makeBasicUnit("washer", false), makeBasicUnit("dryer")],
       brandGroups,
       standardTemplate,
     );
@@ -285,7 +281,7 @@ describe("applySkillTemplate", () => {
 
   it("returns a controlled error when no eligible active units exist", () => {
     const specializedUnits = specializedUnitSlugs.map((slug) =>
-      makeUnit(slug),
+      makeBasicUnit(slug),
     );
     const result = applySkillTemplate(
       [],
@@ -331,10 +327,10 @@ describe("getSkillTemplateAvailability", () => {
     const availability = getSkillTemplateAvailability(
       [],
       [
-        makeUnit("washer"),
-        makeUnit("dryer", false),
-        makeUnit("microwave"),
-        makeUnit("water-heater"),
+        makeBasicUnit("washer"),
+        makeBasicUnit("dryer", false),
+        makeBasicUnit("microwave"),
+        makeBasicUnit("water-heater"),
       ],
       brandGroups,
       standardTemplate,

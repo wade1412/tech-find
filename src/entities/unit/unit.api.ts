@@ -1,10 +1,5 @@
 import { supabase } from "../../shared/api/supabase/supabaseClient";
-import type {
-  Unit,
-  UnitInsert,
-  UnitStatus,
-  UnitUpdate,
-} from "./unit.types";
+import type { Unit, UnitInsert, UnitStatus, UnitUpdate } from "./unit.types";
 
 const UNIT_SELECT = `
   id,
@@ -16,17 +11,16 @@ const UNIT_SELECT = `
   archived_at,
   archived_by,
   is_built_in,
-  can_be_stacked,
   can_be_gas,
+  can_be_stacked,
+  can_be_installed,
   can_be_commercial
 `;
 
 export const getUnits = async (
   status: UnitStatus = "active",
 ): Promise<Unit[]> => {
-  let query = supabase
-    .from("unit")
-    .select(UNIT_SELECT);
+  let query = supabase.from("unit").select(UNIT_SELECT);
 
   if (status === "active") {
     query = query.eq("active", true).is("archived_at", null);

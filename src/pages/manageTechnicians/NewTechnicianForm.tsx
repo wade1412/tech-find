@@ -44,6 +44,8 @@ import { useCreateTechnicianMutation } from "../../features/technician-managemen
 import { SKILL_TEMPLATES } from "../../features/technician-management/skills/model/skillTemplates.constants";
 import { useUnsavedChangesGuard } from "../../shared/hooks/useUnsavedChangesGuard";
 import UnsavedChangesDialog from "../../shared/ui/UnsavedChangesDialog";
+import { useFeedback } from "../../shared/feedback/useFeedback";
+import { FEEDBACK_TEXT } from "../../shared/feedback/feedback.constants";
 
 interface NewTechnicianFormProps {
   units: Unit[];
@@ -72,6 +74,10 @@ function NewTechnicianForm({
     useState<NewTechnicianDraft>(() => createEmptyNewTechnicianDraft());
   const [selectedSectionId, setSelectedSectionId] =
     useState<EditTechnicianSectionId>("profile");
+
+  // Feedback Snackbar
+  const { openSuccessFeedbackWithMessage } = useFeedback();
+
   const navigate = useNavigate();
   const createTechnicianMutation = useCreateTechnicianMutation();
 
@@ -145,6 +151,8 @@ function NewTechnicianForm({
           unsavedChanges.proceedWithoutPrompt(() =>
             navigate(`/technicians/${technician.id}/edit`, { replace: true }),
           );
+
+          openSuccessFeedbackWithMessage(FEEDBACK_TEXT.technician.created);
         },
       },
     );
@@ -153,116 +161,116 @@ function NewTechnicianForm({
   return (
     <>
       <div className={centeredContainerStyle}>
-      <section className={formStyle}>
-        {/* Header */}
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <PageHeader
-            title="New Technician"
-            subtitle="Fill out the sections to create the new technician"
-          />
-
-          <button
-            type="button"
-            disabled={!canCreateNewTechnician || isPending}
-            className={primaryButton}
-            onClick={handleCreateTechnician}
-          >
-            {isPending ? "Creating..." : "Create Technician"}
-          </button>
-        </div>
-
-        {createTechnicianMutation.error && (
-          <p
-            role="alert"
-            className="rounded-xl border border-red-200 bg-red-50/70 px-4 py-3 text-xs font-medium text-red-600 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-400"
-          >
-            Failed to create technician. Check that the name is unique and try
-            again.
-          </p>
-        )}
-
-        {/* Sections Cards */}
-        <div className={editSectionListStyle}>
-          {editTechnicianSections.map((section) => (
-            <EditSectionCard
-              key={section.id}
-              id={section.id}
-              title={section.title}
-              selectedSectionId={selectedSectionId}
-              onClick={() => setSelectedSectionId(section.id)}
+        <section className={formStyle}>
+          {/* Header */}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <PageHeader
+              title="New Technician"
+              subtitle="Fill out the sections to create the new technician"
             />
-          ))}
-        </div>
 
-        {/* Selected Section */}
-        {selectedSectionId === "profile" && (
-          <div className={formStyle}>
-            <ActiveStatusBar
-              label="Technician status"
-              isActive={newTechnicianDraft.profile.active}
-              disabled={isPending}
-              onChange={setActive}
-              activeDescription="This technician can be scheduled for jobs."
-              inactiveDescription="This technician is excluded from scheduling."
-            />
-            <div className="p-2">
-              <ProfileAndCapabilitiesFields
+            <button
+              type="button"
+              disabled={!canCreateNewTechnician || isPending}
+              className={primaryButton}
+              onClick={handleCreateTechnician}
+            >
+              {isPending ? "Creating..." : "Create Technician"}
+            </button>
+          </div>
+
+          {createTechnicianMutation.error && (
+            <p
+              role="alert"
+              className="rounded-xl border border-red-200 bg-red-50/70 px-4 py-3 text-xs font-medium text-red-600 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-400"
+            >
+              Failed to create technician. Check that the name is unique and try
+              again.
+            </p>
+          )}
+
+          {/* Sections Cards */}
+          <div className={editSectionListStyle}>
+            {editTechnicianSections.map((section) => (
+              <EditSectionCard
+                key={section.id}
+                id={section.id}
+                title={section.title}
+                selectedSectionId={selectedSectionId}
+                onClick={() => setSelectedSectionId(section.id)}
+              />
+            ))}
+          </div>
+
+          {/* Selected Section */}
+          {selectedSectionId === "profile" && (
+            <div className={formStyle}>
+              <ActiveStatusBar
+                label="Technician status"
+                isActive={newTechnicianDraft.profile.active}
                 disabled={isPending}
-                formState={newTechnicianDraft.profile}
-                onProfileFieldChange={onProfileFieldChange}
-                onCapabilityToggle={toggleCapability}
-                jobsPerDayRange={jobsPerDayRange}
-                onJobsPerDayRangeChange={onJobsPerDayRangeChange}
+                onChange={setActive}
+                activeDescription="This technician can be scheduled for jobs."
+                inactiveDescription="This technician is excluded from scheduling."
+              />
+              <div className="p-2">
+                <ProfileAndCapabilitiesFields
+                  disabled={isPending}
+                  formState={newTechnicianDraft.profile}
+                  onProfileFieldChange={onProfileFieldChange}
+                  onCapabilityToggle={toggleCapability}
+                  jobsPerDayRange={jobsPerDayRange}
+                  onJobsPerDayRangeChange={onJobsPerDayRangeChange}
+                />
+              </div>
+            </div>
+          )}
+
+          {selectedSectionId === "service_zones" && (
+            <div className={`${formStyle} p-2`}>
+              <ServiceZoneFields
+                zones={zones}
+                selectedZoneIds={newTechnicianDraft.zoneIds}
+                disabled={isPending}
+                onChange={onZoneIdsChange}
               />
             </div>
-          </div>
-        )}
+          )}
 
-        {selectedSectionId === "service_zones" && (
-          <div className={`${formStyle} p-2`}>
-            <ServiceZoneFields
-              zones={zones}
-              selectedZoneIds={newTechnicianDraft.zoneIds}
-              disabled={isPending}
-              onChange={onZoneIdsChange}
-            />
-          </div>
-        )}
+          {selectedSectionId === "skills" && (
+            <div className={`${formStyle} p-2`}>
+              <SkillFields
+                skills={newTechnicianDraft.skills}
+                onChange={onSkillsChange}
+                units={units}
+                unitsById={unitsById}
+                brandGroups={brandGroups}
+                brandGroupById={brandGroupById}
+                specificIssues={specificIssues}
+                specificIssuesById={specificIssuesById}
+                disabled={isPending}
+                templates={SKILL_TEMPLATES}
+                allowClearAll
+              />
+            </div>
+          )}
 
-        {selectedSectionId === "skills" && (
-          <div className={`${formStyle} p-2`}>
-            <SkillFields
-              skills={newTechnicianDraft.skills}
-              onChange={onSkillsChange}
-              units={units}
-              unitsById={unitsById}
-              brandGroups={brandGroups}
-              brandGroupById={brandGroupById}
-              specificIssues={specificIssues}
-              specificIssuesById={specificIssuesById}
-              disabled={isPending}
-              templates={SKILL_TEMPLATES}
-              allowClearAll
-            />
-          </div>
-        )}
-
-        {selectedSectionId === "ignore_list" && (
-          <div className={`${formStyle} p-2`}>
-            <IgnoreListFields
-              items={newTechnicianDraft.ignoreList}
-              onChange={onIgnoreListChange}
-              units={units}
-              unitsById={unitsById}
-              brands={brands}
-              brandsById={brandsById}
-              specificIssues={specificIssues}
-              specificIssuesById={specificIssuesById}
-              disabled={isPending}
-            />
-          </div>
-        )}
-      </section>
+          {selectedSectionId === "ignore_list" && (
+            <div className={`${formStyle} p-2`}>
+              <IgnoreListFields
+                items={newTechnicianDraft.ignoreList}
+                onChange={onIgnoreListChange}
+                units={units}
+                unitsById={unitsById}
+                brands={brands}
+                brandsById={brandsById}
+                specificIssues={specificIssues}
+                specificIssuesById={specificIssuesById}
+                disabled={isPending}
+              />
+            </div>
+          )}
+        </section>
       </div>
 
       <UnsavedChangesDialog

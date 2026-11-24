@@ -1,20 +1,18 @@
 import { describe, expect, it } from "vitest";
-import {
-  makeFilterParams,
-  makeIgnoreRule,
-  makeSkill,
-  makeTechnician,
-  makeUnit,
-} from "./filterTestFixtures";
+import { makeFilterParams } from "./filterTestFixtures";
 import { filterTechnicians } from "./filterTechnicians";
+import { makeUnit } from "../../../entities/unit/testing/unit.factory";
+import { makeTechnician } from "../../../entities/technician/testing/technician.factory";
+import { makeIgnoreRule } from "../../../entities/technician-ignore-list/testing/ignore-list.factory";
+import { makeSkill } from "../../../entities/technician-skill-set/testing/technician-skill-set.factory";
 
 // Helper: get technician ids
 const getIds = (technicians: { id: string }[]) =>
   technicians.map((technician) => technician.id);
 
 describe("filterTechnicians", () => {
-  // --- General Tests ---
-  // Zone match
+  // -------- General Tests --------
+  // 1) Zone match
   it("returns only technicians assigned to selected zone when no units are selected", () => {
     const tech1 = makeTechnician({ id: "tech-1", alias: "Alex" });
     const tech2 = makeTechnician({ id: "tech-2", alias: "Bill" });
@@ -32,7 +30,7 @@ describe("filterTechnicians", () => {
 
     expect(getIds(result)).toEqual(["tech-1"]);
   });
-  // Match all selected units
+  // 2) Match all selected units
   it("requires technician to match every selected unit", () => {
     const washer = makeUnit({
       id: "unit-washer",
@@ -89,7 +87,7 @@ describe("filterTechnicians", () => {
 
     expect(getIds(result)).toEqual(["tech-1"]);
   });
-
+  // 3) Built-In flag check and built-in skill check
   it("requires both the lift capability and the exact skill for a built-in unit", () => {
     const wallOven = makeUnit({
       id: "unit-wall-oven",
@@ -144,8 +142,8 @@ describe("filterTechnicians", () => {
 
     expect(getIds(filterTechnicians(params))).toEqual([fullyQualified.id]);
   });
-  // Ignore brands on commercial checked
-  it("keeps commercial technician when commercial skill exists and brand group is selected", () => {
+  // 4) Selected brands are ignored on commercial flag
+  it("matches the technician with commercial capability, when commercial skill exists and brand group is selected", () => {
     const washer = makeUnit({
       id: "unit-washer",
       name: "Washer",
@@ -191,8 +189,188 @@ describe("filterTechnicians", () => {
     expect(getIds(result)).toEqual(["tech-1"]);
   });
 
-  // --- Brand Group Tests ---
-  it("keeps technician when technician has selected brand group skill", () => {
+  // -------- Installation Tests --------
+  // 1) Installation flag requires the technician to have both the installation capability and a relevant unit skill
+  it("matches the technician, when the installatio job option is selected only if he has the capability and the unit skill", () => {
+    const dryerForInstallation = makeUnit({
+      id: "dryer",
+      name: "Dryer",
+      slug: "Dryer",
+      can_be_installed: true,
+    });
+
+    const fullyQualified = makeTechnician({
+      id: "tech-qualified",
+      can_provide_installation: true,
+    });
+    const capabilityOnly = makeTechnician({
+      id: "installation-only",
+      can_provide_installation: true,
+    });
+    const skillOnly = makeTechnician({
+      id: "tech-skill-only",
+      can_provide_installation: false,
+    });
+
+    const params = makeFilterParams({
+      technicians: [fullyQualified, capabilityOnly, skillOnly],
+      selectedUnits: [dryerForInstallation],
+      selectedUnitIds: new Set([dryerForInstallation.id]),
+      skillsByTechId: new Map([
+        [
+          fullyQualified.id,
+          [
+            makeSkill({
+              id: "qualified-dryer-installation-skill",
+              technician_id: fullyQualified.id,
+              unit_id: dryerForInstallation.id,
+            }),
+          ],
+        ],
+        [
+          capabilityOnly.id,
+          [
+            makeSkill({
+              id: "skill-for-some-other-unit",
+              technician_id: capabilityOnly.id,
+              unit_id: "44",
+            }),
+          ],
+        ],
+        [
+          skillOnly.id,
+          [
+            makeSkill({
+              id: "unit-only-skill",
+              technician_id: skillOnly.id,
+              unit_id: dryerForInstallation.id,
+            }),
+          ],
+        ],
+      ]),
+      filter: {
+        unitSlugs: [dryerForInstallation.slug],
+        isInstallation: true,
+      },
+    });
+
+    expect(getIds(filterTechnicians(params))).toEqual([fullyQualified.id]);
+  });
+  // 2) Mixed filtering: when there are two units selected, filter will match only the technicians that have all the needed skills and capabilitie
+  it("matches the technicians that have all the needed skills and selected capabilities during mixed matching", () => {
+    const dryerGas = makeUnit({
+      id: "dryer",
+      name: "Dryer",
+      slug: "Dryer",
+      can_be_gas: true,
+    });
+    const washerInstallation = makeUnit({
+      id: "dryer",
+      name: "Dryer",
+      slug: "Dryer",
+      can_be_installed: true,
+    });
+
+    const fullyQualified = makeTechnician({
+      id: "tech-qualified",
+      can_provide_installation: true,
+      gas: true,
+    });
+    const capabilityOnly = makeTechnician({
+      id: "capability-only",
+      can_provide_installation: true,
+      gas: true,
+    });
+    const skillOnly = makeTechnician({
+      id: "tech-skill-only",
+      can_provide_installation: false,
+      gas: false,
+    });
+    const mixedSet = makeTechnician({
+      id: "mixed-set",
+      can_provide_installation: true,
+      gas: false,
+    });
+
+    const params = makeFilterParams({
+      technicians: [fullyQualified, capabilityOnly, skillOnly, mixedSet],
+      selectedUnits: [dryerGas, washerInstallation],
+      selectedUnitIds: new Set([dryerGas.id, washerInstallation.id]),
+      skillsByTechId: new Map([
+        [
+          fullyQualified.id,
+          [
+            makeSkill({
+              id: "qualified-dryer-gas-skill",
+              technician_id: fullyQualified.id,
+              unit_id: dryerGas.id,
+            }),
+            makeSkill({
+              id: "qualified-washer-installation-skill",
+              technician_id: fullyQualified.id,
+              unit_id: washerInstallation.id,
+            }),
+          ],
+        ],
+        [
+          capabilityOnly.id,
+          [
+            makeSkill({
+              id: "skill-for-some-other-unit",
+              technician_id: capabilityOnly.id,
+              unit_id: "44",
+            }),
+            makeSkill({
+              id: "skill-for-some-other-unit-2",
+              technician_id: capabilityOnly.id,
+              unit_id: "45",
+            }),
+          ],
+        ],
+        [
+          skillOnly.id,
+          [
+            makeSkill({
+              id: "unit-only-skill",
+              technician_id: skillOnly.id,
+              unit_id: dryerGas.id,
+            }),
+            makeSkill({
+              id: "unit-only-skill-2",
+              technician_id: skillOnly.id,
+              unit_id: washerInstallation.id,
+            }),
+          ],
+        ],
+        [
+          mixedSet.id,
+          [
+            makeSkill({
+              id: "washer-installation-skill-1",
+              technician_id: mixedSet.id,
+              unit_id: washerInstallation.id,
+            }),
+            makeSkill({
+              id: "dryer-skill-id-3",
+              technician_id: mixedSet.id,
+              unit_id: dryerGas.id,
+            }),
+          ],
+        ],
+      ]),
+      filter: {
+        unitSlugs: [dryerGas.slug, washerInstallation.slug],
+        isInstallation: true,
+        isGas: true,
+      },
+    });
+
+    expect(getIds(filterTechnicians(params))).toEqual([fullyQualified.id]);
+  });
+
+  // -------- Brand Group Tests --------
+  // 1) Match the technician with the selected brand group
+  it("matches the technician when technician has the selected brand group skill", () => {
     const washer = makeUnit({
       id: "unit-washer",
       name: "Washer",
@@ -233,6 +411,7 @@ describe("filterTechnicians", () => {
 
     expect(getIds(result)).toEqual(["tech-1"]);
   });
+  // 2) Filter out the technician without the needed skill
   it("excludes technician when technician does not have selected brand group skill", () => {
     const washer = makeUnit({
       id: "unit-washer",
@@ -275,8 +454,8 @@ describe("filterTechnicians", () => {
     expect(getIds(result)).toEqual([]);
   });
 
-  // --- Ignore List Tests ---
-  // Unit Ignore
+  // -------- Ignore List Tests --------
+  // 1) Filter out the technician that has the selected unit in his ignore list
   it("excludes technician when selected unit is in ignore list", () => {
     const washer = makeUnit({
       id: "unit-washer",
@@ -326,7 +505,9 @@ describe("filterTechnicians", () => {
 
     expect(getIds(result)).toEqual([]);
   });
-  // Brand Ignore
+  // 2) Filter out the technician that has the selected brand in his ignore list
+  // Brand specific test: the technician may be able to service ALL standard brands,
+  // but if he has one of the standard brands in his ignore list - he will be filtered out
   it("excludes technician when selected brand is in ignore list", () => {
     const washer = makeUnit({
       id: "unit-washer",
@@ -380,7 +561,7 @@ describe("filterTechnicians", () => {
 
     expect(getIds(result)).toEqual([]);
   });
-  // Empty Ignore List
+  // 3) Match the technician if his ignore List is empty
   it("keeps technician when ignore list map is empty", () => {
     const washer = makeUnit({
       id: "unit-washer",
@@ -420,8 +601,8 @@ describe("filterTechnicians", () => {
     expect(getIds(result)).toEqual(["tech-1"]);
   });
 
-  // --- Specific Issues Tests ---
-  // Basic test
+  // -------- Specific Issues Tests --------
+  // 1) Match the technician that has the selected specific issue skill
   it("keeps technician when selected issue belongs to selected unit and technician supports it", () => {
     const fridge = makeUnit({
       id: "unit-fridge",
@@ -471,7 +652,7 @@ describe("filterTechnicians", () => {
 
     expect(getIds(result)).toEqual(["tech-1"]);
   });
-  // Specific issues is not for the selected unit
+  // 2) Ignore the selected specific issue skill, if it does not match the selected unit
   it("does not match issue skill from another unit", () => {
     const fridge = makeUnit({
       id: "unit-fridge",

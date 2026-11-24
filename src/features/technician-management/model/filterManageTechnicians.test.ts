@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { makeTechnician } from "../../technician-filter/model/filterTestFixtures";
 import type { Technician } from "../../../entities/technician/technician.types";
 import type { ManageTechniciansListFilterValue } from "./manageTechnicians.constants";
 import { filterManageTechnicians } from "./filterManageTechnicians";
+import { makeTechnician } from "../../../entities/technician/testing/technician.factory";
 
 const technicians = [
   makeTechnician({

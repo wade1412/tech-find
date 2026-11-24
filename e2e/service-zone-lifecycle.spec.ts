@@ -1,7 +1,9 @@
 import { test, expect } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
+import { FEEDBACK_TEXT } from "../src/shared/feedback/feedback.constants";
 
 let zoneSlugForCleanup: string | null = null;
+const zoneSavedText = FEEDBACK_TEXT.zone.saved;
 
 test.afterEach(async () => {
   const zoneSlug = zoneSlugForCleanup;
@@ -119,7 +121,7 @@ test("service zone full lifecycle", async ({ page }) => {
 
     // Save changes: saving opens a snackbar
     await page.getByRole("button", { name: "Save Changes" }).click();
-    await expect(page.getByText("Changes saved")).toBeVisible();
+    await expect(page.getByText(zoneSavedText)).toBeVisible();
 
     // Check for DB persisting changes after page reload
     await page.reload();
@@ -181,9 +183,7 @@ test("service zone full lifecycle", async ({ page }) => {
     // Open Archive, danger zone and click purge
     await page.getByRole("button", { name: /archived service zones/i }).click();
     await expect(zoneToPurge).toBeVisible();
-    await purgeArchiveDialog
-      .getByText("Danger zone", { exact: true })
-      .click();
+    await purgeArchiveDialog.getByText("Danger zone", { exact: true }).click();
     await purgeArchiveDialog
       .getByRole("button", {
         name: `Purge ${editedZoneName} permanently`,

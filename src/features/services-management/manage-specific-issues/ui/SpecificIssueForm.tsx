@@ -8,7 +8,6 @@ import {
 } from "../../../../shared/styles/styles";
 import ActiveStatusBar from "../../../../shared/ui/ActiveStatusBar";
 import FormSubmitArea from "../../../../shared/ui/FormSubmitArea";
-import SaveSuccessSnackbar from "../../../../shared/ui/SaveSuccessSnackbar";
 import {
   buildSpecificIssuePatch,
   createSpecificIssueFormState,
@@ -31,6 +30,8 @@ import {
 import EditSpecificIssueFields from "./EditSpecificIssueFields";
 import { useUnsavedChangesGuard } from "../../../../shared/hooks/useUnsavedChangesGuard";
 import UnsavedChangesDialog from "../../../../shared/ui/UnsavedChangesDialog";
+import { useFeedback } from "../../../../shared/feedback/useFeedback";
+import { FEEDBACK_TEXT } from "../../../../shared/feedback/feedback.constants";
 
 interface SpecificIssueFormProps {
   specificIssue?: SpecificIssue;
@@ -45,16 +46,18 @@ function SpecificIssueForm({ specificIssue, units }: SpecificIssueFormProps) {
       : { ...EMPTY_SPECIFIC_ISSUE_FORM_STATE },
   );
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [isSavedSnackbarOpen, setIsSavedSnackbarOpen] = useState(false);
+
+  // Feedback Snackbar
+  const { openSuccessFeedbackWithMessage } = useFeedback();
+
+  // Mutations
   const createMutation = useCreateSpecificIssueMutation();
   const updateMutation = useUpdateSpecificIssueMutation();
   const mutation = specificIssue ? updateMutation : createMutation;
 
   const patch = useMemo(
     () =>
-      specificIssue
-        ? buildSpecificIssuePatch(specificIssue, formState)
-        : null,
+      specificIssue ? buildSpecificIssuePatch(specificIssue, formState) : null,
     [formState, specificIssue],
   );
   const errors = validateSpecificIssueForm(formState, units);
@@ -92,7 +95,7 @@ function SpecificIssueForm({ specificIssue, units }: SpecificIssueFormProps) {
           id: specificIssue.id,
           patch: patch ?? {},
         });
-        setIsSavedSnackbarOpen(true);
+        openSuccessFeedbackWithMessage(FEEDBACK_TEXT.specificIssue.saved);
       } else {
         const createdIssue = await createMutation.mutateAsync(
           normalizeSpecificIssueFormState(formState),
@@ -102,6 +105,7 @@ function SpecificIssueForm({ specificIssue, units }: SpecificIssueFormProps) {
             replace: true,
           }),
         );
+        openSuccessFeedbackWithMessage(FEEDBACK_TEXT.specificIssue.created);
       }
     } catch {
       // The shared submit area renders the mutation error.
@@ -111,43 +115,40 @@ function SpecificIssueForm({ specificIssue, units }: SpecificIssueFormProps) {
   return (
     <>
       <form className={formStyle} onSubmit={handleSubmit} noValidate>
-      <ActiveStatusBar
-        label="Specific issue status"
-        activeDescription="Active issues are available in technician skills and ignore-list configuration when their unit is active."
-        inactiveDescription="Inactive issues stay configured but are hidden from active workflows."
-        isActive={formState.active}
-        disabled={isPending}
-        onChange={(active) => {
-          mutation.reset();
-          setFormState((previous) => ({ ...previous, active }));
-        }}
-      />
-
-      <div className={formWithPaddingStyle}>
-        <EditSpecificIssueFields
+        <ActiveStatusBar
+          label="Specific issue status"
+          activeDescription="Active issues are available in technician skills and ignore-list configuration when their unit is active."
+          inactiveDescription="Inactive issues stay configured but are hidden from active workflows."
+          isActive={formState.active}
           disabled={isPending}
-          errors={hasSubmitted ? errors : null}
-          formState={formState}
-          onFieldChange={setField}
-          units={units}
+          onChange={(active) => {
+            mutation.reset();
+            setFormState((previous) => ({ ...previous, active }));
+          }}
         />
 
-        <FormSubmitArea
-          discardLabel={specificIssue ? "Discard changes" : "Clear form"}
-          error={mutation.error}
-          errorMessage={getSpecificIssueSaveErrorMessage(mutation.error)}
-          isDirty={isDirty}
-          isPending={isPending}
-          onDiscard={handleDiscard}
-          pendingLabel={specificIssue ? "Saving..." : "Creating..."}
-          submitLabel={specificIssue ? "Save Changes" : "Create Specific Issue"}
-        />
-      </div>
+        <div className={formWithPaddingStyle}>
+          <EditSpecificIssueFields
+            disabled={isPending}
+            errors={hasSubmitted ? errors : null}
+            formState={formState}
+            onFieldChange={setField}
+            units={units}
+          />
 
-      <SaveSuccessSnackbar
-        isOpen={isSavedSnackbarOpen}
-        onClose={() => setIsSavedSnackbarOpen(false)}
-      />
+          <FormSubmitArea
+            discardLabel={specificIssue ? "Discard changes" : "Clear form"}
+            error={mutation.error}
+            errorMessage={getSpecificIssueSaveErrorMessage(mutation.error)}
+            isDirty={isDirty}
+            isPending={isPending}
+            onDiscard={handleDiscard}
+            pendingLabel={specificIssue ? "Saving..." : "Creating..."}
+            submitLabel={
+              specificIssue ? "Save Changes" : "Create Specific Issue"
+            }
+          />
+        </div>
       </form>
 
       <UnsavedChangesDialog

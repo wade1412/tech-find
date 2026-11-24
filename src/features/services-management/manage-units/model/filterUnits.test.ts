@@ -1,22 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { Unit } from "../../../../entities/unit/unit.types";
 import { filterUnits } from "./filterUnits";
-
-const makeUnit = (overrides: Partial<Unit> = {}): Unit => ({
-  active: true,
-  active_before_archive: null,
-  archived_at: null,
-  archived_by: null,
-  can_be_commercial: false,
-  can_be_gas: false,
-  can_be_stacked: false,
-  display_order: 10,
-  id: "unit-1",
-  is_built_in: false,
-  name: "Washer",
-  slug: "washer",
-  ...overrides,
-});
+import { makeUnit } from "../../../../entities/unit/testing/unit.factory";
 
 const units = [
   makeUnit(),
@@ -31,9 +15,9 @@ const units = [
 
 describe("filterUnits", () => {
   it("returns all units for an empty search", () => {
-    expect(
-      filterUnits({ units, searchTerm: "   ", status: "all" }),
-    ).toEqual(units);
+    expect(filterUnits({ units, searchTerm: "   ", status: "all" })).toEqual(
+      units,
+    );
   });
 
   it("matches multiple normalized terms across name and slug", () => {

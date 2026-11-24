@@ -8,6 +8,7 @@ export const createTechnicianFilterKey = (filter: FilterState): string => {
     filter.specificIssueSlugs.join(","),
     filter.isGas ? "gas:1" : "gas:0",
     filter.isStacked ? "stacked:1" : "stacked:0",
+    filter.isInstallation ? "installation:1" : "installation:0",
     filter.isCommercial ? "commercial:1" : "commercial:0",
   ].join("|");
 };

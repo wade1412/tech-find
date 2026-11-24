@@ -4,8 +4,9 @@ import { useUpdateTechnicianServiceZonesMutation } from "../model/useUpdateTechn
 import { buildTechnicianZonesPatch } from "../model/serviceZones.helpers";
 import { formWithPaddingStyle } from "../../../../shared/styles/styles";
 import FormSubmitArea from "../../../../shared/ui/FormSubmitArea";
-import SaveSuccessSnackbar from "../../../../shared/ui/SaveSuccessSnackbar";
 import ServiceZoneFields from "./ServiceZoneFields";
+import { useFeedback } from "../../../../shared/feedback/useFeedback";
+import { FEEDBACK_TEXT } from "../../../../shared/feedback/feedback.constants";
 
 interface ServiceZonesFormProps {
   technicianId: string;
@@ -21,7 +22,9 @@ function ServiceZonesForm({
   onDirtyChange,
 }: ServiceZonesFormProps) {
   const [draftZoneIds, setZoneIds] = useState<string[]>(initialZoneIds);
-  const [isSavedSnackbarOpen, setIsSavedSnackbarOpen] = useState(false);
+
+  // Feedback Snackbar
+  const { openSuccessFeedbackWithMessage } = useFeedback();
 
   const updateTechnicianZonesMutation =
     useUpdateTechnicianServiceZonesMutation();
@@ -61,7 +64,7 @@ function ServiceZonesForm({
       },
       {
         onSuccess: () => {
-          setIsSavedSnackbarOpen(true);
+          openSuccessFeedbackWithMessage(FEEDBACK_TEXT.serviceZone.saved);
         },
       },
     );
@@ -82,12 +85,6 @@ function ServiceZonesForm({
         isDirty={isDirty}
         isPending={isPending}
         onDiscard={handleDiscardChanges}
-      />
-
-      {/* Success Snackbar */}
-      <SaveSuccessSnackbar
-        isOpen={isSavedSnackbarOpen}
-        onClose={() => setIsSavedSnackbarOpen(false)}
       />
     </form>
   );

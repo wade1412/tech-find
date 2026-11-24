@@ -4,11 +4,13 @@ import type { SpecificIssue } from "../../../../entities/specific-issue/specific
 import type { Unit } from "../../../../entities/unit/unit.types";
 import { filterSkillsBySearch } from "./skills.helpers";
 import type { SkillDraft } from "./skills.types";
+import { makeUnit } from "../../../../entities/unit/testing/unit.factory";
+import { makeIssue } from "../../../../entities/specific-issue/testing/specific-issue.factory";
 
 const unitsById = new Map<string, Unit>([
   [
     "washer",
-    {
+    makeUnit({
       active_before_archive: null,
       archived_at: null,
       archived_by: null,
@@ -21,11 +23,11 @@ const unitsById = new Map<string, Unit>([
       can_be_stacked: true,
       can_be_gas: false,
       can_be_commercial: true,
-    },
+    }),
   ],
   [
     "dryer",
-    {
+    makeUnit({
       active_before_archive: null,
       archived_at: null,
       archived_by: null,
@@ -38,11 +40,11 @@ const unitsById = new Map<string, Unit>([
       can_be_stacked: true,
       can_be_gas: true,
       can_be_commercial: true,
-    },
+    }),
   ],
   [
     "oven",
-    {
+    makeUnit({
       active_before_archive: null,
       archived_at: null,
       archived_by: null,
@@ -55,7 +57,7 @@ const unitsById = new Map<string, Unit>([
       can_be_stacked: false,
       can_be_gas: true,
       can_be_commercial: true,
-    },
+    }),
   ],
 ]);
 
@@ -91,7 +93,7 @@ const brandGroupsById = new Map<string, BrandGroup>([
 const specificIssuesById = new Map<string, SpecificIssue>([
   [
     "no-heat",
-    {
+    makeIssue({
       id: "no-heat",
       name: "No Heat",
       slug: "no-heat",
@@ -100,7 +102,7 @@ const specificIssuesById = new Map<string, SpecificIssue>([
       active_before_archive: null,
       archived_at: null,
       archived_by: null,
-    },
+    }),
   ],
 ]);
 

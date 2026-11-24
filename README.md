@@ -37,16 +37,16 @@ Dispatchers need to assign the right technician quickly, but the decision depend
 
 ## Operational Status
 
-**Project status: completed educational SaaS project (feature-frozen, 2026-08-24).**
+**Project status: active educational development.** The initial educational scope was completed on 2026-08-24; feature development resumed in 2026.
 
-TechFind is intentionally complete as a learning project that demonstrates how a small SaaS-style application can be designed, secured, tested, documented, recreated locally, and recovered from a logical database backup. The project is not intended to become a commercial product or an unattended production service.
+The completed baseline demonstrates how a small SaaS-style application can be designed, secured, tested, documented, recreated locally, and recovered from a logical database backup. New features are being developed on top of that baseline. The project is not a commercial product or an unattended production service.
 
-The feature scope is closed and no further feature development is planned. The documented production-readiness gaps, such as unattended backup scheduling, reconciliation monitoring, and external operational monitoring, are intentional boundaries of the educational project rather than unfinished product work. See [Project completion and maintenance status](docs/PROJECT_STATUS.md) for the final scope and maintenance policy.
+The documented production-readiness gaps, such as unattended backup scheduling, reconciliation monitoring, and external operational monitoring, remain outside the current scope. See [Project status and development policy](docs/PROJECT_STATUS.md) for the current scope and change process.
 
 ## Project Documentation
 
 - [Local demo fixture scenario and credentials](docs/DEMO_FIXTURE_SCENARIO.md)
-- [Project completion and maintenance status](docs/PROJECT_STATUS.md)
+- [Project status and development policy](docs/PROJECT_STATUS.md)
 - [Backup, restore, and reconciliation operations guide](docs/OPERATIONS_GUIDE.md)
 - [Reference administrator runbook](docs/RUNBOOK.md)
 
@@ -60,9 +60,11 @@ Dispatchers can build a service request using:
 - a service zone;
 - brands and brand groups;
 - unit-specific issues;
-- gas, stacked, built-in, and commercial requirements.
+- gas, stacked, installation, built-in, and commercial requirements.
 
-The application filters active, non-archived technicians and shows the technicians who satisfy the complete request.
+Job Options become available when at least one selected unit supports them. Selected units that do not support an active option remain selected and show a short explanation on their cards. Installation and commercial cannot be selected together. The application filters active, non-archived technicians and shows those who satisfy the complete request, including the installation capability and relevant unit skills when installation is selected.
+
+The installation columns default to `false`. Each environment must configure eligible units and technicians; recreating a database from migrations alone does not restore those choices.
 
 ### 📝 Result Ordering
 
@@ -552,9 +554,9 @@ Implemented:
 - transactional RPCs for multi-step technician writes;
 - unit, component, and SQL integration tests for core business rules and destructive workflows.
 
-Project completion policy:
+Ongoing development policy:
 
-- no further feature phases or product roadmap work are planned;
-- the repository is preserved as a completed educational reference implementation;
-- future changes are limited to correcting critical defects, addressing security issues, keeping dependencies compatible, fixing documentation, or adapting local/deployment configuration;
-- any broader change would reopen the project scope and should be treated as a new project or explicitly approved follow-up phase.
+- the 2026-08-24 completion milestone remains the baseline for continued feature work;
+- new features are developed in branches and reviewed through pull requests to `main` (the current integration branch);
+- changes to matching rules receive focused unit/component tests; database behavior receives relevant SQL integration tests; end-to-end coverage is added for workflows that need browser-level verification;
+- the CI quality gate must pass before merging, and migrations must reach the target database before frontend code that depends on the new schema is deployed.

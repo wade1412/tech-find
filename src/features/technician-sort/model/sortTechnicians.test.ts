@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { sortTechnicians } from "./sortTechnicians";
-import { makeTechnician } from "../../technician-filter/model/filterTestFixtures";
+import { makeTechnician } from "../../../entities/technician/testing/technician.factory";
 
 describe("sortTechnicians", () => {
   it("sorts technicians by alias ascending", () => {

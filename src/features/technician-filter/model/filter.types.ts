@@ -8,13 +8,14 @@ export type FilterState = {
   brandSlugs: string[];
   specificIssueSlugs: string[];
   isGas: boolean;
-  isCommercial: boolean;
   isStacked: boolean;
+  isInstallation: boolean;
+  isCommercial: boolean;
   sort: string;
   zone: string;
 };
 
-export type JobOptionKey = "gas" | "stacked" | "commercial";
+export type JobOptionKey = "gas" | "stacked" | "installation" | "commercial";
 
 export interface FilterTechniciansParams {
   filter: FilterState;

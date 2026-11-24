@@ -4,6 +4,7 @@ import Footer from "./Footer";
 import { Suspense } from "react";
 import { InlineSpinner } from "../shared/ui/Spinners";
 import { MuiThemeProvider } from "../features/theme/MuiThemeProvider";
+import { SuccessFeedbackProvider } from "../shared/feedback/SuccessFeedbackProvider";
 
 function AuthenticatedLayout() {
   const { pathname } = useLocation();
@@ -18,9 +19,11 @@ function AuthenticatedLayout() {
       >
         <Header />
         <main className="flex min-h-0 flex-1 flex-col">
-          <Suspense fallback={<InlineSpinner />}>
-            <Outlet />
-          </Suspense>
+          <SuccessFeedbackProvider>
+            <Suspense fallback={<InlineSpinner />}>
+              <Outlet />
+            </Suspense>
+          </SuccessFeedbackProvider>
         </main>
         <Footer />
       </div>

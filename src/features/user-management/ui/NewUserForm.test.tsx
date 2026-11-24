@@ -8,6 +8,7 @@ import type { AuthContextValue } from "../../auth/model/auth.types";
 import { AuthContext } from "../../auth/model/AuthContext";
 import { createUser } from "../api/createUser.api";
 import NewUserForm from "./NewUserForm";
+import { SuccessFeedbackProvider } from "../../../shared/feedback/SuccessFeedbackProvider";
 
 vi.mock("../api/createUser.api", () => ({
   createUser: vi.fn(),
@@ -60,7 +61,9 @@ function renderForm() {
   render(
     <QueryClientProvider client={queryClient}>
       <AuthContext.Provider value={authValue}>
-        <RouterProvider router={router} />
+        <SuccessFeedbackProvider>
+          <RouterProvider router={router} />
+        </SuccessFeedbackProvider>
       </AuthContext.Provider>
     </QueryClientProvider>,
   );
