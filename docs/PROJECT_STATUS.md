@@ -1,18 +1,21 @@
-# TechFind Project Completion and Maintenance Status
+# TechFind Project Status and Development Policy
 
-**Status:** Completed educational project
+**Status:** Active educational development
 
-**Scope state:** Feature-frozen / maintenance-only
+**Scope state:** New features are being added to the completed baseline
 
-**Completion date:** 2026-08-24
+**Initial scope completion date:** 2026-08-24
+
+**Feature development resumed:** 2026
 
 ## Purpose
 
-TechFind is a learning project built in the style of a small SaaS application. Its purpose was to demonstrate practical frontend, Supabase, database, authorization, testing, recovery, and operational-documentation skills in one coherent system.
+TechFind is a learning project built in the style of a small SaaS application. It demonstrates practical frontend, Supabase, database, authorization, testing, recovery, and operational-documentation skills in one coherent system. The initial scope was completed on 2026-08-24, and the repository is now used for further feature development.
 
-It is not intended to become a commercial product, an active customer deployment, or an unattended production service. Project completion means that the intended educational scope has been implemented and validated; it does not mean that every requirement for operating a commercial SaaS has been implemented.
+It is not an active customer deployment or an unattended production service. The initial completion milestone means that the original educational scope was implemented and validated.
+New features are being added for personal use and
 
-## Completed scope
+## Completed baseline
 
 - technician matching by units, zones, brands, skills, issues, and job capabilities;
 - technician, user, and reference-data management workflows;
@@ -28,7 +31,7 @@ It is not intended to become a commercial product, an active customer deployment
 
 ## Intentional boundaries
 
-The following items are intentionally outside the completed educational scope:
+The following items remain outside the current educational scope:
 
 - scheduled unattended backup automation and long-term retention automation;
 - an always-on reconciliation monitor for Auth/profile drift;
@@ -37,23 +40,25 @@ The following items are intentionally outside the completed educational scope:
 - production SMTP, deployment ownership, customer onboarding, and hosted-service operations;
 - optional UI polish such as broader accessibility review, responsive refinement, image export, and bundle-budget enforcement.
 
-These are not hidden defects in the final project status. They would belong to a separate productionization project with different operational and business requirements.
+These would belong to a separate productionization effort with different operational and business requirements.
 
-## Maintenance policy
+## Ongoing development policy
 
-No further feature development or roadmap phases are planned for this repository.
+Feature work continues in this repository. The appliance-installation matching feature is an example: it adds unit and technician capabilities, Job Option behavior, and focused tests. Future features should update this document and the relevant workflow documentation when their behavior is settled.
 
-Future changes should be limited to:
+The installation schema migrations default both capability flags to `false`. The list of eligible units and technicians is environment data and is not reproduced by these migrations; configure and verify it when preparing a new database.
 
-- critical security fixes;
-- critical correctness or data-integrity fixes;
-- dependency compatibility updates required to keep the project buildable;
-- corrections to inaccurate documentation;
-- local development or deployment configuration adjustments needed to reproduce the project.
+For each change:
 
-Any broader change should be treated as a new project or an explicitly approved follow-up phase rather than a continuation of the completed scope.
+- describe the user-facing behavior and any database changes in the pull request;
+- add focused tests for changed business rules and database behavior, with end-to-end tests where a full browser workflow is the important risk;
+- run lint, tests, build, and relevant local Supabase checks before opening the pull request;
+- merge only after the `quality-gate` and `e2e-smoke` CI jobs pass;
+- apply migrations before deploying frontend code that reads the changed schema.
 
-## Final handoff
+The existing recovery and operational documents remain references; new feature work does not imply that hosted-service operations or commercial commitments have been implemented.
+
+## Local demonstration
 
 The project can be demonstrated locally with the documented demo workflow:
 
@@ -63,4 +68,4 @@ npm run demo:setup-users
 npm run demo:dev
 ```
 
-The repository, migrations, fixtures, tests, recovery reports, and operational references together form the final educational deliverable. The project should be considered archived after the completion documentation is committed.
+The repository, migrations, fixtures, tests, recovery reports, and operational references form the baseline for further development.
