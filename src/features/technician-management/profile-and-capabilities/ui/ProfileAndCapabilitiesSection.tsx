@@ -19,8 +19,9 @@ import {
   formWithPaddingStyle,
 } from "../../../../shared/styles/styles";
 import FormSubmitArea from "../../../../shared/ui/FormSubmitArea";
-import SaveSuccessSnackbar from "../../../../shared/ui/SaveSuccessSnackbar";
 import ActiveStatusBar from "../../../../shared/ui/ActiveStatusBar";
+import { useFeedback } from "../../../../shared/feedback/useFeedback";
+import { FEEDBACK_TEXT } from "../../../../shared/feedback/feedback.constants";
 
 interface ProfileAndCapabilitiesSectionProps {
   technician: Technician;
@@ -35,7 +36,9 @@ function ProfileAndCapabilitiesSection({
     createTechnicianFormState(technician),
   );
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [isSavedSnackbarOpen, setIsSavedSnackbarOpen] = useState(false);
+
+  // Feedback Snackbar
+  const { openSuccessFeedbackWithMessage } = useFeedback();
 
   const updateTechnicianMutation = useUpdateTechnicianMutation();
 
@@ -92,7 +95,7 @@ function ProfileAndCapabilitiesSection({
       },
       {
         onSuccess: () => {
-          setIsSavedSnackbarOpen(true);
+          openSuccessFeedbackWithMessage(FEEDBACK_TEXT.technician.saved);
         },
       },
     );
@@ -128,12 +131,6 @@ function ProfileAndCapabilitiesSection({
           isDirty={isDirty}
           isPending={isPending}
           onDiscard={handleDiscardChanges}
-        />
-
-        {/* Success Snackbar */}
-        <SaveSuccessSnackbar
-          isOpen={isSavedSnackbarOpen}
-          onClose={() => setIsSavedSnackbarOpen(false)}
         />
       </div>
     </form>

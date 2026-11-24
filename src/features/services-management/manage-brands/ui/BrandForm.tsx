@@ -23,11 +23,12 @@ import {
   useCreateBrandMutation,
   useUpdateBrandMutation,
 } from "../model/useBrandMutations";
-import SaveSuccessSnackbar from "../../../../shared/ui/SaveSuccessSnackbar";
 import FormSubmitArea from "../../../../shared/ui/FormSubmitArea";
 import EditBrandFields from "./EditBrandFields";
 import { useUnsavedChangesGuard } from "../../../../shared/hooks/useUnsavedChangesGuard";
 import UnsavedChangesDialog from "../../../../shared/ui/UnsavedChangesDialog";
+import { useFeedback } from "../../../../shared/feedback/useFeedback";
+import { FEEDBACK_TEXT } from "../../../../shared/feedback/feedback.constants";
 
 interface BrandFormProps {
   brand?: Brand;
@@ -40,7 +41,8 @@ function BrandForm({ brand, brandGroups }: BrandFormProps) {
     brand ? createBrandFormState(brand) : { ...EMPTY_BRAND_FORM_STATE },
   );
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [isSavedSnackbarOpen, setIsSavedSnackbarOpen] = useState(false);
+
+  const { openSuccessFeedbackWithMessage } = useFeedback();
 
   const createMutation = useCreateBrandMutation();
   const updateMutation = useUpdateBrandMutation();
@@ -83,7 +85,7 @@ function BrandForm({ brand, brandGroups }: BrandFormProps) {
           id: brand.id,
           patch: patch ?? {},
         });
-        setIsSavedSnackbarOpen(true);
+        openSuccessFeedbackWithMessage(FEEDBACK_TEXT.brand.saved);
       } else {
         const createdBrand = await createMutation.mutateAsync(
           normalizeBrandFormState(formState),
@@ -93,6 +95,7 @@ function BrandForm({ brand, brandGroups }: BrandFormProps) {
             replace: true,
           }),
         );
+        openSuccessFeedbackWithMessage(FEEDBACK_TEXT.brand.created);
       }
     } catch {
       // The shared submit area renders the mutation error.
@@ -102,42 +105,37 @@ function BrandForm({ brand, brandGroups }: BrandFormProps) {
   return (
     <>
       <form className={formStyle} onSubmit={handleSubmit} noValidate>
-      <ActiveStatusBar
-        label="Brand status"
-        activeDescription="Active brands are available in brand filters and technician ignore list configuration."
-        inactiveDescription="Inactive brands stay configured, but are hidden from active workflows."
-        isActive={formState.active}
-        disabled={isPending}
-        onChange={(active) => {
-          mutation.reset();
-          setFormState((previous) => ({ ...previous, active }));
-        }}
-      />
-      <div className={formWithPaddingStyle}>
-        <EditBrandFields
-          brandGroups={brandGroups}
+        <ActiveStatusBar
+          label="Brand status"
+          activeDescription="Active brands are available in brand filters and technician ignore list configuration."
+          inactiveDescription="Inactive brands stay configured, but are hidden from active workflows."
+          isActive={formState.active}
           disabled={isPending}
-          errors={hasSubmitted ? errors : null}
-          formState={formState}
-          onFieldChange={setField}
+          onChange={(active) => {
+            mutation.reset();
+            setFormState((previous) => ({ ...previous, active }));
+          }}
         />
+        <div className={formWithPaddingStyle}>
+          <EditBrandFields
+            brandGroups={brandGroups}
+            disabled={isPending}
+            errors={hasSubmitted ? errors : null}
+            formState={formState}
+            onFieldChange={setField}
+          />
 
-        <FormSubmitArea
-          discardLabel={brand ? "Discard changes" : "Clear form"}
-          error={mutation.error}
-          errorMessage={getBrandSaveErrorMessage(mutation.error)}
-          isDirty={isDirty}
-          isPending={isPending}
-          onDiscard={handleDiscard}
-          pendingLabel={brand ? "Saving..." : "Creating..."}
-          submitLabel={brand ? "Save Changes" : "Create Brand"}
-        />
-      </div>
-
-      <SaveSuccessSnackbar
-        isOpen={isSavedSnackbarOpen}
-        onClose={() => setIsSavedSnackbarOpen(false)}
-      />
+          <FormSubmitArea
+            discardLabel={brand ? "Discard changes" : "Clear form"}
+            error={mutation.error}
+            errorMessage={getBrandSaveErrorMessage(mutation.error)}
+            isDirty={isDirty}
+            isPending={isPending}
+            onDiscard={handleDiscard}
+            pendingLabel={brand ? "Saving..." : "Creating..."}
+            submitLabel={brand ? "Save Changes" : "Create Brand"}
+          />
+        </div>
       </form>
 
       <UnsavedChangesDialog

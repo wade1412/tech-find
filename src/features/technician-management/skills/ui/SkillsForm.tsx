@@ -5,11 +5,12 @@ import type { TechnicianSkill } from "../../../../entities/technician-skill-set/
 import type { Unit } from "../../../../entities/unit/unit.types";
 import { formWithPaddingStyle } from "../../../../shared/styles/styles";
 import FormSubmitArea from "../../../../shared/ui/FormSubmitArea";
-import SaveSuccessSnackbar from "../../../../shared/ui/SaveSuccessSnackbar";
 import { createSkillsDraft, createSkillsPatch } from "../model/skills.helpers";
 import type { SkillDraft } from "../model/skills.types";
 import { useUpdateTechnicianSkillsMutation } from "../model/useUpdateTechnicianSkillsMutation";
 import SkillFields from "./SkillFields";
+import { useFeedback } from "../../../../shared/feedback/useFeedback";
+import { FEEDBACK_TEXT } from "../../../../shared/feedback/feedback.constants";
 
 interface SkillsFormProps {
   technicianId: string;
@@ -39,7 +40,8 @@ function SkillsForm({
     [technicianSkills],
   );
   const [skillsDraft, setSkillsDraft] = useState<SkillDraft[]>(initialSkills);
-  const [isSavedSnackbarOpen, setIsSavedSnackbarOpen] = useState(false);
+
+  const { openSuccessFeedbackWithMessage } = useFeedback();
 
   const updateTechnicianSkillsMutation = useUpdateTechnicianSkillsMutation();
 
@@ -73,7 +75,7 @@ function SkillsForm({
       {
         onSuccess: (savedSkills) => {
           setSkillsDraft(createSkillsDraft(savedSkills));
-          setIsSavedSnackbarOpen(true);
+          openSuccessFeedbackWithMessage(FEEDBACK_TEXT.skill.saved);
         },
       },
     );
@@ -98,11 +100,6 @@ function SkillsForm({
         isDirty={isDirty}
         isPending={isPending}
         onDiscard={handleDiscardChanges}
-      />
-
-      <SaveSuccessSnackbar
-        isOpen={isSavedSnackbarOpen}
-        onClose={() => setIsSavedSnackbarOpen(false)}
       />
     </form>
   );

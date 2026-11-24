@@ -7,7 +7,6 @@ import {
 } from "../../../../shared/styles/styles";
 import ActiveStatusBar from "../../../../shared/ui/ActiveStatusBar";
 import FormSubmitArea from "../../../../shared/ui/FormSubmitArea";
-import SaveSuccessSnackbar from "../../../../shared/ui/SaveSuccessSnackbar";
 import {
   buildUnitPatch,
   createUnitFormState,
@@ -31,6 +30,8 @@ import {
 import EditUnitFields from "./EditUnitFields";
 import { useUnsavedChangesGuard } from "../../../../shared/hooks/useUnsavedChangesGuard";
 import UnsavedChangesDialog from "../../../../shared/ui/UnsavedChangesDialog";
+import { useFeedback } from "../../../../shared/feedback/useFeedback";
+import { FEEDBACK_TEXT } from "../../../../shared/feedback/feedback.constants";
 
 interface UnitFormProps {
   unit?: Unit;
@@ -42,10 +43,11 @@ function UnitForm({ unit }: UnitFormProps) {
     unit ? createUnitFormState(unit) : { ...EMPTY_UNIT_FORM_STATE },
   );
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [isSavedSnackbarOpen, setIsSavedSnackbarOpen] = useState(false);
   const createMutation = useCreateUnitMutation();
   const updateMutation = useUpdateUnitMutation();
   const mutation = unit ? updateMutation : createMutation;
+
+  const { openSuccessFeedbackWithMessage } = useFeedback();
 
   const patch = useMemo(
     () => (unit ? buildUnitPatch(unit, formState) : null),
@@ -92,7 +94,7 @@ function UnitForm({ unit }: UnitFormProps) {
           id: unit.id,
           patch: patch ?? {},
         });
-        setIsSavedSnackbarOpen(true);
+        openSuccessFeedbackWithMessage(FEEDBACK_TEXT.unit.saved);
       } else {
         const createdUnit = await createMutation.mutateAsync(
           normalizeUnitFormState(formState),
@@ -102,6 +104,7 @@ function UnitForm({ unit }: UnitFormProps) {
             replace: true,
           }),
         );
+        openSuccessFeedbackWithMessage(FEEDBACK_TEXT.unit.created);
       }
     } catch {
       // The shared submit area renders the mutation error.
@@ -111,43 +114,38 @@ function UnitForm({ unit }: UnitFormProps) {
   return (
     <>
       <form className={formStyle} onSubmit={handleSubmit} noValidate>
-      <ActiveStatusBar
-        label="Unit status"
-        activeDescription="Active units are available in filters and technician skill configuration."
-        inactiveDescription="Inactive units stay configured but are hidden from active workflows."
-        isActive={formState.active}
-        disabled={isPending}
-        onChange={(active) => {
-          mutation.reset();
-          setFormState((previous) => ({ ...previous, active }));
-        }}
-      />
-
-      <div className={formWithPaddingStyle}>
-        <EditUnitFields
+        <ActiveStatusBar
+          label="Unit status"
+          activeDescription="Active units are available in filters and technician skill configuration."
+          inactiveDescription="Inactive units stay configured but are hidden from active workflows."
+          isActive={formState.active}
           disabled={isPending}
-          errors={hasSubmitted ? errors : null}
-          formState={formState}
-          onProfileChange={setProfileField}
-          onPropertyToggle={toggleProperty}
+          onChange={(active) => {
+            mutation.reset();
+            setFormState((previous) => ({ ...previous, active }));
+          }}
         />
 
-        <FormSubmitArea
-          discardLabel={unit ? "Discard changes" : "Clear form"}
-          error={mutation.error}
-          errorMessage={getUnitSaveErrorMessage(mutation.error)}
-          isDirty={isDirty}
-          isPending={isPending}
-          onDiscard={handleDiscard}
-          pendingLabel={unit ? "Saving..." : "Creating..."}
-          submitLabel={unit ? "Save Changes" : "Create Unit"}
-        />
-      </div>
+        <div className={formWithPaddingStyle}>
+          <EditUnitFields
+            disabled={isPending}
+            errors={hasSubmitted ? errors : null}
+            formState={formState}
+            onProfileChange={setProfileField}
+            onPropertyToggle={toggleProperty}
+          />
 
-      <SaveSuccessSnackbar
-        isOpen={isSavedSnackbarOpen}
-        onClose={() => setIsSavedSnackbarOpen(false)}
-      />
+          <FormSubmitArea
+            discardLabel={unit ? "Discard changes" : "Clear form"}
+            error={mutation.error}
+            errorMessage={getUnitSaveErrorMessage(mutation.error)}
+            isDirty={isDirty}
+            isPending={isPending}
+            onDiscard={handleDiscard}
+            pendingLabel={unit ? "Saving..." : "Creating..."}
+            submitLabel={unit ? "Save Changes" : "Create Unit"}
+          />
+        </div>
       </form>
 
       <UnsavedChangesDialog

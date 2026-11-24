@@ -17,6 +17,8 @@ import { useCreateUserMutation } from "../model/useCreateUserMutation";
 import EditUserFields from "./EditUserFields";
 import { useUnsavedChangesGuard } from "../../../shared/hooks/useUnsavedChangesGuard";
 import UnsavedChangesDialog from "../../../shared/ui/UnsavedChangesDialog";
+import { useFeedback } from "../../../shared/feedback/useFeedback";
+import { FEEDBACK_TEXT } from "../../../shared/feedback/feedback.constants";
 
 function NewUserForm() {
   const navigate = useNavigate();
@@ -25,6 +27,10 @@ function NewUserForm() {
     ...EMPTY_USER_FORM_STATE,
   }));
   const [hasSubmitted, setHasSubmitted] = useState(false);
+
+  // Feedback Snackbar
+  const { openSuccessFeedbackWithMessage } = useFeedback();
+
   const createUserMutation = useCreateUserMutation();
 
   const allowedRoles = getCreatableUserRoles(actorRole);
@@ -79,6 +85,7 @@ function NewUserForm() {
           state: { userCreated: true },
         }),
       );
+      openSuccessFeedbackWithMessage(FEEDBACK_TEXT.user.created);
     } catch {
       // The mutation shows the server error in the submit area.
     }
@@ -87,40 +94,40 @@ function NewUserForm() {
   return (
     <>
       <form onSubmit={handleSubmit} noValidate className={formStyle}>
-      <div className={formWithPaddingStyle}>
-        <div className="flex min-w-0 flex-col gap-3">
-          <SectionHeader
-            label="User Profile"
-            subtext="Enter the user's name, sign-in email, and access role"
-          />
+        <div className={formWithPaddingStyle}>
+          <div className="flex min-w-0 flex-col gap-3">
+            <SectionHeader
+              label="User Profile"
+              subtext="Enter the user's name, sign-in email, and access role"
+            />
 
-          <EditUserFields
-            formState={formState}
-            errors={visibleErrors}
-            allowedRoles={allowedRoles}
-            disabledProfile={isPending}
-            disabledAccess={isPending}
-            onTextChange={handleTextChange}
-            onRoleChange={handleRoleChange}
-          />
+            <EditUserFields
+              formState={formState}
+              errors={visibleErrors}
+              allowedRoles={allowedRoles}
+              disabledProfile={isPending}
+              disabledAccess={isPending}
+              onTextChange={handleTextChange}
+              onRoleChange={handleRoleChange}
+            />
 
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">
-            The user will receive a secure email invitation to create their
-            password. New accounts start active.
-          </p>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">
+              The user will receive a secure email invitation to create their
+              password. New accounts start active.
+            </p>
+          </div>
+
+          <FormSubmitArea
+            discardLabel="Clear form"
+            error={createUserMutation.error}
+            errorMessage={createUserMutation.error?.message}
+            isDirty={isDirty}
+            isPending={isPending}
+            onDiscard={handleDiscardChanges}
+            pendingLabel="Creating..."
+            submitLabel="Create User"
+          />
         </div>
-
-        <FormSubmitArea
-          discardLabel="Clear form"
-          error={createUserMutation.error}
-          errorMessage={createUserMutation.error?.message}
-          isDirty={isDirty}
-          isPending={isPending}
-          onDiscard={handleDiscardChanges}
-          pendingLabel="Creating..."
-          submitLabel="Create User"
-        />
-      </div>
       </form>
 
       <UnsavedChangesDialog
