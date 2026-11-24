@@ -47,9 +47,6 @@ export const useUnsavedChangesGuard = (isDirty: boolean) => {
   // For navigation without guard after succesful entity creation
   const proceedWithoutPrompt = useCallback((action: () => void) => {
     bypassNextNavigationRef.current = true;
-    action();
-
-    bypassNextNavigationRef.current = true;
 
     // using async and microqueque to avoid racing condition issues, because react code is sync
     try {

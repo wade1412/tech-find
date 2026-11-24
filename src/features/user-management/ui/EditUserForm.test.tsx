@@ -8,10 +8,14 @@ import type { AuthContextValue } from "../../auth/model/auth.types";
 import { AuthContext } from "../../auth/model/AuthContext";
 import { updateUser } from "../api/updateUser.api";
 import EditUserForm from "./EditUserForm";
+import { FEEDBACK_TEXT } from "../../../shared/feedback/feedback.constants";
+import { SuccessFeedbackProvider } from "../../../shared/feedback/SuccessFeedbackProvider";
 
 vi.mock("../api/updateUser.api", () => ({
   updateUser: vi.fn(),
 }));
+
+const feedbackText = FEEDBACK_TEXT.user.saved;
 
 const mockedUpdateUser = vi.mocked(updateUser);
 
@@ -65,6 +69,7 @@ function renderForm({
     signOut: vi.fn(),
     user: null,
   };
+
   const router = createMemoryRouter(
     [{ path: "/users/:userId/edit", element: <EditUserForm user={user} /> }],
     { initialEntries: [`/users/${user.id}/edit`] },
@@ -73,7 +78,9 @@ function renderForm({
   render(
     <QueryClientProvider client={queryClient}>
       <AuthContext.Provider value={authValue}>
-        <RouterProvider router={router} />
+        <SuccessFeedbackProvider>
+          <RouterProvider router={router} />
+        </SuccessFeedbackProvider>
       </AuthContext.Provider>
     </QueryClientProvider>,
   );
@@ -127,7 +134,7 @@ describe("EditUserForm", () => {
       role: "user",
       userId: targetUser.id,
     });
-    expect(await screen.findByText("Changes saved")).not.toBeNull();
+    expect(await screen.findByText(feedbackText)).not.toBeNull();
   });
 
   it("submits account deactivation through the access switch", async () => {
@@ -170,12 +177,10 @@ describe("EditUserForm", () => {
       ),
     ).not.toBeNull();
     expect(
-      screen.getByRole<HTMLInputElement>("textbox", { name: "Alias" })
-        .disabled,
+      screen.getByRole<HTMLInputElement>("textbox", { name: "Alias" }).disabled,
     ).toBe(true);
     expect(
-      screen.getByRole<HTMLInputElement>("combobox", { name: "Role" })
-        .disabled,
+      screen.getByRole<HTMLInputElement>("combobox", { name: "Role" }).disabled,
     ).toBe(true);
     expect(
       screen.getByRole<HTMLButtonElement>("switch", { name: "User access" })
@@ -193,10 +198,7 @@ describe("EditUserForm", () => {
     renderForm();
 
     await user.clear(screen.getByRole("textbox", { name: "Alias" }));
-    await user.type(
-      screen.getByRole("textbox", { name: "Alias" }),
-      "Updated",
-    );
+    await user.type(screen.getByRole("textbox", { name: "Alias" }), "Updated");
     await user.click(screen.getByRole("button", { name: "Save Changes" }));
 
     expect((await screen.findByRole("alert")).textContent).toContain(
