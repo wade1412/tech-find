@@ -15,7 +15,7 @@ const TechnicianSortSelect = ({
   const isDefault = value === "default";
   const isDesc = !isDefault && sortOrder === "desc";
   return (
-    <div className="flex items-center gap-1.5 justify-between">
+    <div className="flex items-center gap-1.5 justify-between mb-1">
       <span className="text-xs text-zinc-400 dark:text-zinc-500">Sort by</span>
 
       <div className="flex items-center gap-0.5 rounded-lg bg-zinc-100 p-0.5 dark:bg-zinc-800/60">

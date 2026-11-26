@@ -38,9 +38,9 @@ function FilterPanel() {
   return (
     <div>
       {isDesktopMode ? (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
-            <h2 className="font-heading text-sm font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+            <h2 className="font-heading text-sm font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1">
               Filters
             </h2>
 
