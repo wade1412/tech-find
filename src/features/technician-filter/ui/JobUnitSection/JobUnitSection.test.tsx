@@ -2,12 +2,11 @@ import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { makeUnit } from "../../../entities/unit/testing/unit.factory";
-import { useUnitsQuery } from "../../../entities/unit/useUnitsQuery";
-import JobOptions from "./JobOptions";
-import UnitSelector from "./UnitSelector";
+import { makeUnit } from "../../../../entities/unit/testing/unit.factory";
+import { useUnitsQuery } from "../../../../entities/unit/useUnitsQuery";
+import JobUnitSection from "./JobUnitSection";
 
-vi.mock("../../../entities/unit/useUnitsQuery", () => ({
+vi.mock("../../../../entities/unit/useUnitsQuery", () => ({
   useUnitsQuery: vi.fn(),
 }));
 
@@ -41,12 +40,7 @@ describe("Job Options with Unit Selector", () => {
       [
         {
           path: "/",
-          element: (
-            <>
-              <UnitSelector />
-              <JobOptions />
-            </>
-          ),
+          element: <JobUnitSection />,
         },
       ],
       { initialEntries: ["/"] },

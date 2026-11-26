@@ -1,8 +1,7 @@
 import { headingStyleWithBottomMargin } from "../../../shared/styles/styles";
 import BrandSelect from "./BrandSelect";
-import JobOptions from "./JobOptions";
+import JobUnitSection from "./JobUnitSection/JobUnitSection";
 import SpecificIssueSelect from "./SpecificIssueSelect";
-import UnitSelector from "./UnitSelector";
 import ZoneSelect from "./ZoneSelect";
 
 function FilterFields() {
@@ -15,8 +14,7 @@ function FilterFields() {
 
       <section>
         <h3 className={headingStyleWithBottomMargin}>Units</h3>
-        <JobOptions />
-        <UnitSelector />
+        <JobUnitSection />
       </section>
 
       <section>

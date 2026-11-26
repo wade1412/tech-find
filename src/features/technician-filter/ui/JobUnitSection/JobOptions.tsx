@@ -1,22 +1,34 @@
 import { useEffect } from "react";
-import { useUnitsQuery } from "../../../entities/unit/useUnitsQuery";
-import { filterCheckboxes } from "../model/filter.constants";
-import { useTechnicianFilters } from "../model/useTechnicianFilters";
-import Checkbox from "../../../shared/ui/Checkbox";
-import type { JobOptionKey } from "../model/filter.types";
-import ErrorMessage from "../../../shared/ui/ErrorMessage";
+import type { FilterState, JobOptionKey } from "../../model/filter.types";
+import { useUnitsQuery } from "../../../../entities/unit/useUnitsQuery";
+import Checkbox from "../../../../shared/ui/Checkbox";
+import { filterCheckboxes } from "../../model/filter.constants";
+import ErrorMessage from "../../../../shared/ui/ErrorMessage";
+import { motion, AnimatePresence } from "motion/react";
+import { heightRevealMotionProps } from "../../../../shared/styles/motionVariants";
+import { getHintMessage } from "./hint.helpers";
+import JobOptionsHint from "./JobOptionsHint";
 
-function JobOptions() {
+interface JobOptionsProps {
+  filter: FilterState;
+  toggleGas: () => void;
+  toggleStacked: () => void;
+  toggleInstallation: () => void;
+  toggleCommercial: () => void;
+  clearOptionByKeys: (keys: JobOptionKey[]) => void;
+}
+
+function JobOptions({
+  filter,
+  toggleGas,
+  toggleStacked,
+  toggleInstallation,
+  toggleCommercial,
+  clearOptionByKeys,
+}: JobOptionsProps) {
   const { data: units, isPending, isError, error } = useUnitsQuery();
 
-  const {
-    filter,
-    toggleGas,
-    toggleStacked,
-    toggleInstallation,
-    toggleCommercial,
-    clearOptionByKeys,
-  } = useTechnicianFilters();
+  const hintMessage = getHintMessage(filter, units);
 
   const selectedUnits =
     units?.filter((unit) => filter.unitSlugs.includes(unit.slug)) || [];
@@ -92,8 +104,8 @@ function JobOptions() {
   }
 
   return (
-    <div key="job-options">
-      <div className="mb-3 flex flex-row gap-4">
+    <div key="job-options" className="flex flex-col gap-2">
+      <div className="flex flex-row gap-4">
         {filterCheckboxes.map((optionName: JobOptionKey) => (
           <Checkbox
             disabled={options[optionName].disabled}
@@ -105,6 +117,14 @@ function JobOptions() {
           />
         ))}
       </div>
+
+      <AnimatePresence initial={false}>
+        {hintMessage && (
+          <motion.div {...heightRevealMotionProps}>
+            <JobOptionsHint hintMessage={hintMessage} />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -1,16 +1,21 @@
-import { useUnitsQuery } from "../../../entities/unit/useUnitsQuery";
-import UnitCard from "../../../entities/unit/ui/UnitCard";
-import UnitSkeleton from "../../../entities/unit/ui/UnitSkeleton";
-import { useTechnicianFilters } from "../model/useTechnicianFilters";
-import ErrorMessage from "../../../shared/ui/ErrorMessage";
+import UnitCard from "../../../../entities/unit/ui/UnitCard";
+import UnitSkeleton from "../../../../entities/unit/ui/UnitSkeleton";
+import { useUnitsQuery } from "../../../../entities/unit/useUnitsQuery";
+import ErrorMessage from "../../../../shared/ui/ErrorMessage";
+import type { FilterState } from "../../model/filter.types";
 import {
   getActiveJobOptions,
   getUnsupportedJobOptions,
-} from "../model/unitCompatibility";
+} from "../../model/unitCompatibility";
 
-function UnitSelector() {
+interface UnitSelectorProps {
+  filter: FilterState;
+  toggleUnit: (unitSlug: string) => void;
+  clearUnits: () => void;
+}
+
+function UnitSelector({ filter, toggleUnit, clearUnits }: UnitSelectorProps) {
   const { data, isPending, isError, error } = useUnitsQuery();
-  const { filter, toggleUnit, clearUnits } = useTechnicianFilters();
   const activeJobOptions = getActiveJobOptions(filter);
 
   if (isPending) return <UnitSkeleton />;
